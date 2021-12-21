@@ -71,10 +71,11 @@ assortr_plot <- function(x){
     igraph::V(g_obs)$membership <- 1:length(igraph::V(g_obs))
     r <- NA_real_
   }
-
-  return(plot(g_obs, layout = igraph::layout.fruchterman.reingold(g_obs),
-              edge.width = igraph::E(g_obs)$weight*4,
-              vertex.color = igraph::V(g_obs)$membership,
-              main = bquote(hat(Q)[rel]==.(r))))
+# no way to make invisible with base r plotting?
+  invisible(plot(g_obs, layout = igraph::layout.fruchterman.reingold(g_obs),
+                 edge.width = igraph::E(g_obs)$weight*4,
+                 vertex.color = igraph::V(g_obs)$membership,
+                 main = bquote(hat(Q)[rel]==.(r)))
+            )
 
 }
