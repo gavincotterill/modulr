@@ -1,4 +1,20 @@
-
+#' Simulate the true simple ratio index values for each dyad in a network.
+#'
+#' @param n_animals The number of nodes to include in the network.
+#' @param n_groups The number of modules in the network.
+#' @param time_to_leave The average number of days spent in the home group.
+#' @param time_to_return The average number of days spent away from the home
+#'   group.
+#' @param samples_per_day The number of samples per day.
+#' @param sampling_duration The number of days in the sampling period.
+#' @param time_cut An optional parameter indicating whether or not to simulate
+#'   values at a time period prior to the full sampling duration.... does this
+#'   actaully make sense here? Or should it just exist in sim_animal??
+#'
+#' @return sim_igraph, an igraph graph object.
+#' @export
+#'
+#' @examples # nothing yet
 simulate_graph <- function(n_animals,
                            n_groups,
                            time_to_leave,

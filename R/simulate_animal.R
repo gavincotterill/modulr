@@ -1,3 +1,19 @@
+#' The backbone of the network simulator, called from within simulate_graph
+#'
+#' @param time_to_leave_group The average amount of time spent within the home
+#'   group prior to leaving (days per sampling period).
+#' @param time_to_return_to_group The average amount of time spent abroad before
+#'   returning to home group.
+#' @param n_groups The number of modules in the network.
+#' @param time_cut Optional, is used, the number of days prior to censoring (eg.
+#'   animal died, collar died)
+#' @param samples_per_day Default == 1.
+#' @param sampling_duration Default == 365.
+#'
+#' @return A vector of sampling locations for a single animal.
+#' @export
+#'
+#' @examples # not yet
 simulate_animal <- function(time_to_leave_group,
                             time_to_return_to_group,
                             n_groups,

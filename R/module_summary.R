@@ -1,8 +1,11 @@
-#' Calculate nodes per module and modules per network statistics on a list of graphs with defined membership
+#' Calculate nodes per module and modules per network statistics on a list of
+#' graphs with defined membership
 #'
-#' @param network_list a list of `igraph` graph objects. Each vertex must have a defined `$membership`.
+#' @param network_list a list of `igraph` graph objects. Each vertex must have a
+#'   defined `$membership`.
 #'
-#' @return a `data.frame()` where each row corresponds the the nth element of the network_list.
+#' @return a `data.frame()` where each row corresponds the the nth element of
+#'   the network_list.
 #' @export
 #'
 #' @examples # add at a later date

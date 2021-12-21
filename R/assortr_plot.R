@@ -1,11 +1,18 @@
-#' Takes a square adjacency matrix or igraph graph and returns a plot of the graph, color-coded by modules detected by `rnetcarto`
+#' Plot a graph, color-coded by `rnetcarto` modules
 #'
-#' @param x, a named square adjacency matrix or named igraph graph. Intended for weighted, undirected graphs.
+#' @param x, a named square adjacency matrix or named igraph graph. Intended for
+#'   weighted, undirected graphs.
 #'
-#' @return a plot
+#' @return An igraph plot using the Fruchterman-Reingold layout and displaying
+#'   color-coded node membership as determined by `rnetcarto`.
 #' @export
 #'
-#' @examples # add at a later date
+#' @examples
+#' adjmat <- matrix(sample(seq(0, 1, .01), 16), nrow = 4)
+#' diag(adjmat) <- 0
+#' adjmat[lower.tri(adjmat)] <- 0
+#' rownames(adjmat) <- colnames(adjmat) <- paste0("Animal_", 1:4)
+#' assortr_plot(adjmat)
 assortr_plot <- function(x){
   if (!requireNamespace(c("igraph", "dplyr", "assortnet", "rnetcarto"), quietly = TRUE)) {
     stop(
@@ -45,6 +52,9 @@ assortr_plot <- function(x){
       }
     }
     igraph::V(g_obs)$membership <- colorOrder
+    qrel <- assortnet::assortment.discrete(graph = am_obs, types = colorOrder, weighted = T)$r
+    r <- ifelse(qrel %in% "NaN", 0, qrel)
+
 
   }else if(length(igraph::E(g_obs)) == 1){
 
@@ -55,15 +65,17 @@ assortr_plot <- function(x){
       colorOrder[is.na(colorOrder)][1] <- max(colorOrder, na.rm = T) + 1 # this is counterintuitive... but use a [1] instead of [j]
     }
     igraph::V(g_obs)$membership <- colorOrder
+    r <- 0
 
   }else if(length(igraph::E(g_obs)) == 0){
 
     igraph::V(g_obs)$membership <- 1:length(igraph::V(g_obs))
-
+    r <- NA_real_
   }
 
   return(plot(g_obs, layout = igraph::layout.fruchterman.reingold(g_obs),
               edge.width = igraph::E(g_obs)$weight*4,
-              vertex.color = igraph::V(g_obs)$membership))
+              vertex.color = igraph::V(g_obs)$membership,
+              main = bquote(hat(Q)[rel]==.(r))))
 
 }

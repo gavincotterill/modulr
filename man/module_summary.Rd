@@ -2,18 +2,22 @@
 % Please edit documentation in R/module_summary.R
 \name{module_summary}
 \alias{module_summary}
-\title{Calculate nodes per module and modules per network statistics on a list of graphs with defined membership}
+\title{Calculate nodes per module and modules per network statistics on a list of
+graphs with defined membership}
 \usage{
 module_summary(network_list)
 }
 \arguments{
-\item{network_list}{a list of \code{igraph} graph objects. Each vertex must have a defined \verb{$membership}.}
+\item{network_list}{a list of \code{igraph} graph objects. Each vertex must have a
+defined \verb{$membership}.}
 }
 \value{
-a \code{data.frame()} where each row corresponds the the nth element of the network_list.
+a \code{data.frame()} where each row corresponds the the nth element of
+the network_list.
 }
 \description{
-Calculate nodes per module and modules per network statistics on a list of graphs with defined membership
+Calculate nodes per module and modules per network statistics on a list of
+graphs with defined membership
 }
 \examples{
 # add at a later date

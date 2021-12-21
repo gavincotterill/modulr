@@ -1,3 +1,20 @@
+#' Simulate a sampling regime and calculate network modularity.
+#'
+#' @param adjmat I'm not sure why this is here... should just build it from the
+#'   graph
+#' @param graph The true network to sample
+#' @param missingness The proportion of the nodes in the real network that will
+#'   be missed in sampling
+#' @param propGPS The proportion of high resolution data to use
+#' @param gps_freq The observation frequency (observations per sampling period)
+#'   of the high res data
+#' @param vhf_freq Observations per sampling period of the low res data
+#' @param regime Whether to sample modules randomly or impose 'evenness'
+#'
+#' @return g_obs, the graph of the observed network
+#' @export
+#'
+#' @examples # nothing yet
 sample_graph <- function(adjmat, graph, missingness, propGPS, gps_freq, vhf_freq, regime = "random"){
   if (!requireNamespace(c("igraph", "dplyr", "rnetcarto"), quietly = TRUE)) {
     stop(
