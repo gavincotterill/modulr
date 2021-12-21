@@ -3,6 +3,7 @@
 export("%>%")
 export(assortr_plot)
 export(module_summary)
+export(netcarto_modules)
 export(sample_graph)
 export(simulate_animal)
 export(simulate_graph)
