@@ -25,15 +25,14 @@ netcarto_modules <- function(x) {
 
       g_obs <- igraph::graph_from_adjacency_matrix(x, weighted = T, mode = "undirected", diag = F)
       g_obs <- igraph::delete_edges(g_obs, which(igraph::E(g_obs)$weight==0))
-      am_obs <- igraph::get.adjacency(g_obs, type = "upper", attr = "weight") %>%
-        as.matrix()
+      am_obs <- as.matrix(igraph::get.adjacency(g_obs, type = "upper", attr = "weight"))
 
     } else if(class(x) == "igraph"){
 
       g_obs <- x
       g_obs <- igraph::delete_edges(g_obs, which(igraph::E(g_obs)$weight==0))
-      am_obs <- igraph::get.adjacency(g_obs, type = "upper", attr = "weight") %>%
-        as.matrix()
+      am_obs <- as.matrix(igraph::get.adjacency(g_obs, type = "upper", attr = "weight"))
+
     } else {
       stop("Object must either be a square adjacency matrix of class matrix or an igraph object.")
     }
@@ -48,7 +47,7 @@ netcarto_modules <- function(x) {
       }else{
         colorOrder <- df$module[match(nms, nmsNC)]
         for(j in 1:sum(is.na(colorOrder))){
-          colorOrder[is.na(colorOrder)][1] <- max(colorOrder, na.rm = T) + 1 # this is counterintuitive... but use a [1] instead of [j]
+          colorOrder[is.na(colorOrder)][1] <- max(colorOrder, na.rm = T) + 1
         }
       }
       igraph::V(g_obs)$membership <- colorOrder
@@ -59,7 +58,7 @@ netcarto_modules <- function(x) {
       tail <- names(which(colSums(am_obs) > 0))
       colorOrder <- ifelse(igraph::V(g_obs)$name %in% c(head, tail), 0, NA)
       for(j in 1:sum(is.na(colorOrder))){
-        colorOrder[is.na(colorOrder)][1] <- max(colorOrder, na.rm = T) + 1 # this is counterintuitive... but use a [1] instead of [j]
+        colorOrder[is.na(colorOrder)][1] <- max(colorOrder, na.rm = T) + 1
       }
       igraph::V(g_obs)$membership <- colorOrder
 
