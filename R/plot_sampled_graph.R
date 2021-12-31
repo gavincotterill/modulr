@@ -28,6 +28,7 @@
 #' plot_simulated_graph(g)
 #' plot_sampled_graph(g_obs, g)
 #'
+#' @seealso \code{\link{sample_graph, simulate_graph, plot_simulated_graph}}
 plot_sampled_graph <- function(g_obs, g, vertex.size = 40, mark.expand = 25){
 
   grp <- data.frame(name = igraph::V(g)$name,

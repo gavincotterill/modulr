@@ -8,7 +8,7 @@
 #' @examples
 #' plot_simulated_graph(g)
 #'
-#' @seealso \code{\link{plot_simulated_graph}}
+#' @seealso \code{\link{simulate_graph, plot_sampled_graph}}
 plot_simulated_graph <- function(g, vertex.size = 40, mark.expand = 25){
   igraph::V(g)$name <- stringr::str_extract(igraph::V(g)$name, "\\d{1,}")
 
