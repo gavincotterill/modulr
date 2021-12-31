@@ -39,5 +39,16 @@ sim_igraph, an igraph graph object.
 Simulate the true simple ratio index values for each dyad in a network.
 }
 \examples{
-# nothing yet
+set.seed(123)
+
+g <- simulate_graph(n_animals = 25,
+                    n_groups = 4,
+                    time_to_leave = 5,
+                    time_to_return = 2,
+                    samples_per_day = 1,
+                    sampling_duration = 7,
+                    time_cut = 7)
+}
+\seealso{
+\code{\link{plot_simulated_graph}}
 }

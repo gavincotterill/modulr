@@ -36,5 +36,10 @@ A vector of sampling locations for a single animal.
 The backbone of the network simulator, called from within simulate_graph
 }
 \examples{
-# not yet
+simulate_animal(time_to_leave_group = 3,
+time_to_return_to_group = 1,
+n_groups = 4,
+time_cut = 7,
+samples_per_day = 1,
+sampling_duration = 7)
 }
