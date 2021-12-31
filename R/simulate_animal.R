@@ -13,7 +13,13 @@
 #' @return A vector of sampling locations for a single animal.
 #' @export
 #'
-#' @examples # not yet
+#' @examples
+#' simulate_animal(time_to_leave_group = 3,
+#' time_to_return_to_group = 1,
+#' n_groups = 4,
+#' time_cut = 7,
+#' samples_per_day = 1,
+#' sampling_duration = 7)
 simulate_animal <- function(time_to_leave_group,
                             time_to_return_to_group,
                             n_groups,
@@ -76,7 +82,7 @@ simulate_animal <- function(time_to_leave_group,
   locations$at_home <- ifelse(locations$current_state == animals_home, "home", "away")
 
   # sample group membership on a fixed time grid and record ----
-  sample_times <- seq(1:sampling_duration * samples_per_day) / samples_per_day
+  sample_times <- seq(1:sampling_duration * samples_per_day) / samples_per_day # should this be divided?
   sample_locations <- rep(NA, length(sample_times))
   for(i in 1:length(sample_times)){
     sample_locations[i] <- locations$current_state[min(which(locations$cumulative_time >= sample_times[i]))]
