@@ -16,7 +16,6 @@
 #'                     samples_per_day = 1,
 #'                     sampling_duration = 7,
 #'                     time_cut = 7)
-#'
 #' igraph::V(g)$name <- stringr::str_extract(igraph::V(g)$name, "\\d{1,}")
 #'
 #' g_obs <- sample_graph(
@@ -25,9 +24,11 @@
 #'   propGPS = 1,
 #'   regime = "better")
 #'
+#' par(mfrow = c(1,2))
+#' plot_simulated_graph(g)
 #' plot_sampled_graph(g_obs, g)
 #'
-plot_sampled_graph <- function(g_obs, g){
+plot_sampled_graph <- function(g_obs, g, vertex.size = 40, mark.expand = 25){
 
   grp <- data.frame(name = igraph::V(g)$name,
                     mem = igraph::V(g)$membership)
@@ -57,13 +58,37 @@ plot_sampled_graph <- function(g_obs, g){
     unique() %>%
     unlist()
 
+  set.seed(123)
+  lo_whole <- igraph::layout.fruchterman.reingold(g) %>%
+    data.frame()
+  lo_whole$name <- igraph::V(g)$name
+
+  lo <- lo_whole[,1:2] %>%
+    data.matrix()
+  xbuf <- ybuf <- .1
+  xmin <- min(lo[,1] - xbuf)
+  xmax <- max(lo[,1] + xbuf)
+  ymin <- min(lo[,2] - ybuf)
+  ymax <- max(lo[,2] + ybuf)
+
+  lo2 <- lo_whole %>%
+    filter(name %in% V(g_obs)$name)
+  lo2 <- lo2[match(V(g_obs)$name, lo2$name),] %>%
+    select(-3) %>%
+    data.matrix()
+
   plot(g_obs,
-       layout = layout.fruchterman.reingold(g_obs),
+       layout = lo2,
+       xlim = c(xmin, xmax),
+       ylim = c(ymin, ymax),
+       rescale = F,
        edge.width = E(g_obs)$sim_weight*2,
        edge.color = "black",
        mark.groups = grp_list_obs,
        mark.col = mcs_obs,
        mark.border = mbs_obs,
        vertex.color = V(g_obs)$membership,
-       vertex.frame.color =  "grey20")
+       vertex.frame.color =  "grey20",
+       vertex.size = vertex.size,
+       mark.expand = mark.expand)
 }
