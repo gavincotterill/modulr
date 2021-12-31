@@ -31,6 +31,13 @@ sample_graph <- function(graph, missingness, propGPS = 1, gps_freq = 30/365, vhf
     membership <- igraph::V(graph)$membership    # pull the stored membership vector
     id_df <- data.frame(ids = igraph::V(graph)$name, group = membership)
 
+    grouped_by_size <- id_df %>%
+      dplyr::group_by(group) %>%
+      dplyr::add_tally() %>%
+      ungroup() %>%
+      arrange(-n) %>%
+      filter(n != 1) # drop single node modules
+
     min_sample <- id_df %>% # smallest module size
       dplyr::group_by(group) %>%
       dplyr::count() %>%
@@ -44,19 +51,25 @@ sample_graph <- function(graph, missingness, propGPS = 1, gps_freq = 30/365, vhf
     # if you need fewer animals than there are ngroups * 2
     if(size <= (ngroups * 2) & size %% 2 == 0){ # and is even,
 
-      out <- id_df %>%
+      # out <- id_df %>%
+      out <- grouped_by_size %>%
         dplyr::group_by(group) %>%
-        dplyr::sample_n(ifelse(min_sample == 1, 1, 2)) %>%
+        # dplyr::sample_n(ifelse(min_sample == 1, 1, 2)) %>%
+        dplyr::sample_n(2) %>%
         dplyr::ungroup() %>%
-        dplyr::slice(1:size) # you won't sample every group.
+        dplyr::slice(1:size) %>% # you won't sample every group.
+        select(-n)
 
     } else if(size < (ngroups * 2) & size %% 2 != 0){ # fewer animals then groups*2 and odd
 
-      initial_sampling <- id_df %>%
+      # initial_sampling <- id_df %>%
+      initial_sampling <- grouped_by_size %>%
         dplyr::group_by(group) %>%
-        dplyr::sample_n(ifelse(min_sample == 1, 1, 2)) %>%
+        # dplyr::sample_n(ifelse(min_sample == 1, 1, 2)) %>%
+        dplyr::sample_n(2) %>%
         dplyr::ungroup() %>%
-        dplyr::slice(1:(size - 1))
+        dplyr::slice(1:(size - 1)) %>%
+        select(-n)
 
       remainder <- size - nrow(initial_sampling)
 
