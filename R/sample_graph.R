@@ -13,7 +13,7 @@
 #' @export
 #'
 #' @examples # nothing yet
-sample_graph <- function(graph, missingness, propGPS, gps_freq, vhf_freq, regime = "random"){
+sample_graph <- function(graph, missingness, propGPS = 1, gps_freq = 30/365, vhf_freq = 8/365, regime = "random"){
   if (!requireNamespace(c("igraph", "dplyr", "rnetcarto"), quietly = TRUE)) {
     stop(
       "Packages \"igraph\", \"dplyr\", and \"rnetcarto\" must be installed to use this function.",
