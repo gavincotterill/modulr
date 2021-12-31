@@ -9,7 +9,7 @@
 #' plot_simulated_graph(g)
 #'
 #' @seealso \code{\link{plot_simulated_graph}}
-plot_simulated_graph <- function(g){
+plot_simulated_graph <- function(g, vertex.size = 40, mark.expand = 25){
   igraph::V(g)$name <- stringr::str_extract(igraph::V(g)$name, "\\d{1,}")
 
   grp <- data.frame(name = igraph::V(g)$name,
@@ -37,13 +37,31 @@ plot_simulated_graph <- function(g){
     unique() %>%
     unlist()
 
+  set.seed(123)
+  lo_whole <- igraph::layout.fruchterman.reingold(g) %>%
+    data.frame()
+  lo_whole$name <- igraph::V(g)$name
+
+  lo <- lo_whole[,1:2] %>%
+    data.matrix()
+  xbuf <- ybuf <- .1
+  xmin <- min(lo[,1] - xbuf)
+  xmax <- max(lo[,1] + xbuf)
+  ymin <- min(lo[,2] - ybuf)
+  ymax <- max(lo[,2] + ybuf)
+
   igraph:::plot.igraph(g,
-                       layout = igraph::layout.fruchterman.reingold(g),
+                       layout = lo,
+                       xlim = c(xmin, xmax),
+                       ylim = c(ymin, ymax),
+                       rescale = F,
                        edge.width = igraph::E(g)$weight,
                        edge.color = "black",
                        vertex.color = grp$mb,
                        vertex.frame.color = "grey20",
                        mark.groups = grp_list_whole,
                        mark.col = mcs_whole,
-                       mark.border = mbs_whole)
+                       mark.border = mbs_whole,
+                       vertex.size = vertex.size,
+                       mark.expand = mark.expand)
 }
