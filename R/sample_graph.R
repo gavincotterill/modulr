@@ -54,7 +54,7 @@ sample_graph <- function(graph, missingness, propGPS = 1, gps_freq = 30/365, vhf
       initial_sampling <- id_df %>%
         dplyr::group_by(group) %>%
         dplyr::sample_n(ifelse(min_sample == 1, 1, 2)) %>%
-        dplyr::slice(1:size)
+        dplyr::slice(1:(size - 1))
 
       remainder <- size - nrow(initial_sampling)
 
