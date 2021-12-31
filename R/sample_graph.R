@@ -15,7 +15,7 @@
 #' @export
 #'
 #' @examples # nothing yet
-sample_graph <- function(adjmat, graph, missingness, propGPS, gps_freq, vhf_freq, regime = "random"){
+sample_graph <- function(graph, missingness, propGPS, gps_freq, vhf_freq, regime = "random"){
   if (!requireNamespace(c("igraph", "dplyr", "rnetcarto"), quietly = TRUE)) {
     stop(
       "Packages \"igraph\", \"dplyr\", and \"rnetcarto\" must be installed to use this function.",
@@ -23,7 +23,10 @@ sample_graph <- function(adjmat, graph, missingness, propGPS, gps_freq, vhf_freq
     )
   }
 
+  if(class(graph) != "igraph"){ stop("graph needs to be an igraph object.", call. = FALSE) }
+
   m <- missingness
+  adjmat = as_adjacency_matrix(graph, attr = "weight", type = "both", sparse = F)
   netSize <- ncol(adjmat)
 
   if(regime == "even"){
