@@ -47,6 +47,7 @@ sample_graph <- function(graph, missingness, propGPS = 1, gps_freq = 30/365, vhf
       out <- id_df %>%
         dplyr::group_by(group) %>%
         dplyr::sample_n(ifelse(min_sample == 1, 1, 2)) %>%
+        dplyr::ungroup() %>%
         dplyr::slice(1:size) # you won't sample every group.
 
     } else if(size < (ngroups * 2) & size %% 2 != 0){ # fewer animals then groups*2 and odd
@@ -54,6 +55,7 @@ sample_graph <- function(graph, missingness, propGPS = 1, gps_freq = 30/365, vhf
       initial_sampling <- id_df %>%
         dplyr::group_by(group) %>%
         dplyr::sample_n(ifelse(min_sample == 1, 1, 2)) %>%
+        dplyr::ungroup() %>%
         dplyr::slice(1:(size - 1))
 
       remainder <- size - nrow(initial_sampling)
