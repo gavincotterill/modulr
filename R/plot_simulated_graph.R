@@ -1,8 +1,13 @@
 #' plot_simulated_graph()
 #'
-#' @param g, an igraph object output from simulate_graph()
+#' @param
+#' g, an igraph object output from simulate_graph()
+#' vertex.size, node size in plot
+#' mark.expand, padding of polygon denoting modules around nodes
 #'
 #' @return
+#' a plot of the igraph object
+#'
 #' @export
 #'
 #' @examples
