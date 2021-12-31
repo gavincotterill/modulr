@@ -27,6 +27,59 @@ sample_graph <- function(graph, missingness, propGPS, gps_freq, vhf_freq, regime
   adjmat = as_adjacency_matrix(graph, attr = "weight", type = "both", sparse = F)
   netSize <- ncol(adjmat)
 
+  if(regime == "better"){
+    membership <- igraph::V(graph)$membership    # pull the stored membership vector
+    id_df <- data.frame(ids = igraph::V(graph)$name, group = membership)
+
+    min_sample <- id_df %>% # smallest module size
+      dplyr::group_by(group) %>%
+      dplyr::count() %>%
+      dplyr::ungroup() %>%
+      dplyr::select(n) %>%
+      min()
+    ngroups = length(unique(membership)) # number of modules
+    size = ceiling( (1 - m) * netSize ) # the number of animals to return (number needed)
+    even_sampler <- floor(size/ngroups)
+
+    # if you need fewer animals than there are ngroups * 2
+    if(size <= (ngroups * 2) & size %% 2 == 0){ # and is even,
+
+      out <- id_df %>%
+        dplyr::group_by(group) %>%
+        dplyr::sample_n(2) %>%
+        dplyr::slice(size) # you won't sample every group.
+
+    } else if(size < (ngroups * 2) & size %% 2 != 0){ # fewer animals then groups*2 and odd
+
+      initial_sampling <- id_df %>%
+        dplyr::group_by(group) %>%
+        dplyr::sample_n(2) %>%
+        dplyr::slice(size)
+      remainder <- size - nrow(initial_sampling)
+
+      if(remainder > 0){ # start inner
+        unsampled_df <- id_df %>%
+          dplyr::filter(!ids %in% initial_sampling$ids)
+        random_vec <- sample(1:nrow(unsampled_df), remainder, replace = F)
+        out <- rbind(initial_sampling, unsampled_df[random_vec,])
+      } else { out <- initial_sampling } # end inner
+
+    }else if(size > (ngroups * 2)){ # if you need more animals than twice the number of groups
+      initial_sampling <- id_df %>%
+        dplyr::group_by(group) %>%
+        dplyr::sample_n(even_sampler)
+      remainder <- size - nrow(initial_sampling)
+
+      if(remainder > 0){ # begin inner
+        unsampled_df <- id_df %>%
+          dplyr::filter(!ids %in% initial_sampling$ids)
+        random_vec <- sample(1:nrow(unsampled_df), remainder, replace = F)
+        out <- rbind(initial_sampling, unsampled_df[random_vec,])
+      } else { out <- initial_sampling } # end inner
+    }
+    grab <- out$ids
+  }
+
   if(regime == "even"){
     membership <- igraph::V(graph)$membership    # pull the stored membership vector
     id_df <- data.frame(ids = igraph::V(graph)$name, group = membership)
