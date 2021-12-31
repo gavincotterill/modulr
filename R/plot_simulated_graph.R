@@ -6,9 +6,17 @@
 #' @export
 #'
 #' @examples
+#' set.seed(123)
+#' g <- simulate_graph(n_animals = 25,
+#'                     n_groups = 4,
+#'                     time_to_leave = 5,
+#'                     time_to_return = 2,
+#'                     samples_per_day = 1,
+#'                     sampling_duration = 7,
+#'                     time_cut = 7)
 #' plot_simulated_graph(g)
 #'
-#' @seealso \code{\link{simulate_graph, plot_sampled_graph}}
+#' @seealso \code{\link{simulate_graph}}
 plot_simulated_graph <- function(g, vertex.size = 40, mark.expand = 25){
   igraph::V(g)$name <- stringr::str_extract(igraph::V(g)$name, "\\d{1,}")
 
