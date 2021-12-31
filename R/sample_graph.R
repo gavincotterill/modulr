@@ -12,8 +12,41 @@
 #' @return g_obs, the graph of the observed network
 #' @export
 #'
-#' @examples # nothing yet
-sample_graph <- function(graph, missingness, propGPS = 1, gps_freq = 30/365, vhf_freq = 8/365, regime = "random"){
+#' @examples
+#' data("real_networks")
+#' data("study_design")
+#'
+#' row_index <- study_design %>%
+#'   mutate(index = row.names(.)) %>%
+#'   filter(nNodes == 50) %>%
+#'   arrange(-qrel) %>%
+#'   slice(1:10) %>%
+#'   select(index)
+#' reduced_design <- study_design[as.numeric(row_index$index), ]
+#' reduced_networks <- real_networks[as.numeric(row_index$index)]
+#'
+#' g_obs <- sample_graph(
+#'   graph = reduced_networks[[1]],
+#'   missingness = 0.5,
+#'   propGPS = 1,
+#'   regime = "better")
+#'
+#' am_obs <- igraph::get.adjacency(g_obs, type = "upper", attr = "sim_weight") %>%
+#'   as.matrix()
+#'
+#' reduced_design[1,] %>%
+#'   mutate(missingness = 0.5,
+#'          prop_gps = 1,
+#'          qrel_sim = assortnet::assortment.discrete(am_obs, types = igraph::V(g_obs)$membership, weighted = T)$r,
+#'          nNodes_sim = ncol(am_obs),
+#'          nModules_sim = length(unique(igraph::V(g_obs)$membership))) %>%
+#'   select( - c(vals, obs_freq))
+#'
+#' plot(g_obs,
+#'      layout = igraph::layout.fruchterman.reingold(g_obs),
+#'      edge.width = igraph::E(g_obs)$sim_weight*2,
+#'      vertex.frame.color = "grey20")
+sample_graph <- function(graph, missingness, propGPS = 1, gps_freq = 30/365, vhf_freq = 8/365, regime = "better"){
   if (!requireNamespace(c("igraph", "dplyr", "rnetcarto"), quietly = TRUE)) {
     stop(
       "Packages \"igraph\", \"dplyr\", and \"rnetcarto\" must be installed to use this function.",
@@ -24,7 +57,7 @@ sample_graph <- function(graph, missingness, propGPS = 1, gps_freq = 30/365, vhf
   if(class(graph) != "igraph"){ stop("graph needs to be an igraph object.", call. = FALSE) }
 
   m <- missingness
-  adjmat = as_adjacency_matrix(graph, attr = "weight", type = "both", sparse = F)
+  adjmat = igraph::as_adjacency_matrix(graph, attr = "weight", type = "both", sparse = F)
   netSize <- ncol(adjmat)
 
   if(regime == "better"){
@@ -34,9 +67,9 @@ sample_graph <- function(graph, missingness, propGPS = 1, gps_freq = 30/365, vhf
     grouped_by_size <- id_df %>%
       dplyr::group_by(group) %>%
       dplyr::add_tally() %>%
-      ungroup() %>%
-      arrange(-n) %>%
-      filter(n != 1) # drop single node modules
+      dplyr::ungroup() %>%
+      dplyr::arrange(-n) %>%
+      dplyr::filter(n != 1) # drop single node modules
 
     min_sample <- id_df %>% # smallest module size
       dplyr::group_by(group) %>%
@@ -44,6 +77,7 @@ sample_graph <- function(graph, missingness, propGPS = 1, gps_freq = 30/365, vhf
       dplyr::ungroup() %>%
       dplyr::select(n) %>%
       min()
+
     ngroups = length(unique(membership)) # number of modules
     size = ceiling( (1 - m) * netSize ) # the number of animals to return (number needed)
     even_sampler <- floor(size/ngroups)
@@ -51,25 +85,21 @@ sample_graph <- function(graph, missingness, propGPS = 1, gps_freq = 30/365, vhf
     # if you need fewer animals than there are ngroups * 2
     if(size <= (ngroups * 2) & size %% 2 == 0){ # and is even,
 
-      # out <- id_df %>%
       out <- grouped_by_size %>%
         dplyr::group_by(group) %>%
-        # dplyr::sample_n(ifelse(min_sample == 1, 1, 2)) %>%
         dplyr::sample_n(2) %>%
         dplyr::ungroup() %>%
         dplyr::slice(1:size) %>% # you won't sample every group.
-        select(-n)
+        dplyr::select(-n)
 
     } else if(size < (ngroups * 2) & size %% 2 != 0){ # fewer animals then groups*2 and odd
 
-      # initial_sampling <- id_df %>%
       initial_sampling <- grouped_by_size %>%
         dplyr::group_by(group) %>%
-        # dplyr::sample_n(ifelse(min_sample == 1, 1, 2)) %>%
         dplyr::sample_n(2) %>%
         dplyr::ungroup() %>%
         dplyr::slice(1:(size - 1)) %>%
-        select(-n)
+        dplyr::select(-n)
 
       remainder <- size - nrow(initial_sampling)
 
@@ -83,7 +113,8 @@ sample_graph <- function(graph, missingness, propGPS = 1, gps_freq = 30/365, vhf
     }else if(size > (ngroups * 2)){ # if you need more animals than twice the number of groups
       initial_sampling <- id_df %>%
         dplyr::group_by(group) %>%
-        dplyr::sample_n(even_sampler)
+        dplyr::sample_n(ifelse(min_sample < even_sampler, min_sample, even_sampler))
+
       remainder <- size - nrow(initial_sampling)
 
       if(remainder > 0){ # begin inner
@@ -109,7 +140,6 @@ sample_graph <- function(graph, missingness, propGPS = 1, gps_freq = 30/365, vhf
     ngroups = length(unique(membership))
     size = ceiling( (1 - m) * netSize ) # the number of animals to return
     even_sampler <- floor(size/ngroups)
-
 
       if(size > ngroups & even_sampler >= min_sample){ # start sampling if
 
@@ -150,9 +180,7 @@ sample_graph <- function(graph, missingness, propGPS = 1, gps_freq = 30/365, vhf
     }
 
   if(regime == "random"){
-
     grab <- sample(1:netSize, size = ceiling( (1 - m) * netSize ), replace = F)
-
     }
 
   if(length(grab) > 2){
@@ -197,7 +225,7 @@ sample_graph <- function(graph, missingness, propGPS = 1, gps_freq = 30/365, vhf
       tail <- names(which(colSums(am_obs) > 0))
       colorOrder <- ifelse(igraph::V(g_obs)$name %in% c(head, tail), 0, NA)
       for(j in 1:sum(is.na(colorOrder))){
-        colorOrder[is.na(colorOrder)][1] <- max(colorOrder, na.rm = T) + 1 # this is counterintuitive... but use a [1] instead of [j]
+        colorOrder[is.na(colorOrder)][1] <- max(colorOrder, na.rmuse_ = T) + 1 # this is counterintuitive... but use a [1] instead of [j]
       }
       igraph::V(g_obs)$membership <- colorOrder
 
