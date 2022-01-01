@@ -4,6 +4,9 @@
 #' g, an igraph object output from simulate_graph()
 #' vertex.size, node size in plot
 #' mark.expand, padding of polygon denoting modules around nodes
+#' vertex.label
+#' vertex.label.size
+#' title
 #'
 #' @return
 #' a plot of the igraph object
@@ -22,7 +25,10 @@
 #' plot_simulated_graph(g)
 #'
 #' @seealso \code{\link{simulate_graph}}
-plot_simulated_graph <- function(g, vertex.size = 40, mark.expand = 25){
+plot_simulated_graph <- function(g, vertex.size = 40, mark.expand = 25,
+                                 vertex.label = NA,
+                                 vertex.label.cex = 1.5, title = ""
+                                 ){
   igraph::V(g)$name <- stringr::str_extract(igraph::V(g)$name, "\\d{1,}")
 
   grp <- data.frame(name = igraph::V(g)$name,
@@ -72,9 +78,12 @@ plot_simulated_graph <- function(g, vertex.size = 40, mark.expand = 25){
                        edge.color = "black",
                        vertex.color = grp$mb,
                        vertex.frame.color = "grey20",
+                       vertex.label = vertex.label,
+                       vertex.label.cex = vertex.label.cex,
                        mark.groups = grp_list_whole,
                        mark.col = mcs_whole,
                        mark.border = mbs_whole,
                        vertex.size = vertex.size,
-                       mark.expand = mark.expand)
+                       mark.expand = mark.expand,
+                       main = title)
 }

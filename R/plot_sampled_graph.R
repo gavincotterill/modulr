@@ -29,7 +29,10 @@
 #' plot_sampled_graph(g_obs, g)
 #'
 #' @seealso \code{\link{sample_graph, simulate_graph, plot_simulated_graph}}
-plot_sampled_graph <- function(g_obs, g, vertex.size = 40, mark.expand = 25){
+plot_sampled_graph <- function(g_obs, g, vertex.size = 40, mark.expand = 25,
+                               vertex.label = NA,
+                               vertex.label.cex = 1.5,
+                               title = ""){
 
   grp <- data.frame(name = igraph::V(g)$name,
                     mem = igraph::V(g)$membership)
@@ -91,5 +94,8 @@ plot_sampled_graph <- function(g_obs, g, vertex.size = 40, mark.expand = 25){
        vertex.color = V(g_obs)$membership,
        vertex.frame.color =  "grey20",
        vertex.size = vertex.size,
-       mark.expand = mark.expand)
+       vertex.label = vertex.label,
+       vertex.label.cex = vertex.label.cex,
+       mark.expand = mark.expand,
+       main = title)
 }
