@@ -2,6 +2,10 @@
 #'
 #' @param x, a named square adjacency matrix or named igraph graph. Intended for
 #'   weighted, undirected graphs.
+#' @param alg, the community detection algorithm to use, either from igraph:
+#' "fast_greedy", "leading_eigen", "louvain", or "walktrap"
+#' or from rnetcarto: "netcarto"
+#' default is "walktrap"
 #'
 #' @return An igraph plot using the Fruchterman-Reingold layout and displaying
 #'   color-coded node membership as determined by `rnetcarto`.
@@ -13,11 +17,17 @@
 #' adjmat[lower.tri(adjmat)] <- 0
 #' rownames(adjmat) <- colnames(adjmat) <- paste0("Animal_", 1:4)
 #' assortr_plot(adjmat)
-assortr_plot <- function(x){
+assortr_plot <- function(x, alg = "walktrap"){
   if (!requireNamespace(c("igraph", "assortnet", "rnetcarto"), quietly = TRUE)) {
     stop(
       "Packages \"igraph\", \"igraph\", and \"rnetcarto\" must be installed to use this function.",
       call. = FALSE
+    )
+  }
+  possible_algorithms <- c("netcarto", "fast_greedy", "leading_eigen", "louvain", "walktrap") # there are others
+  if(!alg %in% possible_algorithms){
+    stop(
+      "alg must take one of the following values: \"netcarto\", \"fast_greedy\", \"leading_eigen\", \"louvain\", or \"walktrap\""
     )
   }
 
@@ -37,7 +47,7 @@ assortr_plot <- function(x){
     stop("Object must either be a square adjacency matrix of class matrix or an igraph object.")
   }
 
-  if( length( igraph::E(g_obs) ) >= 2 ){
+  if( length( igraph::E(g_obs) ) >= 2 & alg == "netcarto"){
 
     df <- rnetcarto::netcarto(am_obs)[[1]]
     nms <- igraph::V(g_obs)$name
@@ -54,7 +64,25 @@ assortr_plot <- function(x){
     qrel <- assortnet::assortment.discrete(graph = am_obs, types = colorOrder, weighted = T)$r
     r <- ifelse(qrel %in% "NaN", 0, qrel)
 
+  } else if(length( igraph::E(g_obs) ) >= 2 & alg %in% possible_algorithms[2:5]){
 
+    foo <- eval(parse(text = paste0("cluster_", alg)))
+
+    community_object <- foo(g_obs, weights = E(g_obs)$weight)
+
+    nms <- igraph::V(g_obs)$name
+    nmsCL <- community_object$names
+    if(all(nms %in% nmsCL)){
+      (colorOrder <- community_object$membership[match(nms, nmsCL)])
+    }else{
+      colorOrder <- community_object$membership[match(nms, nmsCL)]
+      for(j in 1:sum(is.na(colorOrder))){
+        colorOrder[is.na(colorOrder)][1] <- max(colorOrder, na.rm = T) + 1 # use [1] not [j]
+      }
+    }
+    igraph::V(g_obs)$membership <- colorOrder
+    qrel <- assortnet::assortment.discrete(graph = am_obs, types = colorOrder, weighted = T)$r
+    r <- ifelse(qrel %in% "NaN", 0, qrel)
   }else if(length(igraph::E(g_obs)) == 1){
 
     head <- names(which(rowSums(am_obs) > 0))

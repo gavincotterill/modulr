@@ -8,6 +8,7 @@
 #'   of the high res data
 #' @param vhf_freq Observations per sampling period of the low res data
 #' @param regime Whether to sample modules randomly or impose 'evenness'. options include "random", "even", "better"
+#' @param alg the clustering algorithm to use, one of: "fast_greedy", "louvain", "leading_eigen", "walktrap", or "netcarto"
 #'
 #' @return g_obs, the graph of the observed network
 #' @export
@@ -46,14 +47,19 @@
 #'      layout = igraph::layout.fruchterman.reingold(g_obs),
 #'      edge.width = igraph::E(g_obs)$sim_weight*2,
 #'      vertex.frame.color = "grey20")
-sample_graph <- function(graph, missingness, propGPS = 1, gps_freq = 30/365, vhf_freq = 8/365, regime = "better"){
+sample_graph <- function(graph, missingness, propGPS = 1, gps_freq = 30/365, vhf_freq = 8/365, regime = "better", alg = "walktrap"){
   if (!requireNamespace(c("igraph", "dplyr", "rnetcarto"), quietly = TRUE)) {
     stop(
       "Packages \"igraph\", \"dplyr\", and \"rnetcarto\" must be installed to use this function.",
       call. = FALSE
     )
   }
-
+  possible_algorithms <- c("netcarto", "fast_greedy", "leading_eigen", "louvain", "walktrap") # there are others
+  if(!alg %in% possible_algorithms){
+    stop(
+      "alg must take one of the following values: \"netcarto\", \"fast_greedy\", \"leading_eigen\", \"louvain\", or \"walktrap\""
+    )
+  }
   if(class(graph) != "igraph"){ stop("graph needs to be an igraph object.", call. = FALSE) }
 
   m <- missingness
@@ -204,7 +210,7 @@ sample_graph <- function(graph, missingness, propGPS = 1, gps_freq = 30/365, vhf
     g_obs <- igraph::delete_edges(g_obs, which(igraph::E(g_obs)$sim_weight==0))
     am_obs <- igraph::get.adjacency(g_obs, type = "upper", attr = "sim_weight") %>% as.matrix()
 
-    if( length( igraph::E(g_obs) ) >= 2 ){
+    if( length( igraph::E(g_obs) ) >= 2 & alg == "netcarto"){
 
       df <- rnetcarto::netcarto(am_obs)[[1]]
       nms <- igraph::V(g_obs)$name
@@ -214,11 +220,32 @@ sample_graph <- function(graph, missingness, propGPS = 1, gps_freq = 30/365, vhf
       }else{
         colorOrder <- df$module[match(nms, nmsNC)]
         for(j in 1:sum(is.na(colorOrder))){
-          colorOrder[is.na(colorOrder)][1] <- max(colorOrder, na.rm = T) + 1 # this is counterintuitive... but use a [1] instead of [j]
+          colorOrder[is.na(colorOrder)][1] <- max(colorOrder, na.rm = T) + 1 # use [1] not [j]
         }
       }
       igraph::V(g_obs)$membership <- colorOrder
+      qrel <- assortnet::assortment.discrete(graph = am_obs, types = colorOrder, weighted = T)$r
+      r <- ifelse(qrel %in% "NaN", 0, qrel)
 
+    } else if(length( igraph::E(g_obs) ) >= 2 & alg %in% possible_algorithms[2:5]){
+
+      foo <- eval(parse(text = paste0("cluster_", alg)))
+
+      community_object <- foo(g_obs, weights = E(g_obs)$weight)
+
+      nms <- igraph::V(g_obs)$name
+      nmsCL <- community_object$names
+      if(all(nms %in% nmsCL)){
+        (colorOrder <- community_object$membership[match(nms, nmsCL)])
+      }else{
+        colorOrder <- community_object$membership[match(nms, nmsCL)]
+        for(j in 1:sum(is.na(colorOrder))){
+          colorOrder[is.na(colorOrder)][1] <- max(colorOrder, na.rm = T) + 1 # use [1] not [j]
+        }
+      }
+      igraph::V(g_obs)$membership <- colorOrder
+      qrel <- assortnet::assortment.discrete(graph = am_obs, types = colorOrder, weighted = T)$r
+      r <- ifelse(qrel %in% "NaN", 0, qrel)
     }else if(length(igraph::E(g_obs)) == 1){
 
       head <- names(which(rowSums(am_obs) > 0))
