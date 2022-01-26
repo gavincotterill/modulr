@@ -44,21 +44,21 @@ plot_sampled_graph <- function(g_obs, g, vertex.size = 40, mark.expand = 25,
   grp$mb <- mark_border[grp$mem]
 
   obs_lists <- grp %>%
-    filter(name %in% V(g_obs)$name) %>%
-    group_by(mem) %>%
-    nest %>%
-    mutate(data = map(data, as.list)) %>%
-    pull(data)
+    dplyr::filter(name %in% igraph::V(g_obs)$name) %>%
+    dplyr::group_by(mem) %>%
+    tidyr::nest(.) %>%
+    dplyr::mutate(data = purrr::map(data, as.list)) %>%
+    dplyr::pull(data)
 
   grp_list_obs <- lapply(obs_lists, `[[`, "name")
 
   mcs_obs <- lapply(obs_lists, `[[`, "mc") %>%
-    flatten() %>%
+    purrr::flatten() %>%
     unique() %>%
     unlist()
 
   mbs_obs <- lapply(obs_lists, `[[`, "mb") %>%
-    flatten() %>%
+    purrr::flatten() %>%
     unique() %>%
     unlist()
 
@@ -76,9 +76,9 @@ plot_sampled_graph <- function(g_obs, g, vertex.size = 40, mark.expand = 25,
   ymax <- max(lo[,2] + ybuf)
 
   lo2 <- lo_whole %>%
-    filter(name %in% V(g_obs)$name)
-  lo2 <- lo2[match(V(g_obs)$name, lo2$name),] %>%
-    select(-3) %>%
+    dplyr::filter(name %in% igraph::V(g_obs)$name)
+  lo2 <- lo2[match(igraph::V(g_obs)$name, lo2$name),] %>%
+    dplyr::select(-3) %>%
     data.matrix()
 
   plot(g_obs,
@@ -86,12 +86,12 @@ plot_sampled_graph <- function(g_obs, g, vertex.size = 40, mark.expand = 25,
        xlim = c(xmin, xmax),
        ylim = c(ymin, ymax),
        rescale = F,
-       edge.width = E(g_obs)$sim_weight*2,
+       edge.width = igraph::E(g_obs)$sim_weight*2,
        edge.color = "black",
        mark.groups = grp_list_obs,
        mark.col = mcs_obs,
        mark.border = mbs_obs,
-       vertex.color = V(g_obs)$membership,
+       vertex.color = igraph::V(g_obs)$membership,
        vertex.frame.color =  "grey20",
        vertex.size = vertex.size,
        vertex.label = vertex.label,

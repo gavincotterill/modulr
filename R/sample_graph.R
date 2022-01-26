@@ -162,7 +162,8 @@ sample_graph <- function(graph, missingness, propGPS = 1, gps_freq = 30/365, vhf
         } else { out <- initial_sampling } # end inner
 
       } else if(size > ngroups & even_sampler < min_sample){ # outer contd
-        initial_sampling <- id_df %>% dplyr::group_by(group) %>%
+        initial_sampling <- id_df %>%
+          dplyr::group_by(group) %>%
           dplyr::sample_n(even_sampler)
         remainder <- size - nrow(initial_sampling)
 

@@ -39,18 +39,42 @@ simulate_graph <- function(n_animals,
       call. = FALSE
     )
   }
+
   animal_list <- animal_sample_df <- vector("list", length = n_animals)  # build storage objects
-  for(a in 1:n_animals){  # for-loop over animals.
-    animal_list[[a]] <- simulate_animal(time_to_leave_group = time_to_leave,
-                                        time_to_return_to_group = time_to_return,
-                                        n_groups = n_groups,
-                                        time_cut = time_cut,
-                                        samples_per_day = samples_per_day,
-                                        sampling_duration = sampling_duration)
-    animal_sample_df[[a]] <- cbind(animal_list[[a]]$samples,
-                                   id = rep(paste("Animal_", a, sep = ""), nrow(animal_list[[a]]$samples)))
-    names(animal_sample_df)[a] <- (paste0("Animal_", a))
+
+  if( length(time_to_leave) == length(time_to_return) & length(time_to_return) == 1 ) {
+    for(a in 1:n_animals){  # for-loop over animals.
+      animal_list[[a]] <- simulate_animal(time_to_leave_group = time_to_leave,
+                                          time_to_return_to_group = time_to_return,
+                                          n_groups = n_groups,
+                                          time_cut = time_cut,
+                                          samples_per_day = samples_per_day,
+                                          sampling_duration = sampling_duration)
+      animal_sample_df[[a]] <- cbind(animal_list[[a]]$samples,
+                                     id = rep(paste("Animal_", a, sep = ""), nrow(animal_list[[a]]$samples)))
+      names(animal_sample_df)[a] <- (paste0("Animal_", a))
+    }
+
+  } else if(length(time_to_leave) == length(time_to_return) & length(time_to_return) == n_animals){
+    for(a in 1:n_animals){  # for-loop over animals.
+      animal_list[[a]] <- simulate_animal(time_to_leave_group = time_to_leave[a],
+                                          time_to_return_to_group = time_to_return[a],
+                                          n_groups = n_groups,
+                                          time_cut = time_cut,
+                                          samples_per_day = samples_per_day,
+                                          sampling_duration = sampling_duration)
+      animal_sample_df[[a]] <- cbind(animal_list[[a]]$samples,
+                                     id = rep(paste("Animal_", a, sep = ""), nrow(animal_list[[a]]$samples)))
+      names(animal_sample_df)[a] <- (paste0("Animal_", a))
+    }
+  } else if( length(time_to_leave) != length(time_to_return) | !length(time_to_leave) %in% c(1, n_animals) | !length(time_to_return) %in% c(1, n_animals)){
+    stop(
+      "\'time_to_leave\' and \'time_to_return\' need to have the same length. That length needs to either be one or equal to \'n_animals\'.",
+      call. = FALSE
+    )
   }
+
+
 
   mem_df <- data.frame(ids = names(animal_sample_df),
                        membership = unlist(lapply(animal_list, function(x) x[['animals_home']])))
