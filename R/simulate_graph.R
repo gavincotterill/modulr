@@ -7,9 +7,6 @@
 #'   group.
 #' @param samples_per_day The number of samples per day.
 #' @param sampling_duration The number of days in the sampling period.
-#' @param time_cut An optional parameter indicating whether or not to simulate
-#'   values at a time period prior to the full sampling duration.... does this
-#'   actaully make sense here? Or should it just exist in sim_animal??
 #'
 #' @return sim_igraph, an igraph graph object.
 #' @export
@@ -22,16 +19,14 @@
 #'                     time_to_leave = 5,
 #'                     time_to_return = 2,
 #'                     samples_per_day = 1,
-#'                     sampling_duration = 7,
-#'                     time_cut = 7)
+#'                     sampling_duration = 7)
 #' @seealso \code{\link{plot_simulated_graph}}
 simulate_graph <- function(n_animals,
                            n_groups,
                            time_to_leave,
                            time_to_return,
                            samples_per_day,
-                           sampling_duration,
-                           time_cut) {
+                           sampling_duration) {
 
   if (!requireNamespace(c("igraph"), quietly = TRUE)) {
     stop(
@@ -47,7 +42,6 @@ simulate_graph <- function(n_animals,
       animal_list[[a]] <- simulate_animal(time_to_leave_group = time_to_leave,
                                           time_to_return_to_group = time_to_return,
                                           n_groups = n_groups,
-                                          time_cut = time_cut,
                                           samples_per_day = samples_per_day,
                                           sampling_duration = sampling_duration)
       animal_sample_df[[a]] <- cbind(animal_list[[a]]$samples,
@@ -60,7 +54,6 @@ simulate_graph <- function(n_animals,
       animal_list[[a]] <- simulate_animal(time_to_leave_group = time_to_leave[a],
                                           time_to_return_to_group = time_to_return[a],
                                           n_groups = n_groups,
-                                          time_cut = time_cut,
                                           samples_per_day = samples_per_day,
                                           sampling_duration = sampling_duration)
       animal_sample_df[[a]] <- cbind(animal_list[[a]]$samples,
