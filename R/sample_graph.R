@@ -1,7 +1,7 @@
 #' Simulate a sampling regime and calculate network modularity.
 #'
 #' @param graph The true network to sample
-#' @param sample_n the number of individuals to sample
+#' @param sample_nNodes the number of individuals to sample
 #' @param propGPS The proportion of high resolution data to use
 #' @param gps_freq The observation frequency (observations per sampling period)
 #'   of the high res data
@@ -27,7 +27,7 @@
 #'
 #' g_obs <- sample_graph(
 #'   graph = reduced_networks[[1]],
-#'   sample_n = ceiling(0.5 * length(igraph::V(reduced_networks[[1]]))),
+#'   sample_nNodes = ceiling(0.5 * length(igraph::V(reduced_networks[[1]]))),
 #'   propGPS = 1,
 #'   regime = "better")
 #'
@@ -35,7 +35,7 @@
 #'   as.matrix()
 #'
 #' reduced_design[1,] %>%
-#'   mutate(missingness = 0.5, # need to go back to study design and real network creation to imlement change
+#'   mutate(ceiling(0.5 * length(igraph::V(reduced_networks[[1]]))), # need to go back to study design and real network creation to imlement change
 #'          prop_gps = 1,
 #'          qrel_sim = assortnet::assortment.discrete(am_obs, types = igraph::V(g_obs)$membership, weighted = T)$r,
 #'          nNodes_sim = ncol(am_obs),
@@ -46,7 +46,7 @@
 #'      layout = igraph::layout.fruchterman.reingold(g_obs),
 #'      edge.width = igraph::E(g_obs)$sim_weight*2,
 #'      vertex.frame.color = "grey20")
-sample_graph <- function(graph, sample_n, propGPS = 1, gps_freq = 30/365, vhf_freq = 8/365, regime = "better", alg = "walktrap"){
+sample_graph <- function(graph, sample_nNodes, propGPS = 1, gps_freq = 30/365, vhf_freq = 8/365, regime = "better", alg = "netcarto"){
   if (!requireNamespace(c("igraph", "dplyr", "rnetcarto"), quietly = TRUE)) {
     stop(
       "Packages \"igraph\", \"dplyr\", and \"rnetcarto\" must be installed to use this function.",
@@ -61,7 +61,7 @@ sample_graph <- function(graph, sample_n, propGPS = 1, gps_freq = 30/365, vhf_fr
   }
   if(class(graph) != "igraph"){ stop("graph needs to be an igraph object.", call. = FALSE) }
 
-  sample_n <- sample_n
+  sample_nNodes <- sample_nNodes
   adjmat = igraph::as_adjacency_matrix(graph, attr = "weight", type = "both", sparse = F)
   netSize <- ncol(adjmat)
 
@@ -84,7 +84,7 @@ sample_graph <- function(graph, sample_n, propGPS = 1, gps_freq = 30/365, vhf_fr
       min()
 
     ngroups = length(unique(membership)) # number of modules
-    size = sample_n # the number of animals to return (number needed)
+    size = sample_nNodes # the number of animals to return (number needed)
     even_sampler <- floor(size/ngroups)
 
     # if you need fewer animals than there are ngroups * 2
