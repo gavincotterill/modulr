@@ -20,8 +20,7 @@
 #'                     time_to_leave = 5,
 #'                     time_to_return = 2,
 #'                     samples_per_day = 1,
-#'                     sampling_duration = 7,
-#'                     time_cut = 7)
+#'                     sampling_duration = 7)
 #' plot_simulated_graph(g)
 #'
 #' @seealso \code{\link{simulate_graph}}

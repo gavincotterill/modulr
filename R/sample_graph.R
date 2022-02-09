@@ -1,8 +1,7 @@
 #' Simulate a sampling regime and calculate network modularity.
 #'
 #' @param graph The true network to sample
-#' @param missingness The proportion of the nodes in the real network that will
-#'   be missed in sampling
+#' @param sample_n the number of individuals to sample
 #' @param propGPS The proportion of high resolution data to use
 #' @param gps_freq The observation frequency (observations per sampling period)
 #'   of the high res data
@@ -18,17 +17,17 @@
 #' data("study_design")
 #'
 #' row_index <- study_design %>%
-#'   mutate(index = row.names(.)) %>%
-#'   filter(nNodes == 50) %>%
-#'   arrange(-qrel) %>%
-#'   slice(1:10) %>%
-#'   select(index)
+#'   dplyr::mutate(index = row.names(.)) %>%
+#'   dplyr::filter(nNodes == 50) %>%
+#'   dplyr::arrange(-qrel) %>%
+#'   dplyr::slice(1:10) %>%
+#'   dplyr::select(index)
 #' reduced_design <- study_design[as.numeric(row_index$index), ]
 #' reduced_networks <- real_networks[as.numeric(row_index$index)]
 #'
 #' g_obs <- sample_graph(
 #'   graph = reduced_networks[[1]],
-#'   missingness = 0.5,
+#'   sample_n = ceiling(0.5 * length(igraph::V(reduced_networks[[1]]))),
 #'   propGPS = 1,
 #'   regime = "better")
 #'
@@ -36,7 +35,7 @@
 #'   as.matrix()
 #'
 #' reduced_design[1,] %>%
-#'   mutate(missingness = 0.5,
+#'   mutate(missingness = 0.5, # need to go back to study design and real network creation to imlement change
 #'          prop_gps = 1,
 #'          qrel_sim = assortnet::assortment.discrete(am_obs, types = igraph::V(g_obs)$membership, weighted = T)$r,
 #'          nNodes_sim = ncol(am_obs),
@@ -47,14 +46,14 @@
 #'      layout = igraph::layout.fruchterman.reingold(g_obs),
 #'      edge.width = igraph::E(g_obs)$sim_weight*2,
 #'      vertex.frame.color = "grey20")
-sample_graph <- function(graph, missingness, propGPS = 1, gps_freq = 30/365, vhf_freq = 8/365, regime = "better", alg = "walktrap"){
+sample_graph <- function(graph, sample_n, propGPS = 1, gps_freq = 30/365, vhf_freq = 8/365, regime = "better", alg = "walktrap"){
   if (!requireNamespace(c("igraph", "dplyr", "rnetcarto"), quietly = TRUE)) {
     stop(
       "Packages \"igraph\", \"dplyr\", and \"rnetcarto\" must be installed to use this function.",
       call. = FALSE
     )
   }
-  possible_algorithms <- c("netcarto", "fast_greedy", "leading_eigen", "louvain", "walktrap") # there are others
+  possible_algorithms <- c("netcarto", "fast_greedy", "leading_eigen", "louvain", "walktrap")
   if(!alg %in% possible_algorithms){
     stop(
       "alg must take one of the following values: \"netcarto\", \"fast_greedy\", \"leading_eigen\", \"louvain\", or \"walktrap\""
@@ -62,7 +61,7 @@ sample_graph <- function(graph, missingness, propGPS = 1, gps_freq = 30/365, vhf
   }
   if(class(graph) != "igraph"){ stop("graph needs to be an igraph object.", call. = FALSE) }
 
-  m <- missingness
+  sample_n <- sample_n
   adjmat = igraph::as_adjacency_matrix(graph, attr = "weight", type = "both", sparse = F)
   netSize <- ncol(adjmat)
 
@@ -85,7 +84,7 @@ sample_graph <- function(graph, missingness, propGPS = 1, gps_freq = 30/365, vhf
       min()
 
     ngroups = length(unique(membership)) # number of modules
-    size = ceiling( (1 - m) * netSize ) # the number of animals to return (number needed)
+    size = sample_n # the number of animals to return (number needed)
     even_sampler <- floor(size/ngroups)
 
     # if you need fewer animals than there are ngroups * 2
@@ -144,7 +143,7 @@ sample_graph <- function(graph, missingness, propGPS = 1, gps_freq = 30/365, vhf
       dplyr::select(n) %>%
       min()     # return smallest number of nodes per group
     ngroups = length(unique(membership))
-    size = ceiling( (1 - m) * netSize ) # the number of animals to return
+    size = size # the number of animals to return
     even_sampler <- floor(size/ngroups)
 
       if(size > ngroups & even_sampler >= min_sample){ # start sampling if
@@ -187,7 +186,7 @@ sample_graph <- function(graph, missingness, propGPS = 1, gps_freq = 30/365, vhf
     }
 
   if(regime == "random"){
-    grab <- sample(1:netSize, size = ceiling( (1 - m) * netSize ), replace = F)
+    grab <- sample(1:netSize, size = size, replace = F)
     }
 
   if(length(grab) > 2){
