@@ -51,25 +51,28 @@ simulate_animal <- function(time_to_leave_group,
   cumulative_time <- 0
 
   # build empty storage df
-  locations <- data.frame(current_state = c(animals_home),
-                          waiting_time = NA,
-                          cumulative_time = 0)
+  while(cumulative_time < sampling_duration){
+    locations <- data.frame(current_state = c(animals_home),
+                            waiting_time = NA,
+                            cumulative_time = 0)
 
-  current_state_last <- current_state_now
-  waiting_time_now <- ifelse(current_state_last == animals_home,
-                             stats::rexp(n = 1, delta), # waiting time from an exponential with delta if they're at home
-                             stats::rexp(n = 1, xi)) # waiting time from an exponential with xi if they're away.
-  cumulative_time <- cumulative_time + waiting_time_now
+    current_state_last <- current_state_now
+    waiting_time_now <- ifelse(current_state_last == animals_home,
+                               stats::rexp(n = 1, delta), # waiting time from an exponential with delta if they're at home
+                               stats::rexp(n = 1, xi)) # waiting time from an exponential with xi if they're away.
+    cumulative_time <- cumulative_time + waiting_time_now
 
-  current_state_now <- ifelse(current_state_last == animals_home,
-                              sample(animals_other_groups, size = 1),
-                              animals_home)
+    current_state_now <- ifelse(current_state_last == animals_home,
+                                sample(animals_other_groups, size = 1),
+                                animals_home)
 
-  new_row <- c(current_state_last,
-               waiting_time_now,
-               cumulative_time)
+    new_row <- c(current_state_last,
+                 waiting_time_now,
+                 cumulative_time)
 
-  locations <- as.data.frame(rbind(locations, new_row))
+    locations <- as.data.frame(rbind(locations, new_row))
+
+  }
 
   # add variable for whether animal is in its "home" group
   locations$at_home <- ifelse(locations$current_state == animals_home, "home", "away")
