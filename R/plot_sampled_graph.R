@@ -14,13 +14,12 @@
 #'                     time_to_leave = 5,
 #'                     time_to_return = 2,
 #'                     samples_per_day = 1,
-#'                     sampling_duration = 7,
-#'                     time_cut = 7)
+#'                     sampling_duration = 7)
 #' igraph::V(g)$name <- stringr::str_extract(igraph::V(g)$name, "\\d{1,}")
 #'
 #' g_obs <- sample_graph(
 #'   graph = g,
-#'   missingness = 0.5,
+#'   sample_nNodes = 13,
 #'   propGPS = 1,
 #'   regime = "better")
 #'

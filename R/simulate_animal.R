@@ -51,10 +51,10 @@ simulate_animal <- function(time_to_leave_group,
   cumulative_time <- 0
 
   # build empty storage df
-  while(cumulative_time < sampling_duration){
-    locations <- data.frame(current_state = c(animals_home),
+  locations <- data.frame(current_state = c(animals_home),
                             waiting_time = NA,
                             cumulative_time = 0)
+  while(cumulative_time < sampling_duration){
 
     current_state_last <- current_state_now
     waiting_time_now <- ifelse(current_state_last == animals_home,
