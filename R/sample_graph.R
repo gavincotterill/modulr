@@ -200,8 +200,16 @@ sample_graph <- function(graph, sample_nNodes, propGPS = 1, gps_freq = 30/365, v
     # nNodes_sim <- length(grab) # redundant, replace with sample_nNodes
     # nGPS <- ceiling(nNodes_sim * propGPS)
     # nVHF <- nNodes_sim - nGPS
+
+    ## is the problem here?
     nGPS <- ceiling(sample_nNodes * propGPS)
-    nVHF <- sample_nNodes - nGPS
+    if(nGPS < sample_nNodes){
+      nVHF <- sample_nNodes - nGPS
+    }else if(nGPS == sample_nNodes){
+      nVHF <- 0
+    }else if(nGPS > sample_nNodes){
+      print("error line 209")
+    }
 
     ofd <- data.frame(id = row.names(am)) %>%
       dplyr::mutate(obs_freq = ifelse(as.numeric(row.names(.)) <= nGPS, gps_freq, vhf_freq),
