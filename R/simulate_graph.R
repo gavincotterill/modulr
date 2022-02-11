@@ -130,16 +130,14 @@ simulate_graph <- function(n_animals,
         data.table::setkey(., start, end)
       t1
     }
+    animals_transformed <- lapply(animal_list, dt_fxn)
 
     adj_mat <- matrix(NA, nrow = n_animals,ncol = n_animals)
 
     for(d in 1:nrow(dyads)){
 
-      a1 <- animal_list[[dyads[d,"Var2"]]]
-      a2 <- animal_list[[dyads[d,"Var1"]]]
-
-      t1 <- dt_fxn(a1)
-      t2 <- dt_fxn(a2)
+      t1 <- animals_transformed[[dyads[d,"Var2"]]]
+      t2 <- animals_transformed[[dyads[d,"Var1"]]]
 
       intervals <- data.table::foverlaps(t1, t2) %>%
         dplyr::mutate(start_max = pmax(start, i.start),
@@ -157,12 +155,12 @@ simulate_graph <- function(n_animals,
         dplyr::filter(id == "A" & together == 1) %>%
         dplyr::mutate(time = end_min - start_max)
 
-      (numer <- sum(time_overlap$time))
-      (denom <- pmin(intervals[nrow(intervals),"end"], intervals[nrow(intervals),"i.end"]))
+      numer <- sum(time_overlap$time)
+      denom <- intervals[nrow(intervals), "end_min"]$end_min # got a speed up here
 
-      (edge_weight <- numer / denom )
+      edge_weight <- numer / denom
 
-      dyads$ew[d] <- edge_weight$end
+      dyads$ew[d] <- edge_weight
       adj_mat[dyads[d, 1], dyads[d, 2]] <- dyads$ew[d]
     }
 
@@ -170,7 +168,6 @@ simulate_graph <- function(n_animals,
     diag(adj_mat) <- rep(0, n_animals) # zero diagonal and lower tri
     adj_mat[lower.tri(adj_mat)] <- 0
   }
-
 
   # convert to igraph object and plot with f-r layout
   sim_igraph <- igraph::graph_from_adjacency_matrix(adj_mat, weighted = T, mode = "undirected")
