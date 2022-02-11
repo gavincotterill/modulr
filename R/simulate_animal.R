@@ -1,12 +1,12 @@
 #' The backbone of the network simulator, called from within simulate_graph
 #'
+#' @param n_groups The number of modules in the network.
 #' @param time_to_leave_group The average amount of time spent within the home
 #'   group prior to leaving (days per sampling period).
 #' @param time_to_return_to_group The average amount of time spent abroad before
 #'   returning to home group.
-#' @param n_groups The number of modules in the network.
-#' @param samples_per_day Default == 1.
 #' @param sampling_duration Default == 365.
+#' @param samples_per_day Default == 1.
 #'
 #' @return A vector of sampling locations for a single animal.
 #' @export
@@ -17,11 +17,12 @@
 #' n_groups = 4,
 #' samples_per_day = 1,
 #' sampling_duration = 7)
-simulate_animal <- function(time_to_leave_group,
+simulate_animal <- function(n_groups,
+                            time_to_leave_group,
                             time_to_return_to_group,
-                            n_groups,
-                            samples_per_day = 1,
-                            sampling_duration = 365){
+                            sampling_duration = 365,
+                            samples_per_day = 1
+                            ){
 
   if (!requireNamespace(c("stats"), quietly = TRUE)) {
     stop(
