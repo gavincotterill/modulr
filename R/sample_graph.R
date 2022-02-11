@@ -142,8 +142,9 @@ sample_graph <- function(graph, sample_nNodes, propGPS = 1, gps_freq = 30/365, v
       dplyr::ungroup() %>%
       dplyr::select(n) %>%
       min()     # return smallest number of nodes per group
+
     ngroups = length(unique(membership))
-    size = size # the number of animals to return
+    size = sample_nNodes # the number of animals to return
     even_sampler <- floor(size/ngroups)
 
       if(size > ngroups & even_sampler >= min_sample){ # start sampling if
@@ -186,17 +187,21 @@ sample_graph <- function(graph, sample_nNodes, propGPS = 1, gps_freq = 30/365, v
     }
 
   if(regime == "random"){
-    grab <- sample(1:netSize, size = size, replace = F)
+    grab <- sample(1:netSize, size = sample_nNodes, replace = F)
     }
+
+  # if(any(grab > netSize)){print("this is the problem")}
 
   if(length(grab) > 2){
     am <- adjmat[grab, grab]
     g2 <- igraph::graph_from_adjacency_matrix(am, weighted = T, mode = "undirected", diag = F)
     ed <- igraph::get.data.frame(g2)
 
-    nNodes_sim <- length(grab)
-    nGPS <- ceiling(nNodes_sim * propGPS)
-    nVHF <- nNodes_sim - nGPS
+    # nNodes_sim <- length(grab) # redundant, replace with sample_nNodes
+    # nGPS <- ceiling(nNodes_sim * propGPS)
+    # nVHF <- nNodes_sim - nGPS
+    nGPS <- ceiling(sample_nNodes * propGPS)
+    nVHF <- sample_nNodes - nGPS
 
     ofd <- data.frame(id = row.names(am)) %>%
       dplyr::mutate(obs_freq = ifelse(as.numeric(row.names(.)) <= nGPS, gps_freq, vhf_freq),
