@@ -4,12 +4,25 @@
 \alias{plot_sampled_graph}
 \title{plot_sampled_graph()}
 \usage{
-plot_sampled_graph(g_obs, g, vertex.size = 40, mark.expand = 25)
+plot_sampled_graph(
+  g_obs,
+  g,
+  vertex.size = 40,
+  mark.expand = 25,
+  vertex.label = NA,
+  vertex.label.cex = 1.5,
+  title = ""
+)
 }
 \arguments{
 \item{g_obs, }{an igraph object output from sample_graph()}
 
-\item{g}{an igraph object output from simulate_graph()}
+\item{g}{an igraph object output from simulate_graph()
+vertex.size, node size in plot
+mark.expand, padding of polygon denoting modules around nodes
+vertex.label
+vertex.label.size
+title}
 }
 \value{
 
@@ -25,13 +38,12 @@ g <- simulate_graph(n_animals = 25,
                     time_to_leave = 5,
                     time_to_return = 2,
                     samples_per_day = 1,
-                    sampling_duration = 7,
-                    time_cut = 7)
+                    sampling_duration = 7)
 igraph::V(g)$name <- stringr::str_extract(igraph::V(g)$name, "\\\\d{1,}")
 
 g_obs <- sample_graph(
   graph = g,
-  missingness = 0.5,
+  sample_nNodes = 13,
   propGPS = 1,
   regime = "better")
 
