@@ -156,7 +156,9 @@ simulate_graph <- function(n_animals,
         dplyr::mutate(time = end_min - start_max)
 
       numer <- sum(time_overlap$time)
-      denom <- intervals[nrow(intervals), "end_min"]$end_min # got a speed up here
+      # denom <- intervals[nrow(intervals), "end_min"]$end_min # got a speed up here
+      denom <- intervals[nrow(intervals), "end_min"]["end_min"] # got a speed up here
+
 
       edge_weight <- numer / denom
 
