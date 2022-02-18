@@ -5,29 +5,25 @@
 \title{The backbone of the network simulator, called from within simulate_graph}
 \usage{
 simulate_animal(
+  n_groups,
   time_to_leave_group,
   time_to_return_to_group,
-  n_groups,
-  time_cut = 365,
-  samples_per_day = 1,
-  sampling_duration = 365
+  sampling_duration = 365,
+  samples_per_day = 1
 )
 }
 \arguments{
+\item{n_groups}{The number of modules in the network.}
+
 \item{time_to_leave_group}{The average amount of time spent within the home
 group prior to leaving (days per sampling period).}
 
 \item{time_to_return_to_group}{The average amount of time spent abroad before
 returning to home group.}
 
-\item{n_groups}{The number of modules in the network.}
-
-\item{time_cut}{Optional, is used, the number of days prior to censoring (eg.
-animal died, collar died)}
+\item{sampling_duration}{Default == 365.}
 
 \item{samples_per_day}{Default == 1.}
-
-\item{sampling_duration}{Default == 365.}
 }
 \value{
 A vector of sampling locations for a single animal.
@@ -39,7 +35,6 @@ The backbone of the network simulator, called from within simulate_graph
 simulate_animal(time_to_leave_group = 3,
 time_to_return_to_group = 1,
 n_groups = 4,
-time_cut = 7,
 samples_per_day = 1,
 sampling_duration = 7)
 }
