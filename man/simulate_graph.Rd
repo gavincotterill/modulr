@@ -9,9 +9,9 @@ simulate_graph(
   n_groups,
   time_to_leave,
   time_to_return,
-  samples_per_day,
   sampling_duration,
-  time_cut
+  sampler = "discrete",
+  samples_per_day
 )
 }
 \arguments{
@@ -24,13 +24,15 @@ simulate_graph(
 \item{time_to_return}{The average number of days spent away from the home
 group.}
 
-\item{samples_per_day}{The number of samples per day.}
-
 \item{sampling_duration}{The number of days in the sampling period.}
 
-\item{time_cut}{An optional parameter indicating whether or not to simulate
-values at a time period prior to the full sampling duration.... does this
-actaully make sense here? Or should it just exist in sim_animal??}
+\item{sampler}{Takes one of c("discrete", "continuous"). Whether group
+composition should be monitored instantaneously (truth), or sampled in
+discrete time. Continuous monitoring is much slower.}
+
+\item{samples_per_day}{Optional. If sampler == "discrete", the number of
+samples taken per day in order to estimate the simple ratio index for each
+dyad.}
 }
 \value{
 sim_igraph, an igraph graph object.
@@ -45,9 +47,10 @@ g <- simulate_graph(n_animals = 25,
                     n_groups = 4,
                     time_to_leave = 5,
                     time_to_return = 2,
-                    samples_per_day = 1,
                     sampling_duration = 7,
-                    time_cut = 7)
+                    sampler = "discrete",
+                    samples_per_day = 1
+                    )
 }
 \seealso{
 \code{\link{plot_simulated_graph}}
