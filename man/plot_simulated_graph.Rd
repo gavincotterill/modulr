@@ -4,13 +4,25 @@
 \alias{plot_simulated_graph}
 \title{plot_simulated_graph()}
 \usage{
-plot_simulated_graph(g, vertex.size = 40, mark.expand = 25)
+plot_simulated_graph(
+  g,
+  vertex.size = 40,
+  mark.expand = 25,
+  vertex.label = NA,
+  vertex.label.cex = 1.5,
+  title = ""
+)
 }
 \arguments{
-\item{g, }{an igraph object output from simulate_graph()}
+\item{g, }{an igraph object output from simulate_graph()
+vertex.size, node size in plot
+mark.expand, padding of polygon denoting modules around nodes
+vertex.label
+vertex.label.size
+title}
 }
 \value{
-
+a plot of the igraph object
 }
 \description{
 plot_simulated_graph()
@@ -22,8 +34,7 @@ g <- simulate_graph(n_animals = 25,
                     time_to_leave = 5,
                     time_to_return = 2,
                     samples_per_day = 1,
-                    sampling_duration = 7,
-                    time_cut = 7)
+                    sampling_duration = 7)
 plot_simulated_graph(g)
 
 }
