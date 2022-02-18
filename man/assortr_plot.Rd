@@ -4,11 +4,16 @@
 \alias{assortr_plot}
 \title{Plot a graph, color-coded by \code{rnetcarto} modules}
 \usage{
-assortr_plot(x)
+assortr_plot(x, alg = "walktrap")
 }
 \arguments{
 \item{x, }{a named square adjacency matrix or named igraph graph. Intended for
 weighted, undirected graphs.}
+
+\item{alg, }{the community detection algorithm to use, either from igraph:
+"fast_greedy", "leading_eigen", "louvain", or "walktrap"
+or from rnetcarto: "netcarto"
+default is "walktrap"}
 }
 \value{
 An igraph plot using the Fruchterman-Reingold layout and displaying
