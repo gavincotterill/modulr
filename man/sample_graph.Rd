@@ -6,18 +6,18 @@
 \usage{
 sample_graph(
   graph,
-  missingness,
+  sample_nNodes,
   propGPS = 1,
   gps_freq = 30/365,
   vhf_freq = 8/365,
-  regime = "better"
+  regime = "better",
+  alg = "netcarto"
 )
 }
 \arguments{
 \item{graph}{The true network to sample}
 
-\item{missingness}{The proportion of the nodes in the real network that will
-be missed in sampling}
+\item{sample_nNodes}{the number of individuals to sample}
 
 \item{propGPS}{The proportion of high resolution data to use}
 
@@ -27,6 +27,8 @@ of the high res data}
 \item{vhf_freq}{Observations per sampling period of the low res data}
 
 \item{regime}{Whether to sample modules randomly or impose 'evenness'. options include "random", "even", "better"}
+
+\item{alg}{the clustering algorithm to use, one of: "fast_greedy", "louvain", "leading_eigen", "walktrap", or "netcarto"}
 }
 \value{
 g_obs, the graph of the observed network
@@ -39,17 +41,17 @@ data("real_networks")
 data("study_design")
 
 row_index <- study_design \%>\%
-  mutate(index = row.names(.)) \%>\%
-  filter(nNodes == 50) \%>\%
-  arrange(-qrel) \%>\%
-  slice(1:10) \%>\%
-  select(index)
+  dplyr::mutate(index = row.names(.)) \%>\%
+  dplyr::filter(nNodes == 50) \%>\%
+  dplyr::arrange(-qrel) \%>\%
+  dplyr::slice(1:10) \%>\%
+  dplyr::select(index)
 reduced_design <- study_design[as.numeric(row_index$index), ]
 reduced_networks <- real_networks[as.numeric(row_index$index)]
 
 g_obs <- sample_graph(
   graph = reduced_networks[[1]],
-  missingness = 0.5,
+  sample_nNodes = ceiling(0.5 * length(igraph::V(reduced_networks[[1]]))),
   propGPS = 1,
   regime = "better")
 
@@ -57,7 +59,7 @@ am_obs <- igraph::get.adjacency(g_obs, type = "upper", attr = "sim_weight") \%>\
   as.matrix()
 
 reduced_design[1,] \%>\%
-  mutate(missingness = 0.5,
+  mutate(ceiling(0.5 * length(igraph::V(reduced_networks[[1]]))), # need to go back to study design and real network creation to imlement change
          prop_gps = 1,
          qrel_sim = assortnet::assortment.discrete(am_obs, types = igraph::V(g_obs)$membership, weighted = T)$r,
          nNodes_sim = ncol(am_obs),
