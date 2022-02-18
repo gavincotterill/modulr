@@ -34,7 +34,7 @@ simulate_graph <- function(n_animals,
                            time_to_return,
                            sampling_duration,
                            sampler = "discrete",
-                           samples_per_day) {
+                           samples_per_day = 1) {
 
   if (!requireNamespace(c("igraph"), quietly = TRUE)) {
     stop(
