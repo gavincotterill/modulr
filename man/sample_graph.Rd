@@ -7,9 +7,9 @@
 sample_graph(
   graph,
   sample_nNodes,
-  propGPS = 1,
-  gps_freq = 30/365,
-  vhf_freq = 8/365,
+  prop_hi_res = 1,
+  hi_res = 30/365,
+  lo_res = 5/365,
   regime = "better",
   alg = "netcarto"
 )
@@ -19,12 +19,12 @@ sample_graph(
 
 \item{sample_nNodes}{the number of individuals to sample}
 
-\item{propGPS}{The proportion of high resolution data to use}
+\item{prop_hi_res}{The proportion of high resolution data to use}
 
-\item{gps_freq}{The observation frequency (observations per sampling period)
+\item{hi_res}{The observation frequency (observations per sampling period)
 of the high res data}
 
-\item{vhf_freq}{Observations per sampling period of the low res data}
+\item{lo_res}{Observations per sampling period of the low res data}
 
 \item{regime}{Whether to sample modules randomly or impose 'evenness'. options include "random", "even", "better"}
 
@@ -52,7 +52,7 @@ reduced_networks <- real_networks[as.numeric(row_index$index)]
 g_obs <- sample_graph(
   graph = reduced_networks[[1]],
   sample_nNodes = ceiling(0.5 * length(igraph::V(reduced_networks[[1]]))),
-  propGPS = 1,
+  prop_hi_res = 1,
   regime = "better")
 
 am_obs <- igraph::get.adjacency(g_obs, type = "upper", attr = "sim_weight") \%>\%
