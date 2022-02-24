@@ -1,9 +1,9 @@
 #' The backbone of the network simulator, called from within simulate_graph
 #'
 #' @param n_groups The number of modules in the network.
-#' @param time_to_leave_group The average amount of time spent within the home
+#' @param time_to_leave The average amount of time spent within the home
 #'   group prior to leaving (days per sampling period).
-#' @param time_to_return_to_group The average amount of time spent abroad before
+#' @param time_to_return The average amount of time spent abroad before
 #'   returning to home group.
 #' @param sampling_duration Default == 365.
 #' @param samples_per_day Default == 1.
@@ -12,14 +12,14 @@
 #' @export
 #'
 #' @examples
-#' simulate_animal(time_to_leave_group = 3,
-#' time_to_return_to_group = 1,
+#' simulate_animal(time_to_leave = 3,
+#' time_to_return = 1,
 #' n_groups = 4,
 #' samples_per_day = 1,
 #' sampling_duration = 7)
 simulate_animal <- function(n_groups,
-                            time_to_leave_group,
-                            time_to_return_to_group,
+                            time_to_leave,
+                            time_to_return,
                             sampling_duration = 365,
                             samples_per_day = 1
                             ){
@@ -37,12 +37,12 @@ simulate_animal <- function(n_groups,
   animals_other_groups <- which(c(1:n_groups) != animals_home)
 
   # convert expected times to departure rates
-  delta <- 1/time_to_leave_group
-  xi <- 1/time_to_return_to_group
+  delta <- 1/time_to_leave
+  xi <- 1/time_to_return
 
   # store inputs in named list (returned at end of function)
-  inputs <- list(time_to_leave_group = time_to_leave_group,
-                 time_to_return_to_group = time_to_return_to_group,
+  inputs <- list(time_to_leave = time_to_leave,
+                 time_to_return = time_to_return,
                  n_groups = n_groups,
                  samples_per_day = samples_per_day,
                  sampling_duration = sampling_duration)
