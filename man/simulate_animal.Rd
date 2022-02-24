@@ -6,8 +6,8 @@
 \usage{
 simulate_animal(
   n_groups,
-  time_to_leave_group,
-  time_to_return_to_group,
+  time_to_leave,
+  time_to_return,
   sampling_duration = 365,
   samples_per_day = 1
 )
@@ -15,10 +15,10 @@ simulate_animal(
 \arguments{
 \item{n_groups}{The number of modules in the network.}
 
-\item{time_to_leave_group}{The average amount of time spent within the home
+\item{time_to_leave}{The average amount of time spent within the home
 group prior to leaving (days per sampling period).}
 
-\item{time_to_return_to_group}{The average amount of time spent abroad before
+\item{time_to_return}{The average amount of time spent abroad before
 returning to home group.}
 
 \item{sampling_duration}{Default == 365.}
@@ -32,8 +32,8 @@ A vector of sampling locations for a single animal.
 The backbone of the network simulator, called from within simulate_graph
 }
 \examples{
-simulate_animal(time_to_leave_group = 3,
-time_to_return_to_group = 1,
+simulate_animal(time_to_leave = 3,
+time_to_return = 1,
 n_groups = 4,
 samples_per_day = 1,
 sampling_duration = 7)
