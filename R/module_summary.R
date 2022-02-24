@@ -7,7 +7,7 @@
 #' @return a `data.frame()` where each row corresponds the the nth element of
 #'   the network_list.
 #' @export
-#'
+#' @importFrom rlang .data
 #' @examples
 #' data(real_networks)
 #'
@@ -40,12 +40,12 @@ module_summary <- function(network_list){
   sum_list <- lapply(network_list, function(x) {
     y1 <- igraph::V(x)$membership %>%
       dplyr::as_tibble() %>%
-      dplyr::count(value) %>%
-      dplyr::select(n)
+      dplyr::count(.data$value) %>%
+      dplyr::select(.data$n)
     y2 <- igraph::V(x)$membership %>%
       dplyr::as_tibble() %>%
-      dplyr::count(value) %>%
-      dplyr::select(n) %>%
+      dplyr::count(.data$value) %>%
+      dplyr::select(.data$n) %>%
       sum()
     out <- list(grps = y1, size = y2)
 
