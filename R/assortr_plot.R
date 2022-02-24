@@ -66,9 +66,9 @@ assortr_plot <- function(x, alg = "walktrap"){
 
   } else if(length( igraph::E(g_obs) ) >= 2 & alg %in% possible_algorithms[2:5]){
 
-    foo <- eval(parse(text = paste0("cluster_", alg)))
+    foo <- eval(parse(text = paste0("igraph::cluster_", alg)))
 
-    community_object <- foo(g_obs, weights = E(g_obs)$weight)
+    community_object <- foo(g_obs, weights = igraph::E(g_obs)$weight)
 
     nms <- igraph::V(g_obs)$name
     nmsCL <- community_object$names
@@ -103,7 +103,7 @@ assortr_plot <- function(x, alg = "walktrap"){
   invisible(plot(g_obs, layout = igraph::layout.fruchterman.reingold(g_obs),
                  edge.width = igraph::E(g_obs)$weight*4,
                  vertex.color = igraph::V(g_obs)$membership,
-                 main = bquote(hat(Q)[rel]==.(r)))
+                 main = paste0("Assort. Coef. = ", round(r, 2)))
             )
 
 }
