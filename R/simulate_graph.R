@@ -42,19 +42,24 @@ simulate_graph <- function(n_animals,
       call. = FALSE
     )
   }
+  if (n_groups == 1) {
+    stop(
+      "single module networks are currently not supported -- n_groups must be >= 2",
+      call. = FALSE
+    )
+  }
   if (!sampler %in% c("discrete", "continuous")) {
     stop(
       "sampler must be either \"discrete\" or \"continuous\".",
       call. = FALSE
     )
   }
-
   animal_list <- animal_sample_df <- vector("list", length = n_animals)  # build storage objects
 
   if( length(time_to_leave) == length(time_to_return) & length(time_to_return) == 1 ) {
     for(a in 1:n_animals){  # for-loop over animals.
-      animal_list[[a]] <- simulate_animal(time_to_leave_group = time_to_leave,
-                                          time_to_return_to_group = time_to_return,
+      animal_list[[a]] <- simulate_animal(time_to_leave = time_to_leave,
+                                          time_to_return = time_to_return,
                                           n_groups = n_groups,
                                           samples_per_day = samples_per_day,
                                           sampling_duration = sampling_duration)
@@ -65,8 +70,8 @@ simulate_graph <- function(n_animals,
 
   } else if(length(time_to_leave) == length(time_to_return) & length(time_to_return) == n_animals){
     for(a in 1:n_animals){  # for-loop over animals.
-      animal_list[[a]] <- simulate_animal(time_to_leave_group = time_to_leave[a],
-                                          time_to_return_to_group = time_to_return[a],
+      animal_list[[a]] <- simulate_animal(time_to_leave = time_to_leave[a],
+                                          time_to_return = time_to_return[a],
                                           n_groups = n_groups,
                                           samples_per_day = samples_per_day,
                                           sampling_duration = sampling_duration)
@@ -179,7 +184,11 @@ simulate_graph <- function(n_animals,
   nmsNC <- mem_df$ids
   membership <- mem_df$membership[match(nms, nmsNC)]
 
-  igraph::V(sim_igraph)$membership <- membership
+  if(length(unique(membership)) == n_groups){
+    igraph::V(sim_igraph)$membership <- membership
+  }else{warning(paste0(length(unique(membership)), " group(s) in simulated network, not ", n_groups, " as requested.
+Individuals are randomly assigned to groups.
+At very small network sizes it is possible that fewer groups are returned than desired."), call. = FALSE)}
 
   return(sim_igraph)
 
