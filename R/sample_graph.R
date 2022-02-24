@@ -2,10 +2,10 @@
 #'
 #' @param graph The true network to sample
 #' @param sample_nNodes the number of individuals to sample
-#' @param propGPS The proportion of high resolution data to use
-#' @param gps_freq The observation frequency (observations per sampling period)
+#' @param prop_hi_res The proportion of high resolution data to use
+#' @param hi_res The observation frequency (observations per sampling period)
 #'   of the high res data
-#' @param vhf_freq Observations per sampling period of the low res data
+#' @param lo_res Observations per sampling period of the low res data
 #' @param regime Whether to sample modules randomly or impose 'evenness'. options include "random", "even", "better"
 #' @param alg the clustering algorithm to use, one of: "fast_greedy", "louvain", "leading_eigen", "walktrap", or "netcarto"
 #'
@@ -28,7 +28,7 @@
 #' g_obs <- sample_graph(
 #'   graph = reduced_networks[[1]],
 #'   sample_nNodes = ceiling(0.5 * length(igraph::V(reduced_networks[[1]]))),
-#'   propGPS = 1,
+#'   prop_hi_res = 1,
 #'   regime = "better")
 #'
 #' am_obs <- igraph::get.adjacency(g_obs, type = "upper", attr = "sim_weight") %>%
@@ -46,7 +46,7 @@
 #'      layout = igraph::layout.fruchterman.reingold(g_obs),
 #'      edge.width = igraph::E(g_obs)$sim_weight*2,
 #'      vertex.frame.color = "grey20")
-sample_graph <- function(graph, sample_nNodes, propGPS = 1, gps_freq = 30/365, vhf_freq = 8/365, regime = "better", alg = "netcarto"){
+sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, hi_res = 30/365, lo_res = 5/365, regime = "better", alg = "netcarto"){
   if (!requireNamespace(c("igraph", "dplyr", "rnetcarto"), quietly = TRUE)) {
     stop(
       "Packages \"igraph\", \"dplyr\", and \"rnetcarto\" must be installed to use this function.",
@@ -59,9 +59,14 @@ sample_graph <- function(graph, sample_nNodes, propGPS = 1, gps_freq = 30/365, v
       "alg must take one of the following values: \"netcarto\", \"fast_greedy\", \"leading_eigen\", \"louvain\", or \"walktrap\""
     )
   }
+  if(sample_nNodes <= 2){
+    stop(
+      "sample_nNodes must be greater than 2 in order to make a graph"
+    )
+  }
   if(class(graph) != "igraph"){ stop("graph needs to be an igraph object.", call. = FALSE) }
 
-  sample_nNodes <- sample_nNodes
+  # sample_nNodes <- sample_nNodes # what's this for?
   adjmat = igraph::as_adjacency_matrix(graph, attr = "weight", type = "both", sparse = F)
   netSize <- ncol(adjmat)
 
@@ -198,11 +203,11 @@ sample_graph <- function(graph, sample_nNodes, propGPS = 1, gps_freq = 30/365, v
     ed <- igraph::get.data.frame(g2)
 
     # nNodes_sim <- length(grab) # redundant, replace with sample_nNodes
-    # nGPS <- ceiling(nNodes_sim * propGPS)
+    # nGPS <- ceiling(nNodes_sim * prop_hi_res)
     # nVHF <- nNodes_sim - nGPS
 
     ## is the problem here?
-    nGPS <- ceiling(sample_nNodes * propGPS)
+    nGPS <- ceiling(sample_nNodes * prop_hi_res)
     if(nGPS < sample_nNodes){
       nVHF <- sample_nNodes - nGPS
     }else if(nGPS == sample_nNodes){
@@ -212,7 +217,7 @@ sample_graph <- function(graph, sample_nNodes, propGPS = 1, gps_freq = 30/365, v
     }
 
     ofd <- data.frame(id = row.names(am)) %>%
-      dplyr::mutate(obs_freq = ifelse(as.numeric(row.names(.)) <= nGPS, gps_freq, vhf_freq),
+      dplyr::mutate(obs_freq = ifelse(as.numeric(row.names(.)) <= nGPS, hi_res, lo_res),
              n_obs = obs_freq * 365)
     ed$fromObs <- ofd$n_obs[match(ed$from, ofd$id)]
     ed$toObs <- ofd$n_obs[match(ed$to, ofd$id)]
