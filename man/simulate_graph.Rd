@@ -11,7 +11,7 @@ simulate_graph(
   time_to_return,
   sampling_duration,
   sampler = "discrete",
-  samples_per_day
+  samples_per_day = 1
 )
 }
 \arguments{
