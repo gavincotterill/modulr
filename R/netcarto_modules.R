@@ -1,12 +1,11 @@
 #' Return vector of group membership
 #'
-#' @param x
 #' @inheritParams assortr_plot
 #'
 #' @return a named vector of module memberships matching the named adjacency
 #'   matrix or igraph graph object (igraph::V(graph)$name)
 #' @export
-#'
+#' @importFrom rlang .data
 #' @examples
 #' adjmat <- matrix(sample(seq(0, 1, .01), 16), nrow = 4)
 #' diag(adjmat) <- 0
@@ -67,7 +66,7 @@ netcarto_modules <- function(x) {
       igraph::V(g_obs)$membership <- 1:length(igraph::V(g_obs))
     }
 
-  y <- setNames(igraph::V(g_obs)$membership, c(igraph::V(g_obs)$name))
+  y <- stats::setNames(igraph::V(g_obs)$membership, c(igraph::V(g_obs)$name))
   return(y)
 
   }
