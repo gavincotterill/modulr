@@ -1,18 +1,17 @@
 #' plot_simulated_graph()
 #'
-#' @param
-#' g, an igraph object output from simulate_graph()
-#' vertex.size, node size in plot
-#' mark.expand, padding of polygon denoting modules around nodes
-#' vertex.label
-#' vertex.label.size
-#' title
+#' @param g, an igraph object output from simulate_graph()
+#' @param vertex.size, node size in plot
+#' @param mark.expand, padding of polygon denoting modules around nodes
+#' @param vertex.label, label for graph vertices
+#' @param vertex.label.cex, size for vertex labels
+#' @param title, plot title
 #'
 #' @return
 #' a plot of the igraph object
 #'
 #' @export
-#'
+#' @importFrom rlang .data
 #' @examples
 #' set.seed(123)
 #' g <- simulate_graph(n_animals = 25,
@@ -40,10 +39,10 @@ plot_simulated_graph <- function(g, vertex.size = 40, mark.expand = 25,
   grp$mb <- mark_border[grp$mem]
 
   whole_lists <- grp %>%
-    dplyr::group_by(mem) %>%
+    dplyr::group_by(.data$mem) %>%
     tidyr::nest() %>%
     dplyr::mutate(data = purrr::map(data, as.list)) %>%
-    dplyr::pull(data)
+    dplyr::pull(.data$data)
 
   grp_list_whole <- lapply(whole_lists, `[[`, "name")
   mcs_whole <- lapply(whole_lists, `[[`, "mc") %>%
