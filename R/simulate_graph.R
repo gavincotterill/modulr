@@ -98,7 +98,7 @@ simulate_graph <- function(n_animals,
     dyads <- expand.grid(1:n_animals, 1:n_animals)
     dyads <- dyads[which(dyads[, 1] != dyads[, 2]), ] # this still includes eg A--B and B--A, but that shouldn't add much time
 
-    adj_mat <- matrix(NA, nrow = n_animals,ncol = n_animals)
+    adj_mat <- matrix(NA, nrow = n_animals, ncol = n_animals)
 
     for(d in 1:nrow(dyads)){
       anim1 <- subset(samples_out, id == levels(factor(samples_out$id))[dyads[d, 1]])
@@ -126,13 +126,13 @@ simulate_graph <- function(n_animals,
     dt_fxn <- function(animal){
       one <- animal
       t1 <- one$locations %>%
-        dplyr::mutate(end = dplyr::lead(cumulative_time),
-                      state = dplyr::lead(current_state)) %>%
+        dplyr::mutate(end = dplyr::lead(.data$cumulative_time),
+                      state = dplyr::lead(.data$current_state)) %>%
         dplyr::slice(1:(nrow(.)-1)) %>%
-        dplyr::rename(start = cumulative_time) %>%
+        dplyr::rename(start = .data$cumulative_time) %>%
         dplyr::select("state", "start","end") %>%
         data.table::setDT() %>%
-        data.table::setkey(., start, end)
+        data.table::setkey(., .data$start, .data$end)
       t1
     }
     animals_transformed <- lapply(animal_list, dt_fxn)
@@ -145,9 +145,9 @@ simulate_graph <- function(n_animals,
       t2 <- animals_transformed[[dyads[d,"Var1"]]]
 
       intervals <- data.table::foverlaps(t1, t2) %>%
-        dplyr::mutate(start_max = pmax(start, i.start),
-                      end_min = pmin(end, i.end),
-                      together = ifelse(state == i.state, 1, 0))
+        dplyr::mutate(start_max = pmax(.data$start, .data$i.start),
+                      end_min = pmin(.data$end, .data$i.end),
+                      together = ifelse(.data$state == .data$i.state, 1, 0))
 
       g_int <- data.frame(intervals) %>%
         dplyr::select(1,4,7:9)
@@ -157,8 +157,8 @@ simulate_graph <- function(n_animals,
         rbind(g_int[,2:5]  %>% 'names<-'(names(g_int)[c(1,3:5)]) %>% dplyr::mutate(id = "B"))
 
       time_overlap <- together %>%
-        dplyr::filter(id == "A" & together == 1) %>%
-        dplyr::mutate(time = end_min - start_max)
+        dplyr::filter(.data$id == "A" & .data$together == 1) %>%
+        dplyr::mutate(time = .data$end_min - .data$start_max)
 
       numer <- sum(time_overlap$time)
       # denom <- intervals[nrow(intervals), "end_min"]$end_min # got a speed up here
@@ -177,7 +177,7 @@ simulate_graph <- function(n_animals,
   }
 
   # convert to igraph object and plot with f-r layout
-  sim_igraph <- igraph::graph_from_adjacency_matrix(adj_mat, weighted = T, mode = "undirected")
+  sim_igraph <- igraph::graph_from_adjacency_matrix(adj_mat, weighted = TRUE, mode = "undirected")
   sim_igraph <- igraph::delete.edges(sim_igraph, which(igraph::E(sim_igraph)$weight == 0))
 
   nms <- igraph::V(sim_igraph)$name
