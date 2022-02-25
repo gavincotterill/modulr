@@ -8,15 +8,15 @@
 #'   the network_list.
 #' @export
 #' @importFrom rlang .data
+#' @import utils
+#' @name module_summary
 #' @examples
 #' data(real_networks)
-#'
 #' module_stats <- module_summary(real_networks)
-#'
 #' module_stats %>%
 #'   `names<-`(c("n", "mean", "sd", "netSize")) %>%
 #'   ggplot2::ggplot() +
-#'   ggplot2::geom_pointrange(aes(x = n, y = mean, ymin = mean - sd, ymax= mean + sd,
+#'   ggplot2::geom_pointrange(ggplot2::aes(x = n, y = mean, ymin = mean - sd, ymax= mean + sd,
 #'                       color = as.factor(netSize)),
 #'                   position = ggplot2::position_jitter(width = .4), lty = "dotted") +
 #'   ggplot2::theme_bw() +
@@ -27,7 +27,8 @@
 #'         axis.text = ggplot2::element_text(size = 20),
 #'         axis.title = ggplot2::element_text(size = 20)) +
 #'   ggplot2::guides(color = ggplot2::guide_legend(title = "Network Size"))
-#'
+
+utils::globalVariables(".")
 
 module_summary <- function(network_list){
 
