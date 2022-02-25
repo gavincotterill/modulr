@@ -4,9 +4,6 @@
 \alias{module_summary}
 \title{Calculate nodes per module and modules per network statistics on a list of
 graphs with defined membership}
-\usage{
-module_summary(network_list)
-}
 \arguments{
 \item{network_list}{a list of \code{igraph} graph objects. Each vertex must have a
 defined \verb{$membership}.}
@@ -21,13 +18,11 @@ graphs with defined membership
 }
 \examples{
 data(real_networks)
-
 module_stats <- module_summary(real_networks)
-
 module_stats \%>\%
   `names<-`(c("n", "mean", "sd", "netSize")) \%>\%
   ggplot2::ggplot() +
-  ggplot2::geom_pointrange(aes(x = n, y = mean, ymin = mean - sd, ymax= mean + sd,
+  ggplot2::geom_pointrange(ggplot2::aes(x = n, y = mean, ymin = mean - sd, ymax= mean + sd,
                       color = as.factor(netSize)),
                   position = ggplot2::position_jitter(width = .4), lty = "dotted") +
   ggplot2::theme_bw() +
@@ -38,5 +33,4 @@ module_stats \%>\%
         axis.text = ggplot2::element_text(size = 20),
         axis.title = ggplot2::element_text(size = 20)) +
   ggplot2::guides(color = ggplot2::guide_legend(title = "Network Size"))
-
 }
