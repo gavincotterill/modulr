@@ -2,13 +2,11 @@
 #'
 #' @param g_obs, an igraph object output from sample_graph()
 #' @inheritParams plot_simulated_graph
-#'
-#' @return
+#' @return a plot of the sampled graph
 #' @export
-#'
+#' @importFrom rlang .data
 #' @examples
 #' set.seed(123)
-#'
 #' g <- simulate_graph(n_animals = 25,
 #'                     n_groups = 4,
 #'                     time_to_leave = 5,
@@ -16,17 +14,14 @@
 #'                     samples_per_day = 1,
 #'                     sampling_duration = 7)
 #' igraph::V(g)$name <- stringr::str_extract(igraph::V(g)$name, "\\d{1,}")
-#'
 #' g_obs <- sample_graph(
 #'   graph = g,
 #'   sample_nNodes = 13,
-#'   propGPS = 1,
+#'   prop_hi_res = 1,
 #'   regime = "better")
-#'
 #' par(mfrow = c(1,2))
 #' plot_simulated_graph(g)
 #' plot_sampled_graph(g_obs, g)
-#'
 #' @seealso \code{\link{sample_graph, simulate_graph, plot_simulated_graph}}
 plot_sampled_graph <- function(g_obs, g, vertex.size = 40, mark.expand = 25,
                                vertex.label = NA,
@@ -43,11 +38,11 @@ plot_sampled_graph <- function(g_obs, g, vertex.size = 40, mark.expand = 25,
   grp$mb <- mark_border[grp$mem]
 
   obs_lists <- grp %>%
-    dplyr::filter(name %in% igraph::V(g_obs)$name) %>%
-    dplyr::group_by(mem) %>%
+    dplyr::filter(.data$name %in% igraph::V(g_obs)$name) %>%
+    dplyr::group_by(.data$mem) %>%
     tidyr::nest(.) %>%
-    dplyr::mutate(data = purrr::map(data, as.list)) %>%
-    dplyr::pull(data)
+    dplyr::mutate(data = purrr::map(.data$data, as.list)) %>%
+    dplyr::pull(.data$data)
 
   grp_list_obs <- lapply(obs_lists, `[[`, "name")
 
@@ -75,7 +70,7 @@ plot_sampled_graph <- function(g_obs, g, vertex.size = 40, mark.expand = 25,
   ymax <- max(lo[,2] + ybuf)
 
   lo2 <- lo_whole %>%
-    dplyr::filter(name %in% igraph::V(g_obs)$name)
+    dplyr::filter(.data$name %in% igraph::V(g_obs)$name)
   lo2 <- lo2[match(igraph::V(g_obs)$name, lo2$name),] %>%
     dplyr::select(-3) %>%
     data.matrix()
