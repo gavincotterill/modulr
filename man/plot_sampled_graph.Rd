@@ -17,22 +17,26 @@ plot_sampled_graph(
 \arguments{
 \item{g_obs, }{an igraph object output from sample_graph()}
 
-\item{g}{an igraph object output from simulate_graph()
-vertex.size, node size in plot
-mark.expand, padding of polygon denoting modules around nodes
-vertex.label
-vertex.label.size
-title}
+\item{g}{an igraph object output from simulate_graph()}
+
+\item{vertex.size}{node size in plot}
+
+\item{mark.expand}{padding of polygon denoting modules around nodes}
+
+\item{vertex.label}{label for graph vertices}
+
+\item{vertex.label.cex}{size for vertex labels}
+
+\item{title}{plot title}
 }
 \value{
-
+a plot of the sampled graph
 }
 \description{
 plot_sampled_graph()
 }
 \examples{
 set.seed(123)
-
 g <- simulate_graph(n_animals = 25,
                     n_groups = 4,
                     time_to_leave = 5,
@@ -40,17 +44,14 @@ g <- simulate_graph(n_animals = 25,
                     samples_per_day = 1,
                     sampling_duration = 7)
 igraph::V(g)$name <- stringr::str_extract(igraph::V(g)$name, "\\\\d{1,}")
-
 g_obs <- sample_graph(
   graph = g,
   sample_nNodes = 13,
-  propGPS = 1,
+  prop_hi_res = 1,
   regime = "better")
-
 par(mfrow = c(1,2))
 plot_simulated_graph(g)
 plot_sampled_graph(g_obs, g)
-
 }
 \seealso{
 \code{\link{sample_graph, simulate_graph, plot_simulated_graph}}
