@@ -39,35 +39,19 @@ Simulate a sampling regime and calculate network modularity.
 \examples{
 data("real_networks")
 data("study_design")
-
-row_index <- study_design \%>\%
-  dplyr::mutate(index = row.names(.)) \%>\%
-  dplyr::filter(nNodes == 50) \%>\%
-  dplyr::arrange(-qrel) \%>\%
-  dplyr::slice(1:10) \%>\%
-  dplyr::select(index)
-reduced_design <- study_design[as.numeric(row_index$index), ]
-reduced_networks <- real_networks[as.numeric(row_index$index)]
-
 g_obs <- sample_graph(
-  graph = reduced_networks[[1]],
-  sample_nNodes = ceiling(0.5 * length(igraph::V(reduced_networks[[1]]))),
+  graph = real_networks[[1]],
+  sample_nNodes = ceiling(0.5 * length(igraph::V(real_networks[[1]]))),
   prop_hi_res = 1,
   regime = "better")
-
 am_obs <- igraph::get.adjacency(g_obs, type = "upper", attr = "sim_weight") \%>\%
   as.matrix()
+qrel_hat <- assortnet::assortment.discrete(am_obs,
+types = igraph::V(g_obs)$membership, weighted = TRUE)$r
+study_design[1,] \%>\%
+  dplyr::mutate(prop_hi_res = 1,
+                nNodes_sim = ncol(am_obs),
+                nModules_sim = length(unique(igraph::V(g_obs)$membership)),
+                qrel_sim = qrel_hat)
 
-reduced_design[1,] \%>\%
-  mutate(ceiling(0.5 * length(igraph::V(reduced_networks[[1]]))), # need to go back to study design and real network creation to imlement change
-         prop_gps = 1,
-         qrel_sim = assortnet::assortment.discrete(am_obs, types = igraph::V(g_obs)$membership, weighted = T)$r,
-         nNodes_sim = ncol(am_obs),
-         nModules_sim = length(unique(igraph::V(g_obs)$membership))) \%>\%
-  select( - c(vals, obs_freq))
-
-plot(g_obs,
-     layout = igraph::layout.fruchterman.reingold(g_obs),
-     edge.width = igraph::E(g_obs)$sim_weight*2,
-     vertex.frame.color = "grey20")
 }
