@@ -100,7 +100,7 @@ assortr_plot <- function(x, alg = "walktrap"){
     r <- NA_real_
   }
 # no way to make invisible with base r plotting?
-  invisible(plot(g_obs, layout = igraph::layout.fruchterman.reingold(g_obs),
+  invisible(igraph::plot.igraph(g_obs, layout = igraph::layout.fruchterman.reingold(g_obs),
                  edge.width = igraph::E(g_obs)$weight*4,
                  vertex.color = igraph::V(g_obs)$membership,
                  main = paste0("Assort. Coef. = ", round(r, 2)))
