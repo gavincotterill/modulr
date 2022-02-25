@@ -14,12 +14,17 @@ plot_simulated_graph(
 )
 }
 \arguments{
-\item{g, }{an igraph object output from simulate_graph()
-vertex.size, node size in plot
-mark.expand, padding of polygon denoting modules around nodes
-vertex.label
-vertex.label.size
-title}
+\item{g, }{an igraph object output from simulate_graph()}
+
+\item{vertex.size, }{node size in plot}
+
+\item{mark.expand, }{padding of polygon denoting modules around nodes}
+
+\item{vertex.label, }{label for graph vertices}
+
+\item{vertex.label.cex, }{size for vertex labels}
+
+\item{title, }{plot title}
 }
 \value{
 a plot of the igraph object
