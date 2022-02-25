@@ -15,21 +15,20 @@
 #' @examples
 #' data("real_networks")
 #' data("study_design")
-#'
 #' g_obs <- sample_graph(
 #'   graph = real_networks[[1]],
 #'   sample_nNodes = ceiling(0.5 * length(igraph::V(real_networks[[1]]))),
 #'   prop_hi_res = 1,
 #'   regime = "better")
-#'
 #' am_obs <- igraph::get.adjacency(g_obs, type = "upper", attr = "sim_weight") %>%
 #'   as.matrix()
-#'
+#' qrel_hat <- assortnet::assortment.discrete(am_obs,
+#' types = igraph::V(g_obs)$membership, weighted = TRUE)$r
 #' study_design[1,] %>%
 #'   dplyr::mutate(prop_hi_res = 1,
 #'                 nNodes_sim = ncol(am_obs),
 #'                 nModules_sim = length(unique(igraph::V(g_obs)$membership)),
-#'                 qrel_sim = assortnet::assortment.discrete(am_obs, types = igraph::V(g_obs)$membership, weighted = T)$r)
+#'                 qrel_sim = qrel_hat)
 #'
 sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, hi_res = 30/365, lo_res = 5/365, regime = "better", alg = "netcarto"){
   if (!requireNamespace(c("igraph", "dplyr", "rnetcarto"), quietly = TRUE)) {
@@ -52,7 +51,7 @@ sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, hi_res = 30/365,
   if(class(graph) != "igraph"){ stop("graph needs to be an igraph object.", call. = FALSE) }
 
   # sample_nNodes <- sample_nNodes # what's this for?
-  adjmat = igraph::as_adjacency_matrix(graph, attr = "weight", type = "both", sparse = F)
+  adjmat = igraph::as_adjacency_matrix(graph, attr = "weight", type = "both", sparse = FALSE)
   netSize <- ncol(adjmat)
 
   if(regime == "better"){
@@ -60,17 +59,17 @@ sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, hi_res = 30/365,
     id_df <- data.frame(ids = igraph::V(graph)$name, group = membership)
 
     grouped_by_size <- id_df %>%
-      dplyr::group_by(group) %>%
+      dplyr::group_by(.data$group) %>%
       dplyr::add_tally() %>%
       dplyr::ungroup() %>%
-      dplyr::arrange(-n) %>%
-      dplyr::filter(n != 1) # drop single node modules
+      dplyr::arrange(-.data$n) %>%
+      dplyr::filter(.data$n != 1) # drop single node modules
 
     min_sample <- id_df %>% # smallest module size
-      dplyr::group_by(group) %>%
+      dplyr::group_by(.data$group) %>%
       dplyr::count() %>%
       dplyr::ungroup() %>%
-      dplyr::select(n) %>%
+      dplyr::select(.data$n) %>%
       min()
 
     ngroups = length(unique(membership)) # number of modules
@@ -81,40 +80,40 @@ sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, hi_res = 30/365,
     if(size <= (ngroups * 2) & size %% 2 == 0){ # and is even,
 
       out <- grouped_by_size %>%
-        dplyr::group_by(group) %>%
+        dplyr::group_by(.data$group) %>%
         dplyr::sample_n(2) %>%
         dplyr::ungroup() %>%
         dplyr::slice(1:size) %>% # you won't sample every group.
-        dplyr::select(-n)
+        dplyr::select(-.data$n)
 
     } else if(size < (ngroups * 2) & size %% 2 != 0){ # fewer animals then groups*2 and odd
 
       initial_sampling <- grouped_by_size %>%
-        dplyr::group_by(group) %>%
+        dplyr::group_by(.data$group) %>%
         dplyr::sample_n(2) %>%
         dplyr::ungroup() %>%
         dplyr::slice(1:(size - 1)) %>%
-        dplyr::select(-n)
+        dplyr::select(-.data$n)
 
       remainder <- size - nrow(initial_sampling)
 
       if(remainder > 0){ # start inner
         unsampled_df <- id_df %>%
-          dplyr::filter(!ids %in% initial_sampling$ids)
+          dplyr::filter(!.data$ids %in% initial_sampling$ids)
         random_vec <- sample(1:nrow(unsampled_df), remainder, replace = F)
         out <- rbind(initial_sampling, unsampled_df[random_vec,])
       } else { out <- initial_sampling } # end inner
 
     }else if(size > (ngroups * 2)){ # if you need more animals than twice the number of groups
       initial_sampling <- id_df %>%
-        dplyr::group_by(group) %>%
+        dplyr::group_by(.data$group) %>%
         dplyr::sample_n(ifelse(min_sample < even_sampler, min_sample, even_sampler))
 
       remainder <- size - nrow(initial_sampling)
 
       if(remainder > 0){ # begin inner
         unsampled_df <- id_df %>%
-          dplyr::filter(!ids %in% initial_sampling$ids)
+          dplyr::filter(!.data$ids %in% initial_sampling$ids)
         random_vec <- sample(1:nrow(unsampled_df), remainder, replace = F)
         out <- rbind(initial_sampling, unsampled_df[random_vec,])
       } else { out <- initial_sampling } # end inner
@@ -127,10 +126,10 @@ sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, hi_res = 30/365,
     id_df <- data.frame(ids = igraph::V(graph)$name, group = membership)
 
     min_sample <- id_df %>%
-      dplyr::group_by(group) %>%
+      dplyr::group_by(.data$group) %>%
       dplyr::count() %>%
       dplyr::ungroup() %>%
-      dplyr::select(n) %>%
+      dplyr::select(.data$n) %>%
       min()     # return smallest number of nodes per group
 
     ngroups = length(unique(membership))
@@ -140,33 +139,33 @@ sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, hi_res = 30/365,
       if(size > ngroups & even_sampler >= min_sample){ # start sampling if
 
         initial_sampling <- id_df %>%
-          dplyr::group_by(group) %>%
+          dplyr::group_by(.data$group) %>%
           dplyr::sample_n(min_sample)
         remainder <- size - nrow(initial_sampling)
 
         if(remainder > 0){ # inner
           unsampled_df <- id_df %>%
-            dplyr::filter(!ids %in% initial_sampling$ids)
+            dplyr::filter(!.data$ids %in% initial_sampling$ids)
           random_vec <- sample(1:nrow(unsampled_df), remainder, replace = F)
           out <- rbind(initial_sampling, unsampled_df[random_vec,])
         } else { out <- initial_sampling } # end inner
 
       } else if(size > ngroups & even_sampler < min_sample){ # outer contd
         initial_sampling <- id_df %>%
-          dplyr::group_by(group) %>%
+          dplyr::group_by(.data$group) %>%
           dplyr::sample_n(even_sampler)
         remainder <- size - nrow(initial_sampling)
 
         if(remainder > 0){ # inner
           unsampled_df <- id_df %>%
-            dplyr::filter(!ids %in% initial_sampling$ids)
+            dplyr::filter(!.data$ids %in% initial_sampling$ids)
           random_vec <- sample(1:nrow(unsampled_df), remainder, replace = F)
           out <- rbind(initial_sampling, unsampled_df[random_vec,])
         } else { out <- initial_sampling } # end inner
 
       } else if(size <= ngroups){ # outer contd
         sampling <- id_df %>%
-          dplyr::group_by(group) %>%
+          dplyr::group_by(.data$group) %>%
           dplyr::slice(1) %>%
           dplyr::ungroup() # these are randomly sorted by group
         out <- sampling[1:size,]
@@ -203,7 +202,7 @@ sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, hi_res = 30/365,
 
     ofd <- data.frame(id = row.names(am)) %>%
       dplyr::mutate(obs_freq = ifelse(as.numeric(row.names(.)) <= nGPS, hi_res, lo_res),
-             n_obs = obs_freq * 365)
+             n_obs = .data$obs_freq * 365)
     ed$fromObs <- ofd$n_obs[match(ed$from, ofd$id)]
     ed$toObs <- ofd$n_obs[match(ed$to, ofd$id)]
     ed$minObs <- pmin(ed$fromObs, ed$toObs)
@@ -234,7 +233,7 @@ sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, hi_res = 30/365,
 
       foo <- eval(parse(text = paste0("cluster_", alg)))
 
-      community_object <- foo(g_obs, weights = E(g_obs)$weight)
+      community_object <- foo(g_obs, weights = igraph::E(g_obs)$weight)
 
       nms <- igraph::V(g_obs)$name
       nmsCL <- community_object$names
