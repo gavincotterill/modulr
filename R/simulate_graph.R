@@ -103,7 +103,7 @@ simulate_graph <- function(n_animals,
     for(d in 1:nrow(dyads)){
       anim1 <- subset(samples_out, id == levels(factor(samples_out$id))[dyads[d, 1]])
       anim2 <- subset(samples_out, id == levels(factor(samples_out$id))[dyads[d, 2]])
-      together <- length(which(anim1$location == anim2$location))
+      together <- length(which(anim1$location == anim2$location & anim1$time == anim2$time))
       adj_mat[dyads[d, 1], dyads[d, 2]] <- together / nrow(anim1)
     }
 
@@ -132,7 +132,7 @@ simulate_graph <- function(n_animals,
         dplyr::rename(start = .data$cumulative_time) %>%
         dplyr::select("state", "start","end") %>%
         data.table::setDT() %>%
-        data.table::setkey(., .data$start, .data$end)
+        data.table::setkey(., start, end) # don't add .data$ here
       t1
     }
     animals_transformed <- lapply(animal_list, dt_fxn)
