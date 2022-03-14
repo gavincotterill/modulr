@@ -6,7 +6,7 @@
 #' @param hi_res The observation frequency (observations per sampling period)
 #'   of the high res data
 #' @param lo_res Observations per sampling period of the low res data
-#' @param regime Whether to sample modules randomly or impose 'evenness'. options include "random", "even", "better"
+#' @param regime Whether to sample modules randomly or impose 'evenness'. options include "random", "even", "grab-two"
 #' @param alg the clustering algorithm to use, one of: "fast_greedy", "louvain", "leading_eigen", "walktrap", or "netcarto"
 #'
 #' @return g_obs, the graph of the observed network
@@ -19,7 +19,7 @@
 #'   graph = real_networks[[1]],
 #'   sample_nNodes = ceiling(0.5 * length(igraph::V(real_networks[[1]]))),
 #'   prop_hi_res = 1,
-#'   regime = "better")
+#'   regime = "grab-two")
 #' am_obs <- igraph::get.adjacency(g_obs, type = "upper", attr = "sim_weight") %>%
 #'   as.matrix()
 #' qrel_hat <- assortnet::assortment.discrete(am_obs,
@@ -30,7 +30,7 @@
 #'                 nModules_sim = length(unique(igraph::V(g_obs)$membership)),
 #'                 qrel_sim = qrel_hat)
 #'
-sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, hi_res = 30/365, lo_res = 5/365, regime = "better", alg = "netcarto"){
+sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, hi_res = 30/365, lo_res = 5/365, regime = "grab-two", alg = "netcarto"){
   if (!requireNamespace(c("igraph", "dplyr"), quietly = TRUE)) {
     stop(
       "Packages \"igraph\" and \"dplyr\" must be installed to use this function.",
@@ -59,7 +59,7 @@ sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, hi_res = 30/365,
   adjmat = igraph::as_adjacency_matrix(graph, attr = "weight", type = "both", sparse = FALSE)
   netSize <- ncol(adjmat)
 
-  if(regime == "better"){
+  if(regime == "grab-two"){
     membership <- igraph::V(graph)$membership    # pull the stored membership vector
     id_df <- data.frame(ids = igraph::V(graph)$name, group = membership)
 
