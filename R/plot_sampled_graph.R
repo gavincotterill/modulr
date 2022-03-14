@@ -18,7 +18,7 @@
 #'   graph = g,
 #'   sample_nNodes = 13,
 #'   prop_hi_res = 1,
-#'   regime = "better")
+#'   regime = "grab-two")
 #' par(mfrow = c(1,2))
 #' plot_simulated_graph(g)
 #' plot_sampled_graph(g_obs, g)
