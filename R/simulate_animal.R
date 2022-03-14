@@ -13,10 +13,10 @@
 #'
 #' @examples
 #' simulate_animal(time_to_leave = 3,
-#' time_to_return = 1,
-#' n_groups = 4,
-#' samples_per_day = 1,
-#' sampling_duration = 7)
+#'                 time_to_return = 1,
+#'                 n_groups = 4,
+#'                 samples_per_day = 1,
+#'                 sampling_duration = 7)
 simulate_animal <- function(n_groups,
                             time_to_leave,
                             time_to_return,
