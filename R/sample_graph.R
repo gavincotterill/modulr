@@ -31,9 +31,9 @@
 #'                 qrel_sim = qrel_hat)
 #'
 sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, hi_res = 30/365, lo_res = 5/365, regime = "better", alg = "netcarto"){
-  if (!requireNamespace(c("igraph", "dplyr", "rnetcarto"), quietly = TRUE)) {
+  if (!requireNamespace(c("igraph", "dplyr"), quietly = TRUE)) {
     stop(
-      "Packages \"igraph\", \"dplyr\", and \"rnetcarto\" must be installed to use this function.",
+      "Packages \"igraph\" and \"dplyr\" must be installed to use this function.",
       call. = FALSE
     )
   }
@@ -41,6 +41,11 @@ sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, hi_res = 30/365,
   if(!alg %in% possible_algorithms){
     stop(
       "alg must take one of the following values: \"netcarto\", \"fast_greedy\", \"leading_eigen\", \"louvain\", or \"walktrap\""
+    )
+  }
+  if(alg %in% c("netcarto") & !requireNamespace(c("rnetcarto"), quietly = TRUE)){
+    stop(
+      "Package \"rnetcarto\" must be installed to use the netcarto community detection algorithm."
     )
   }
   if(sample_nNodes <= 2){
@@ -226,8 +231,6 @@ sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, hi_res = 30/365,
         }
       }
       igraph::V(g_obs)$membership <- colorOrder
-      qrel <- assortnet::assortment.discrete(graph = am_obs, types = colorOrder, weighted = T)$r
-      r <- ifelse(qrel %in% "NaN", 0, qrel)
 
     } else if(length( igraph::E(g_obs) ) >= 2 & alg %in% possible_algorithms[2:5]){
 
@@ -246,15 +249,14 @@ sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, hi_res = 30/365,
         }
       }
       igraph::V(g_obs)$membership <- colorOrder
-      qrel <- assortnet::assortment.discrete(graph = am_obs, types = colorOrder, weighted = T)$r
-      r <- ifelse(qrel %in% "NaN", 0, qrel)
+
     }else if(length(igraph::E(g_obs)) == 1){
 
       head <- names(which(rowSums(am_obs) > 0))
       tail <- names(which(colSums(am_obs) > 0))
       colorOrder <- ifelse(igraph::V(g_obs)$name %in% c(head, tail), 0, NA)
       for(j in 1:sum(is.na(colorOrder))){
-        colorOrder[is.na(colorOrder)][1] <- max(colorOrder, na.rmuse_ = T) + 1 # this is counterintuitive... but use a [1] instead of [j]
+        colorOrder[is.na(colorOrder)][1] <- max(colorOrder, na.rm = T) + 1 # this is counterintuitive... but use a [1] instead of [j]
       }
       igraph::V(g_obs)$membership <- colorOrder
 
