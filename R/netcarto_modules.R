@@ -1,6 +1,6 @@
 #' Return vector of group membership
 #'
-#' @inheritParams assortr_plot
+#' @inheritParams modulr_plot
 #'
 #' @return a named vector of module memberships matching the named adjacency
 #'   matrix or igraph graph object (igraph::V(graph)$name)
