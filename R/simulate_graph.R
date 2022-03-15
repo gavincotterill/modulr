@@ -13,7 +13,7 @@
 #' samples taken per day in order to estimate the simple ratio index for each
 #' dyad.
 #'
-#' @return sim_igraph, an igraph graph object.
+#' @return an igraph graph object.
 #' @export
 #'
 #' @examples
