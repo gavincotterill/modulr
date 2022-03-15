@@ -161,8 +161,9 @@ simulate_graph <- function(n_animals,
         dplyr::mutate(time = .data$end_min - .data$start_max)
 
       numer <- sum(time_overlap$time)
-      # denom <- intervals[nrow(intervals), "end_min"]$end_min # got a speed up here
-      denom <- intervals[nrow(intervals), "end_min"]["end_min"] # got a speed up here
+      # denom <- intervals[nrow(intervals), "end_min"]$end_min # this was slower, but appears to create $ not valid for atomic vectors when using packge normally
+      # denom <- intervals[nrow(intervals), "end_min"]["end_min"] # this was faster but buggy
+      denom <- as.numeric(intervals[nrow(intervals), "end_min"])
 
 
       edge_weight <- numer / denom
