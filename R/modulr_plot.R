@@ -16,8 +16,8 @@
 #' diag(adjmat) <- 0
 #' adjmat[lower.tri(adjmat)] <- 0
 #' rownames(adjmat) <- colnames(adjmat) <- paste0("Animal_", 1:4)
-#' assortr_plot(adjmat)
-assortr_plot <- function(x, alg = "walktrap"){
+#' modulr_plot(adjmat)
+modulr_plot <- function(x, alg = "walktrap"){
   if (!requireNamespace(c("igraph", "assortnet", "rnetcarto"), quietly = TRUE)) {
     stop(
       "Packages \"igraph\", \"igraph\", and \"rnetcarto\" must be installed to use this function.",
