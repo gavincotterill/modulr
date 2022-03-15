@@ -1,16 +1,15 @@
-Package: assortr
-Title: Calculating Graph Assortativity on the Basis of Community Detection
+Package: modulr
+Title: Simulate modular fission-fusion networks and sample design
 Version: 0.0.0.9000
 Authors@R: 
     person("Gavin", "Cotterill", , "gcotterill2@unl.edu", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-1408-778X"))
-Description: '`assortr` provides functions to simulate group switching behavior and create weighted, undirected social networks based on the proportion of time dyads spend together -- the simple ratio index. `assortr` borrows the simulated annealing algorithm of `rnetcarto` to identify modules within the network which it uses as the basis for calculating the assortativity coefficient of the graph. Additional functions help assess the robustness of user-defined sampling schemes'.
+Description: '`modulr` provides functions to simulate group switching behavior and create weighted, undirected social networks based on the proportion of time dyads spend together. `modulr` also simulates sampling processes and gives users to the tools to assess network statistic estimation under diverse scenarios'.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
 Imports: 
-    assortnet,
     data.table,
     dplyr,
     ggplot2,

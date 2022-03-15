@@ -1,5 +1,5 @@
 library(testthat)
-library(assortr)
+library(modulr)
 
 test_check("assortr")
 
