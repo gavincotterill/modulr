@@ -10,7 +10,7 @@ sample_graph(
   prop_hi_res = 1,
   hi_res = 30/365,
   lo_res = 5/365,
-  regime = "better",
+  regime = "grab-two",
   alg = "netcarto"
 )
 }
@@ -26,7 +26,7 @@ of the high res data}
 
 \item{lo_res}{Observations per sampling period of the low res data}
 
-\item{regime}{Whether to sample modules randomly or impose 'evenness'. options include "random", "even", "better"}
+\item{regime}{Whether to sample modules randomly or impose 'evenness'. options include "random", "even", "grab-two"}
 
 \item{alg}{the clustering algorithm to use, one of: "fast_greedy", "louvain", "leading_eigen", "walktrap", or "netcarto"}
 }
@@ -43,7 +43,7 @@ g_obs <- sample_graph(
   graph = real_networks[[1]],
   sample_nNodes = ceiling(0.5 * length(igraph::V(real_networks[[1]]))),
   prop_hi_res = 1,
-  regime = "better")
+  regime = "grab-two")
 am_obs <- igraph::get.adjacency(g_obs, type = "upper", attr = "sim_weight") \%>\%
   as.matrix()
 qrel_hat <- assortnet::assortment.discrete(am_obs,
