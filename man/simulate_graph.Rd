@@ -35,7 +35,7 @@ samples taken per day in order to estimate the simple ratio index for each
 dyad.}
 }
 \value{
-sim_igraph, an igraph graph object.
+an igraph graph object.
 }
 \description{
 Simulate the true simple ratio index values for each dyad in a network.
