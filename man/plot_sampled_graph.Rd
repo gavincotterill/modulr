@@ -15,7 +15,7 @@ plot_sampled_graph(
 )
 }
 \arguments{
-\item{g_obs, }{an igraph object output from sample_graph()}
+\item{g_obs}{an igraph object output from sample_graph()}
 
 \item{g}{an igraph object output from simulate_graph()}
 
@@ -37,7 +37,7 @@ plot_sampled_graph()
 }
 \examples{
 set.seed(123)
-g <- simulate_graph(n_animals = 25,
+g <- modulr::simulate_graph(n_animals = 25,
                     n_groups = 4,
                     time_to_leave = 5,
                     time_to_return = 2,
@@ -52,7 +52,4 @@ g_obs <- sample_graph(
 par(mfrow = c(1,2))
 plot_simulated_graph(g)
 plot_sampled_graph(g_obs, g)
-}
-\seealso{
-\code{\link{sample_graph, simulate_graph, plot_simulated_graph}}
 }

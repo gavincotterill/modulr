@@ -1,13 +1,13 @@
 #' plot_sampled_graph()
 #'
-#' @param g_obs, an igraph object output from sample_graph()
+#' @param g_obs an igraph object output from sample_graph()
 #' @inheritParams plot_simulated_graph
 #' @return a plot of the sampled graph
 #' @export
 #' @importFrom rlang .data
 #' @examples
 #' set.seed(123)
-#' g <- simulate_graph(n_animals = 25,
+#' g <- modulr::simulate_graph(n_animals = 25,
 #'                     n_groups = 4,
 #'                     time_to_leave = 5,
 #'                     time_to_return = 2,
@@ -22,7 +22,6 @@
 #' par(mfrow = c(1,2))
 #' plot_simulated_graph(g)
 #' plot_sampled_graph(g_obs, g)
-#' @seealso \code{\link{sample_graph, simulate_graph, plot_simulated_graph}}
 plot_sampled_graph <- function(g_obs, g, vertex.size = 40, mark.expand = 25,
                                vertex.label = NA,
                                vertex.label.cex = 1.5,

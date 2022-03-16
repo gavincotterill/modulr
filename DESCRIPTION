@@ -30,6 +30,7 @@ Suggests:
     assortnet,
     rnetcarto,
     testthat (>= 3.0.0),
-    rmarkdown
+    rmarkdown,
+    ggh4x
 Config/testthat/edition: 3
 VignetteBuilder: knitr
