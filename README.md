@@ -244,7 +244,8 @@ points %>%
 ```
 
 ![](docs/unnamed-chunk-7-1.png)
-In practice we would want to do this many more times using a broader range of parameter values. There is a great deal of chance involved in sampling. How do the results change when different individuals are selected for sampling? If you change the `set.seed()` value, you will get different results! Although we can't say anything with much certainty based on this figure alone, it suggests that perhaps netcarto leads to better Qrel (modularity) estimates, especially at low rates of sampling (eg 5 nodes in a population of 25).
+
+Here the x-axis is just an index corresponding to our sampling simulations. In practice we would want to do this many more times using a broader range of parameter values. There is a great deal of chance involved in sampling. How do the results change when different individuals are selected for sampling? If you change the `set.seed()` value, you will get different results! Although we can't say anything with much certainty based on this figure alone, it suggests that perhaps netcarto leads to better Qrel (modularity) estimates, especially at low rates of sampling (eg 5 nodes in a population of 25).
 
 
 
