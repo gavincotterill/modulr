@@ -9,8 +9,7 @@ modulr is an open source project, maintained by people who care. We are not dire
 [repo]: https://github.com/gavincotterill/modulr
 [issues]: https://github.com/gavincotterill/modulr/issues
 [new_issue]: https://github.com/gavincotterill/modulr/issues/new
-[citation]: https://github.com/gavincotterill/modulr/inst/CITATION
-[email]: mailto:gcotterill2@unl.edu
+[citation]: https://github.com/gavincotterill/modulr/blob/main/inst/CITATION
 
 ## How you can contribute
 
@@ -26,7 +25,6 @@ Using modulr for a paper you are writing? Consider [citing it][citation].
 
 Using modulr and got stuck? Post your question as an [issue on GitHub][new_issue]. While we cannot offer user support, we'll try to do our best to address it, as questions often lead to better documentation or the discovery of bugs.
 
-Want to ask a question in private? Contact the package maintainer by [email][mailto:email].
 
 ### Propose an idea 
 
