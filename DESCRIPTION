@@ -1,6 +1,6 @@
 Package: modulr
 Title: Simulate modular fission-fusion networks and sample design
-Version: 0.0.0.9000
+Version: 0.8.0
 Authors@R: 
     person("Gavin", "Cotterill", , "gcotterill2@unl.edu", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-1408-778X"))
