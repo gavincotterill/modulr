@@ -6,7 +6,7 @@ If using the 'netcarto' simulated-annealing community detection algorithm implem
 
 ## How to cite this package
 
-Cotterill, G., & K. Manlove (2022). modulr: R package for simulating fission-fusion networks and sample design. (Version v1.0.0). https://github.com/gavincotterill/modulr
+Cotterill, G., & K. Manlove (2022). modulr: R package for simulating fission-fusion networks and sample design. (Version v0.8.0). https://github.com/gavincotterill/modulr
 
 ## Installation
 Currently only available through github. You will need to install and load `devtools`.
