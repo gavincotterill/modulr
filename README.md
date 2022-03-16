@@ -208,7 +208,7 @@ plot_sampled_graph(g = actual_graphs[[1]], g_obs = out_nc[[2]][[2]], title = pas
 
 We are intentionally providing an example where netcarto really shines. `plot_sampled_graph()` preserves the layout from the corresponding 'true' network (which is why you have to provide that as the first argument). This means that the nodes are in the same place so we can see who was sampled, and the surrounding polygons are the same color indicating the 'true' community membserhip. Lastly, the node color in `plot_sampled_graph()` shows us the communities that were assigned using the algorithm we selected. These will be new colors, and in this case they tell us that each individual (node) was correctly grouped!
 
-
+We've already calculated our Qrel (modularity) estimates after sampling, so the last step is to assess how well these sampling designs (in conjunction with the community detection algorithms) performed.
 
 ```r
 alg_names <- c(netcarto = "\"netcarto\"", fast_greedy = "\"fast_greedy\"")
