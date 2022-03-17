@@ -22,13 +22,13 @@ Imports:
     stats,
     stringr,
     tidyr,
-    methods
+    methods,
+    assortnet
 Depends: 
     R (>= 2.10)
 LazyData: true
 Suggests: 
     knitr,
-    assortnet,
     rnetcarto,
     testthat (>= 3.0.0),
     rmarkdown,
