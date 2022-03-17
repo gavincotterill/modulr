@@ -67,7 +67,7 @@ plot_simulated_graph <- function(g, vertex.size = 40, mark.expand = 25,
   ymin <- min(lo[,2] - ybuf)
   ymax <- max(lo[,2] + ybuf)
 
-  igraph:::plot.igraph(g,
+  igraph::plot.igraph(g,
                        layout = lo,
                        xlim = c(xmin, xmax),
                        ylim = c(ymin, ymax),
