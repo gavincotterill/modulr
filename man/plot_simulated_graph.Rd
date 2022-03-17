@@ -33,6 +33,7 @@ a plot of the igraph object
 plot_simulated_graph()
 }
 \examples{
+\donttest{
 set.seed(123)
 g <- simulate_graph(n_animals = 25,
                     n_groups = 4,
@@ -41,8 +42,5 @@ g <- simulate_graph(n_animals = 25,
                     samples_per_day = 1,
                     sampling_duration = 7)
 plot_simulated_graph(g)
-
 }
-\seealso{
-\code{\link{simulate_graph}}
 }

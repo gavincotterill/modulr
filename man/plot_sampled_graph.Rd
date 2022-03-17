@@ -36,6 +36,7 @@ a plot of the sampled graph
 plot_sampled_graph()
 }
 \examples{
+\donttest{
 set.seed(123)
 g <- modulr::simulate_graph(n_animals = 25,
                     n_groups = 4,
@@ -53,4 +54,5 @@ g_obs <- sample_graph(
 par(mfrow = c(1,2))
 plot_simulated_graph(g)
 plot_sampled_graph(g_obs, g)
+}
 }

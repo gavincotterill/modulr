@@ -37,6 +37,7 @@ g_obs, the graph of the observed network
 Simulate a sampling regime and calculate network modularity.
 }
 \examples{
+\donttest{
 data("real_networks")
 data("study_design")
 g_obs <- sample_graph(
@@ -54,5 +55,5 @@ study_design[1,] \%>\%
                 nNodes_sim = ncol(am_obs),
                 nModules_sim = length(unique(igraph::V(g_obs)$membership)),
                 qrel_sim = qrel_hat)
-
+}
 }

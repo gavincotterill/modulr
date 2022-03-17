@@ -17,6 +17,7 @@ Calculate nodes per module and modules per network statistics on a list of
 graphs with defined membership
 }
 \examples{
+\donttest{
 data(real_networks)
 module_stats <- module_summary(real_networks)
 module_stats \%>\%
@@ -33,4 +34,5 @@ module_stats \%>\%
         axis.text = ggplot2::element_text(size = 20),
         axis.title = ggplot2::element_text(size = 20)) +
   ggplot2::guides(color = ggplot2::guide_legend(title = "Network Size"))
+  }
 }

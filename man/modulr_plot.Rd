@@ -23,9 +23,11 @@ color-coded node membership as determined by \code{rnetcarto}.
 Plot a graph, color-coded by \code{rnetcarto} modules
 }
 \examples{
+\donttest{
 adjmat <- matrix(sample(seq(0, 1, .01), 16), nrow = 4)
 diag(adjmat) <- 0
 adjmat[lower.tri(adjmat)] <- 0
 rownames(adjmat) <- colnames(adjmat) <- paste0("Animal_", 1:4)
 modulr_plot(adjmat)
+}
 }
