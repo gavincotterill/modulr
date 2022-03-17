@@ -9,6 +9,7 @@
 #' @export
 #' @importFrom rlang .data
 #' @import utils
+#' @import ggplot2
 #' @name module_summary
 #' @examples
 #' \donttest{
