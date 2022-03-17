@@ -19,7 +19,8 @@
 #'   graph = real_networks[[1]],
 #'   sample_nNodes = ceiling(0.5 * length(igraph::V(real_networks[[1]]))),
 #'   prop_hi_res = 1,
-#'   regime = "grab-two")
+#'   regime = "grab-two",
+#'   alg = "fast_greedy")
 #' am_obs <- igraph::get.adjacency(g_obs, type = "upper", attr = "sim_weight") %>%
 #'   as.matrix()
 #' qrel_hat <- assortnet::assortment.discrete(am_obs,
