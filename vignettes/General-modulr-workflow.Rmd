@@ -172,17 +172,12 @@ saveRDS(out_grab_two, "./out_grab_two.RDS")
 ```
  
 Don't forget to save! (And adapt the filepath.) 
- 
-```{r read data, include = FALSE}
-actual_graphs <- readRDS("~/actual_graphs.RDS")
-out_grab_two <- readRDS("~/out_grab_two.RDS")
-```
 
 ### Now we've got some results to look at!
 
 The object we made in the last step is actually a list of lists. There are other ways to do this, but this one works for me. That means we've got to do a little bit of data transformation. If you're not used to working with lists or `magrittr` piping (`%>%`), you may already dislike this script. At any rate, we're going to first extract the first element of all of our lists, which are data.frames with modularity results and other network specs. Then we bind all of the rows of those data.frames into a single data.frame and remind ourselves which sampling regime and community detection algortihm we chose in the previous step.
 
-```{r list extract}
+```{r list extract, eval = FALSE}
 #------- investigate results ----------
 res_gt <- lapply(out_grab_two, function(x) x[[1]]) %>%
   bind_rows() %>%
@@ -193,22 +188,18 @@ res_gt <- lapply(out_grab_two, function(x) x[[1]]) %>%
 
 For modularity estimation, we have another decision to make. There will be cases when we can't calculate the statistic, either because all of our sampled nodes were deemed to be in a single community by the detection algorithm (in which case I'm enforcing Qrel = 0), or at the other extreme, all of the sampled nodes were deemed to be in unique communities or there are just very few edges (in which case I'm enforcing Qrel = 1). These usually only occur at very low levels of sampling, but you can choose to handle these scenarios in whatever way you think makes the most sense.
 
-```{r zeros and ones, fig.height=30, fig.width=10}
+```{r zeros and ones, fig.height=30, fig.width=10, eval = FALSE}
 # if there's only one module detected, impose qrel=0:
 res <- res_gt %>% mutate(qrel_sim = ifelse(qrel_sim == "NaN" & nModules_sim == 1, 0, qrel_sim))
 # if the number of modules = the number of nodes (or nodes - 1 bc there's one edge), impose qrel = 1
 res  <- res  %>%  mutate(qrel_sim = ifelse(qrel_sim == "NaN" & nModules_sim  %in% c(nNodes_sim, nNodes_sim - 1), 1, qrel_sim))
 ```
 
-```{r fix mistake, include = FALSE}
-res$prop_hi_res <- 0.5
-```
-
 Next I'm going to calculate the proportion of the population that was sampled, and the difference between true Qrel and our estimate. Lastly, I'm going to average across shared sampling space for the sampled graphs with relatively low levels of monitoring to calculate the mean and sd of the differences between Q and Qrel. This means I'm grouping together graphs with different configurations and group switching rates (which won't be known for the most part in the real world) to look at the range of error produced by my sampling design. We're going to plot those numbers against the raw estimates.
 
 You'll need to install the `ggh4x` package if you want to use `facet_nested`. Here it isn't really needed, but it makes this code adaptable in the case where you want side-by-side comparisons with another factor level. For exampled, if you used the `prop_hi_res` vectored approach or if you re-ran the sampling with another community detection algorithm or sampling regime.
 
-```{r vis, fig.height=10, fig.width=5}
+```{r vis, fig.height=10, fig.width=5, eval = FALSE}
 # calculate proportion of the population sampled
 res$prop_sampled <- round(res$sample_nNodes / res$nNodes, 2)
 
@@ -259,6 +250,9 @@ f4 <- res3 %>%
 
 f4
 
+```
+```{r, out.width = "400px", include = FALSE}
+knitr::include_graphics("../docs/f4.png")
 ```
 
 Phew! Finally some results! Here the x-axis is just an index for the different true networks. It has no biological interpretation. But I ordered them by true network modularity (the black dots) for ease of interpretation. I also trimmed down the number of panels for different levels of sampled nodes. Note that with only three animals sampled we don't have useable results-- it's all zeros and ones. Even with 15 sampled animals we've got over 10% average error on the Qrel estimate. Granted, this is averaged over a bunch of network configurations and some of the estimates look right on the money. In general though, we would want to investigate this further and also compare results using other community detection algorithms.

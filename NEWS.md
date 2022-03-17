@@ -2,4 +2,3 @@
 
 * Added a `NEWS.md` file to track changes to the package.
 * Repo went public on github!
-* Ready for initial submission to ROpenSci.
