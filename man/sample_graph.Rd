@@ -38,6 +38,7 @@ Simulate a sampling regime and calculate network modularity.
 }
 \examples{
 \donttest{
+library(igraph)
 data("real_networks")
 data("study_design")
 g_obs <- sample_graph(
