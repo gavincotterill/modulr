@@ -3,7 +3,6 @@
 export("%>%")
 export(module_summary)
 export(modulr_plot)
-export(netcarto_modules)
 export(plot_sampled_graph)
 export(plot_simulated_graph)
 export(sample_graph)
