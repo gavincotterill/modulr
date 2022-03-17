@@ -39,7 +39,7 @@ modulr_plot <- function(x, alg = "walktrap"){
     g_obs <- igraph::delete_edges(g_obs, which(igraph::E(g_obs)$weight==0))
     am_obs <- as.matrix(igraph::get.adjacency(g_obs, type = "upper", attr = "weight"))
 
-  } else if(class(x) == "igraph"){
+  } else if(is(x) == "igraph"){
 
     g_obs <- x
     g_obs <- igraph::delete_edges(g_obs, which(igraph::E(g_obs)$weight==0))
