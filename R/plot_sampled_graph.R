@@ -18,7 +18,8 @@
 #'   graph = g,
 #'   sample_nNodes = 13,
 #'   prop_hi_res = 1,
-#'   regime = "grab-two")
+#'   regime = "grab-two",
+#'   alg = "fast_greedy")
 #' par(mfrow = c(1,2))
 #' plot_simulated_graph(g)
 #' plot_sampled_graph(g_obs, g)
