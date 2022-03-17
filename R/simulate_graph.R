@@ -95,19 +95,20 @@ simulate_graph <- function(n_animals,
     names(samples_out) <- c("time", "location", "id")
 
     # build SRI adjacency matrix -----
-    dyads <- expand.grid(1:n_animals, 1:n_animals)
+    animals <- paste0("Animal_", rep(1:length(animal_list)))
+    dyads <- expand.grid(animals, animals)
     dyads <- dyads[which(dyads[, 1] != dyads[, 2]), ] # this still includes eg A--B and B--A, but that shouldn't add much time
 
     adj_mat <- matrix(NA, nrow = n_animals, ncol = n_animals)
 
     for(d in 1:nrow(dyads)){
-      anim1 <- subset(samples_out, id == levels(factor(samples_out$id))[dyads[d, 1]])
-      anim2 <- subset(samples_out, id == levels(factor(samples_out$id))[dyads[d, 2]])
+      anim1 <- samples_out %>% dplyr::filter(.data$id == dyads[d, 1])
+      anim2 <- samples_out %>% dplyr::filter(.data$id == dyads[d, 2])
       together <- length(which(anim1$location == anim2$location & anim1$time == anim2$time))
       adj_mat[dyads[d, 1], dyads[d, 2]] <- together / nrow(anim1)
     }
 
-    rownames(adj_mat) <- colnames(adj_mat) <- levels(factor(samples_out$id))
+    rownames(adj_mat) <- colnames(adj_mat) <- animals
     diag(adj_mat) <- rep(0, n_animals) # zero diagonal and lower tri
     adj_mat[lower.tri(adj_mat)] <- 0
   }
@@ -131,9 +132,10 @@ simulate_graph <- function(n_animals,
         dplyr::slice(1:(nrow(.)-1)) %>%
         dplyr::rename(start = .data$cumulative_time) %>%
         dplyr::select("state", "start","end") %>%
-        data.table::setDT() %>%
-        data.table::setkey(., start, end) # don't add .data$ here
-      t1
+        data.table::setDT()
+
+      t2 <- data.table::setkey(t1, t1$start, t1$end) # don't add .data$ here, trying to get around import note
+      t2
     }
     animals_transformed <- lapply(animal_list, dt_fxn)
 
