@@ -2,7 +2,7 @@
 title: "General modulr workflow in parallel"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{General-modulr-workflow}
+  %\VignetteIndexEntry{General modulr workflow}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -251,8 +251,8 @@ f4 <- res3 %>%
 f4
 
 ```
-```{r, out.width = "400px", include = FALSE}
-knitr::include_graphics("../docs/f4.png")
+```{r, out.width = "400px", echo = FALSE}
+knitr::include_graphics("f4.png")
 ```
 
 Phew! Finally some results! Here the x-axis is just an index for the different true networks. It has no biological interpretation. But I ordered them by true network modularity (the black dots) for ease of interpretation. I also trimmed down the number of panels for different levels of sampled nodes. Note that with only three animals sampled we don't have useable results-- it's all zeros and ones. Even with 15 sampled animals we've got over 10% average error on the Qrel estimate. Granted, this is averaged over a bunch of network configurations and some of the estimates look right on the money. In general though, we would want to investigate this further and also compare results using other community detection algorithms.
