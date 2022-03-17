@@ -74,7 +74,7 @@ g <- actual_graphs[[1]]
 plot_simulated_graph(g, vertex.label = V(g), title = paste0("True Qrel = ", round(true_design[1, "qrel"], 2)))
 ```
 
-![](doc/unnamed-chunk-3-1.png)
+![](man/figures/unnamed-chunk-3-1.png)
 
 This is a good check of our work so far. We should have 4 modules, and 25 nodes. Furthermore, the Fruchterman-Reingold layout should show us 4 distinct communities, since the group-switching rates we used ensure reasonably high modularity.
 
@@ -204,7 +204,7 @@ plot_simulated_graph(actual_graphs[[1]], title = paste0("True Qrel = ", round(tr
 plot_sampled_graph(g = actual_graphs[[1]], g_obs = out_nc[[2]][[2]], title = paste0("Est. Qrel = ", round(res_nc[2, "qrel_sim"], 2)))
 ```
 
-![](doc/unnamed-chunk-6-1.png)
+![](man/figures/unnamed-chunk-6-1.png)
 
 We are intentionally providing an example where netcarto really shines. `plot_sampled_graph()` preserves the layout from the corresponding 'true' network (which is why you have to provide that as the first argument). This means that the nodes are in the same place so we can see who was sampled, and the surrounding polygons are the same color indicating the 'true' community membserhip. Lastly, the node color in `plot_sampled_graph()` shows us the communities that were assigned using the algorithm we selected. These will be new colors, and in this case they tell us that each individual (node) was correctly grouped!
 
@@ -243,7 +243,7 @@ points %>%
   scale_color_brewer(palette = "Set2")
 ```
 
-![](doc/unnamed-chunk-7-1.png)
+![](man/figures/unnamed-chunk-7-1.png)
 
 Here the x-axis is just an index corresponding to our sampling simulations. In practice we would want to do this many more times using a broader range of parameter values. There is a great deal of chance involved in sampling. How do the results change when different individuals are selected for sampling? If you change the `set.seed()` value, you will get different results! Although we can't say anything with much certainty based on this figure alone, it suggests that perhaps netcarto leads to better Qrel (modularity) estimates, especially at low rates of sampling (eg 5 nodes in a population of 25).
 
