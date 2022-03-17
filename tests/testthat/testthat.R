@@ -71,13 +71,13 @@ test_that("sample_graph creates list", {
                         hi_res = 30/365,
                         lo_res = 5/365,
                         regime = "better",
-                        alg = "netcarto")
+                        alg = "fast_greedy")
 
   expect_equal(length(g_obs), 10)
   expect_output(str(g_obs), "Class \'igraph\'  hidden list of 10")
 })
 
-test_that("when there are more than two edges in sampled graph with netcarto, all memberships are assigned", {
+test_that("when there are more than two edges in sampled graph with fast_greedy, all memberships are assigned", {
 
   g_d <- simulate_graph(n_animals = 5,
                         n_groups = 2,
@@ -94,7 +94,7 @@ test_that("when there are more than two edges in sampled graph with netcarto, al
                         hi_res = 30/365,
                         lo_res = 5/365,
                         regime = "better",
-                        alg = "netcarto")
+                        alg = "fast_greedy")
 
   expect_equal(length(g_obs), 10)
   expect_output(str(g_obs), "Class \'igraph\'  hidden list of 10")
@@ -131,7 +131,7 @@ test_that("plotting sampled graph works", {
                         hi_res = 30/365,
                         lo_res = 5/365,
                         regime = "better",
-                        alg = "netcarto")
+                        alg = "fast_greedy")
 
   expect_silent({plot_sampled_graph(g_obs = g_obs, g = g_d)})
 
@@ -144,7 +144,7 @@ test_that("assortr plot works with multiple algorithms", {
   adjmat[lower.tri(adjmat)] <- 0
   rownames(adjmat) <- colnames(adjmat) <- paste0("Animal_", 1:4)
 
-  expect_silent({  assortr_plot(adjmat, alg = "netcarto") })
+  expect_silent({  assortr_plot(adjmat, alg = "fast_greedy") })
   expect_silent({  assortr_plot(adjmat) })
 
 })
@@ -190,13 +190,4 @@ test_that("module_summary works", {
 
 })
 
-test_that("netcarto modules work", {
-  adjmat <- matrix(sample(seq(0, 1, .01), 16), nrow = 4)
-  diag(adjmat) <- 0
-  adjmat[lower.tri(adjmat)] <- 0
-  rownames(adjmat) <- colnames(adjmat) <- paste0("Animal_", 1:4)
-  t <- netcarto_modules(adjmat)
 
-  expect_equal(length(t), ncol(adjmat))
-  expect_output(str(t), "Named int")
-  })
