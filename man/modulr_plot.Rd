@@ -2,25 +2,25 @@
 % Please edit documentation in R/modulr_plot.R
 \name{modulr_plot}
 \alias{modulr_plot}
-\title{Plot a graph, color-coded by \code{rnetcarto} modules}
+\title{Plot a graph, color-coded by communities detection}
 \usage{
 modulr_plot(x, alg = "walktrap")
 }
 \arguments{
-\item{x, }{a named square adjacency matrix or named igraph graph. Intended for
+\item{x}{a named square adjacency matrix or named \code{igraph} graph. Intended for
 weighted, undirected graphs.}
 
-\item{alg, }{the community detection algorithm to use, either from igraph:
+\item{alg}{the community detection algorithm to use, either from igraph:
 "fast_greedy", "leading_eigen", "louvain", or "walktrap"
 or from rnetcarto: "netcarto"
 default is "walktrap"}
 }
 \value{
 An igraph plot using the Fruchterman-Reingold layout and displaying
-color-coded node membership as determined by \code{rnetcarto}.
+color-coded node membership as determined by the community detection algorithm.
 }
 \description{
-Plot a graph, color-coded by \code{rnetcarto} modules
+Plot a graph, color-coded by communities detection
 }
 \examples{
 \donttest{

@@ -1,14 +1,14 @@
-#' Plot a graph, color-coded by `rnetcarto` modules
+#' Plot a graph, color-coded by communities detection
 #'
-#' @param x, a named square adjacency matrix or named igraph graph. Intended for
+#' @param x a named square adjacency matrix or named `igraph` graph. Intended for
 #'   weighted, undirected graphs.
-#' @param alg, the community detection algorithm to use, either from igraph:
+#' @param alg the community detection algorithm to use, either from igraph:
 #' "fast_greedy", "leading_eigen", "louvain", or "walktrap"
 #' or from rnetcarto: "netcarto"
 #' default is "walktrap"
 #'
 #' @return An igraph plot using the Fruchterman-Reingold layout and displaying
-#'   color-coded node membership as determined by `rnetcarto`.
+#'   color-coded node membership as determined by the community detection algorithm.
 #' @export
 #'
 #' @examples
@@ -20,9 +20,15 @@
 #' modulr_plot(adjmat)
 #' }
 modulr_plot <- function(x, alg = "walktrap"){
-  if (!requireNamespace(c("igraph", "assortnet", "rnetcarto"), quietly = TRUE)) {
+  if (!requireNamespace(c("igraph", "assortnet"), quietly = TRUE)) {
     stop(
-      "Packages \"igraph\", \"igraph\", and \"rnetcarto\" must be installed to use this function.",
+      "Packages \"igraph\" and \"assortnet\" must be installed to use this function.",
+      call. = FALSE
+    )
+  }
+  if (alg == "netcarto") {
+    stop(
+      "Package \"rnetcarto\" must be installed to use this function.",
       call. = FALSE
     )
   }
@@ -39,7 +45,7 @@ modulr_plot <- function(x, alg = "walktrap"){
     g_obs <- igraph::delete_edges(g_obs, which(igraph::E(g_obs)$weight==0))
     am_obs <- as.matrix(igraph::get.adjacency(g_obs, type = "upper", attr = "weight"))
 
-  } else if(is(x) == "igraph"){
+  } else if(methods::is(x) == "igraph"){
 
     g_obs <- x
     g_obs <- igraph::delete_edges(g_obs, which(igraph::E(g_obs)$weight==0))
