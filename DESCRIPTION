@@ -21,7 +21,8 @@ Imports:
     rlang,
     stats,
     stringr,
-    tidyr
+    tidyr,
+    methods
 Depends: 
     R (>= 2.10)
 LazyData: true

@@ -38,6 +38,7 @@ plot_sampled_graph()
 \examples{
 \donttest{
 set.seed(123)
+library(igraph)
 g <- modulr::simulate_graph(n_animals = 25,
                     n_groups = 4,
                     time_to_leave = 5,
