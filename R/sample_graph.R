@@ -13,6 +13,7 @@
 #' @export
 #'
 #' @examples
+#' \donttest{
 #' data("real_networks")
 #' data("study_design")
 #' g_obs <- sample_graph(
@@ -30,7 +31,7 @@
 #'                 nNodes_sim = ncol(am_obs),
 #'                 nModules_sim = length(unique(igraph::V(g_obs)$membership)),
 #'                 qrel_sim = qrel_hat)
-#'
+#'}
 sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, hi_res = 30/365, lo_res = 5/365, regime = "grab-two", alg = "fast_greedy"){
   if (!requireNamespace(c("igraph", "dplyr"), quietly = TRUE)) {
     stop(

@@ -17,8 +17,8 @@
 #' @export
 #'
 #' @examples
+#' \donttest{
 #' set.seed(123)
-#'
 #' g <- simulate_graph(n_animals = 25,
 #'                     n_groups = 4,
 #'                     time_to_leave = 5,
@@ -27,7 +27,7 @@
 #'                     sampler = "discrete",
 #'                     samples_per_day = 1
 #'                     )
-#' @seealso \code{\link{plot_simulated_graph}}
+#'}
 simulate_graph <- function(n_animals,
                            n_groups,
                            time_to_leave,

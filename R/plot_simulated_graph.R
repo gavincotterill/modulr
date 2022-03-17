@@ -13,6 +13,7 @@
 #' @export
 #' @importFrom rlang .data
 #' @examples
+#' \donttest{
 #' set.seed(123)
 #' g <- simulate_graph(n_animals = 25,
 #'                     n_groups = 4,
@@ -21,8 +22,7 @@
 #'                     samples_per_day = 1,
 #'                     sampling_duration = 7)
 #' plot_simulated_graph(g)
-#'
-#' @seealso \code{\link{simulate_graph}}
+#'}
 plot_simulated_graph <- function(g, vertex.size = 40, mark.expand = 25,
                                  vertex.label = NA,
                                  vertex.label.cex = 1.5, title = ""

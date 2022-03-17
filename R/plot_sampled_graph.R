@@ -6,6 +6,7 @@
 #' @export
 #' @importFrom rlang .data
 #' @examples
+#' \donttest{
 #' set.seed(123)
 #' g <- modulr::simulate_graph(n_animals = 25,
 #'                     n_groups = 4,
@@ -23,6 +24,7 @@
 #' par(mfrow = c(1,2))
 #' plot_simulated_graph(g)
 #' plot_sampled_graph(g_obs, g)
+#' }
 plot_sampled_graph <- function(g_obs, g, vertex.size = 40, mark.expand = 25,
                                vertex.label = NA,
                                vertex.label.cex = 1.5,

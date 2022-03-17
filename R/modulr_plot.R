@@ -12,11 +12,13 @@
 #' @export
 #'
 #' @examples
+#' \donttest{
 #' adjmat <- matrix(sample(seq(0, 1, .01), 16), nrow = 4)
 #' diag(adjmat) <- 0
 #' adjmat[lower.tri(adjmat)] <- 0
 #' rownames(adjmat) <- colnames(adjmat) <- paste0("Animal_", 1:4)
 #' modulr_plot(adjmat)
+#' }
 modulr_plot <- function(x, alg = "walktrap"){
   if (!requireNamespace(c("igraph", "assortnet", "rnetcarto"), quietly = TRUE)) {
     stop(
