@@ -34,3 +34,4 @@ Suggests:
     ggh4x
 Config/testthat/edition: 3
 VignetteBuilder: knitr
+Additional_repositories: http://github.com/geeklhem/rnetcarto
