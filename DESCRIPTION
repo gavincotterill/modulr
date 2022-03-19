@@ -29,10 +29,11 @@ Depends:
 LazyData: true
 Suggests: 
     knitr,
-    rnetcarto,
+    rnetcarto (>= 0.2.4),
     testthat (>= 3.0.0),
     rmarkdown,
     ggh4x
 Config/testthat/edition: 3
 VignetteBuilder: knitr
-Remotes: gavincotterill/rnetcarto-master
+Additional_repositories: https://github.com/gavincotterill/rnetcarto-master
+
