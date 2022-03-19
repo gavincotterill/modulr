@@ -4,7 +4,7 @@ Version: 0.8.0
 Authors@R: 
     person("Gavin", "Cotterill", , "gcotterill2@unl.edu", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-1408-778X"))
-Description: Simulate group switching behavior and sampling of weighted, undirected social networks based on the proportion of time dyads spend together. 
+Description: Simulate group switching behavior and sampling of weighted, 'undirected' social networks based on the proportion of time 'dyads' spend together. 
 URL: https://github.com/gavincotterill/modulr
 BugReports: https://github.com/gavincotterill/modulr/issues
 License: MIT + file LICENSE
