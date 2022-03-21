@@ -35,5 +35,5 @@ Suggests:
     ggh4x
 Config/testthat/edition: 3
 VignetteBuilder: knitr
-Additional_repositories: https://github.com/gavincotterill/rnetcarto-master
+Additional_repositories: https://gavincotterill.github.io/drat/
 
