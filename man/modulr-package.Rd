@@ -6,7 +6,7 @@
 \alias{modulr-package}
 \title{modulr: Simulate Modular Fission-Fusion Networks and Sample Design}
 \description{
-Simulate group switching behavior and sampling of weighted, undirected social networks based on the proportion of time dyads spend together.
+Simulate group switching behavior and sampling of weighted, 'undirected' social networks based on the proportion of time 'dyads' spend together.
 }
 \seealso{
 Useful links:
