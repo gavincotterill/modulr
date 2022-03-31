@@ -6,6 +6,15 @@
 \usage{
 delta_grp(df, column_name, value, i)
 }
+\arguments{
+\item{df}{the t2 dataframe}
+
+\item{column_name}{the column to reference, usually 'vector'}
+
+\item{value}{usually the group number}
+
+\item{i}{the row index}
+}
 \description{
 Delta grp
 }

@@ -1,6 +1,6 @@
 #' Delta grp
 #' @inheritParams index_back
-delta_grp <- function(df, column_name, value, i){ # am I using 'value'?
+delta_grp <- function(df, column_name, value, i){
   out <- tryCatch({
     if(str_length(df[i, column_name]) > 1){
       vals <- str_split(df[i, column_name], "-")[[1]]

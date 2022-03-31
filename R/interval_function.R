@@ -1,6 +1,6 @@
 #' Extract data from list on individual basis and make keyed data.table
-#' @param groups
-#' @param interval
+#' @param groups a pairwise set of groups
+#' @param intervals the intervals dataframe
 
 interval_function <- function(groups, intervals){
   intervals %>%

@@ -6,6 +6,11 @@
 \usage{
 interval_function(groups, intervals)
 }
+\arguments{
+\item{groups}{a pairwise set of groups}
+
+\item{intervals}{the intervals dataframe}
+}
 \description{
 Extract data from list on individual basis and make keyed data.table
 }

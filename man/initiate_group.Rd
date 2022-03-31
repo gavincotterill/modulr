@@ -6,6 +6,11 @@
 \usage{
 initiate_group(x, n)
 }
+\arguments{
+\item{x}{the group number}
+
+\item{n}{the number of individuals in the group to generate}
+}
 \description{
 Extract data from list on individual basis and make keyed data.table
 }

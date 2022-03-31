@@ -2,16 +2,13 @@
 % Please edit documentation in R/graph_from_non_independence.R
 \name{graph_from_non_independence}
 \alias{graph_from_non_independence}
-\title{graph non independence
-make the list of unique individuals and use str_detect on t2 to get all rows for that id
-then you'd have n_individuals data.frames with state, start, end, id
-then you'd run dyads}
+\title{graph non independence}
 \usage{
 graph_from_non_independence(t2)
 }
+\arguments{
+\item{t2}{a dataframe from simulate_non_independence()}
+}
 \description{
 graph non independence
-make the list of unique individuals and use str_detect on t2 to get all rows for that id
-then you'd have n_individuals data.frames with state, start, end, id
-then you'd run dyads
 }

@@ -1,6 +1,12 @@
 #' plot non independence
+#' @inheritParams plot_simulated_graph
 
-plot_non_independence <- function(g){
+plot_non_independence <- function(g,
+                                  vertex.size = 40,
+                                  mark.expand = 25,
+                                  vertex.label = "",
+                                  vertex.label.cex = 1.5,
+                                  title = ""){
   # modulr::plot_simulated_graph(g) # needs to be modified slightly to work:
   # just comment out the renaming part here
   # igraph::V(g)$name <- stringr::str_extract(igraph::V(g)$name,
@@ -27,12 +33,6 @@ plot_non_independence <- function(g){
   xmax <- max(lo[, 1] + xbuf)
   ymin <- min(lo[, 2] - ybuf)
   ymax <- max(lo[, 2] + ybuf)
-
-  vertex.size = 40
-  mark.expand = 25
-  vertex.label = igraph::V(g)$name
-  vertex.label.cex = 1.5
-  title = ""
 
   igraph::plot.igraph(g, layout = lo, xlim = c(xmin, xmax),
                       ylim = c(ymin, ymax), rescale = F, edge.width = igraph::E(g)$weight,

@@ -1,5 +1,5 @@
 #' Simulate groups
-# internal functions ------
+#' @inheritParams simulate_graph
 simulate_groups <- function(animals_home,
                             n_groups,
                             time_to_leave,
@@ -59,9 +59,6 @@ simulate_groups <- function(animals_home,
 
       cumulative_time <- cumulative_time + travelling_time
 
-      # new_row <- c("travel",
-      #              travelling_time,
-      #              cumulative_time)
       new_row <- c(sample(seq(0.01,0.099, by = 0.01), 1),
                    travelling_time,
                    cumulative_time)

@@ -1,7 +1,5 @@
 #' graph non independence
-#' make the list of unique individuals and use str_detect on t2 to get all rows for that id
-#' then you'd have n_individuals data.frames with state, start, end, id
-#' then you'd run dyads
+#' @param t2 a dataframe from simulate_non_independence()
 
 graph_from_non_independence <- function(t2){
   ids <- str_split(paste(t2$members[1:n_groups], collapse = "-"), "-")[[1]]

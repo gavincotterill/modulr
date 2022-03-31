@@ -1,5 +1,5 @@
 #' ff_fwd
-ff_forward <- function(t2, curr_vec, n, mbrs_list){
+ff_forward <- function(t2, curr_vec, n, mbrs_list, i){
   fwd_inds <- list()
   next_actions <- list()
   for(k in seq_along(curr_vec)){
@@ -24,22 +24,22 @@ ff_forward <- function(t2, curr_vec, n, mbrs_list){
       t2$holding[next_locs] <- gsub("NA| NA|NA ", "", paste(t2$holding[next_locs], names(mbrs_list))) %>%
         gsub(" ", "-", .)
 
-      new_order <- str_split(t2$holding[next_locs], "-")[[1]] %>% as.numeric() %>% base::order()
-      t2$holding[next_locs] <- paste(str_split(t2$holding[next_locs], "-")[[1]][new_order], collapse = "-")
-      t2$members[next_locs] <- paste(str_split(t2$members[next_locs], "/")[[1]][new_order], collapse = "/")
+      new_order <- stringr::str_split(t2$holding[next_locs], "-")[[1]] %>% as.numeric() %>% base::order()
+      t2$holding[next_locs] <- paste(stringr::str_split(t2$holding[next_locs], "-")[[1]][new_order], collapse = "-")
+      t2$members[next_locs] <- paste(stringr::str_split(t2$members[next_locs], "/")[[1]][new_order], collapse = "/")
     }
   }
 
   if(any(c("fission", "fission-fusion") %in% next_actions) & n_next_locs > 1){
-    curr_mem_split <- str_split(t2$members[i], "/")[[1]] # who was there with blank space divider and length = n groups
-    curr_mem_vec <- str_split(paste(curr_mem_split, collapse = "-"), "-")[[1]] # separated individuals for sampling
+    curr_mem_split <- stringr::str_split(t2$members[i], "/")[[1]] # who was there with blank space divider and length = n groups
+    curr_mem_vec <- stringr::str_split(paste(curr_mem_split, collapse = "-"), "-")[[1]] # separated individuals for sampling
     groups_in <- mbrs_list
     # use mbrs_list
     split_list <- list()
     for(j in 1:length(groups_in)){
       group_id <- names(groups_in)[[j]]
-      home_group <- str_split(groups_in[[group_id]], "-")[[1]][str_split(groups_in[[group_id]], "-")[[1]] %in% curr_mem_vec]
-      other_group <- unlist(str_split(unlist(groups_in[!names(groups_in) %in% group_id]), "-"))[unlist(str_split(unlist(groups_in[!names(groups_in) %in% group_id]), "-")) %in% curr_mem_vec]
+      home_group <- stringr::str_split(groups_in[[group_id]], "-")[[1]][stringr::str_split(groups_in[[group_id]], "-")[[1]] %in% curr_mem_vec]
+      other_group <- unlist(stringr::str_split(unlist(groups_in[!names(groups_in) %in% group_id]), "-"))[unlist(stringr::str_split(unlist(groups_in[!names(groups_in) %in% group_id]), "-")) %in% curr_mem_vec]
       l_m <- length(home_group)
       l_n_m <- length(other_group)
       if(j < n){ # is it safe to use n here?
@@ -47,7 +47,7 @@ ff_forward <- function(t2, curr_vec, n, mbrs_list){
                                     sample(other_group, round(l_n_m * (1 - cohesion), 0))),
                                   collapse = "-" )
         names(split_list)[j] <- group_id
-        curr_mem_vec <- curr_mem_vec[!curr_mem_vec %in% str_split(paste(unlist(split_list), collapse = "-"), "-")[[1]]]
+        curr_mem_vec <- curr_mem_vec[!curr_mem_vec %in% stringr::str_split(paste(unlist(split_list), collapse = "-"), "-")[[1]]]
         # }else if(j == n_grp_prev){
       }else if(j == n){
         split_list[[j]] <- paste(curr_mem_vec, collapse = "-")
@@ -71,9 +71,9 @@ ff_forward <- function(t2, curr_vec, n, mbrs_list){
         t2$holding[fwd_index] <- gsub("NA| NA|NA ", "", paste(t2$holding[fwd_index], names(split_list)[k])) %>%
           gsub(" ", "-", .)
 
-        new_order <- str_split(t2$holding[fwd_index], "-")[[1]] %>% as.numeric() %>% base::order()
-        t2$holding[fwd_index] <- paste(str_split(t2$holding[fwd_index], "-")[[1]][new_order], collapse = "-")
-        t2$members[fwd_index] <- paste(str_split(t2$members[fwd_index], "/")[[1]][new_order], collapse = "/")
+        new_order <- stringr::str_split(t2$holding[fwd_index], "-")[[1]] %>% as.numeric() %>% base::order()
+        t2$holding[fwd_index] <- paste(stringr::str_split(t2$holding[fwd_index], "-")[[1]][new_order], collapse = "-")
+        t2$members[fwd_index] <- paste(stringr::str_split(t2$members[fwd_index], "/")[[1]][new_order], collapse = "/")
       }
     }
   }

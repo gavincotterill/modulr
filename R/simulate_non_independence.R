@@ -1,7 +1,7 @@
 #' simulate non-independent group-switching
-
-library(dplyr)
-library(stringr)
+#' @inheritParams simulate_graph
+#' @param cohesion the probability that individuals stay with their group from
+#' the previous time step during fission.
 
 simulate_non_independence <- function(
   n_groups = 4,
@@ -16,11 +16,11 @@ simulate_non_independence <- function(
   for(m in 1:n_groups){
     group_list[[m]] <- simulate_groups(animals_home = m,
                                        n_groups = n_groups,
-                                       time_to_leave = 8,
-                                       time_to_return = 4,
-                                       travel_time = c(0,2),
-                                       sampling_duration = 21,
-                                       samples_per_day = 1)
+                                       time_to_leave = time_to_leave,
+                                       time_to_return = time_to_return,
+                                       travel_time = travel_time,
+                                       sampling_duration = sampling_duration,
+                                       samples_per_day = samples_per_day)
   }
 
   names(group_list) <- 1:length(group_list)
@@ -45,7 +45,7 @@ simulate_non_independence <- function(
     dplyr::group_by(start) %>%
     dplyr::slice(1) %>%
     dplyr::ungroup() %>%
-    mdplyr::utate(end = lead(start)) %>%
+    dplyr::mutate(end = dplyr::lead(start)) %>%
     dplyr::slice(1:n()-1)
 
   # now I have a list, one data.frame per id. intervals match across all dfs in list. location is tracked
@@ -64,13 +64,12 @@ simulate_non_independence <- function(
 
   t2 <- test %>%
     dplyr::arrange(start) %>%
-    dplyr::mutate(idx = match(start, unique(start))) %>%
     data.frame() %>%
     dplyr::mutate(action = NA,
            holding = NA)
 
   for(i in 1:nrow(t2)){
-    value <- paste(str_split(t2$vector[i], "-")[[1]], collapse = "|")
+    value <- paste(stringr::str_split(t2$vector[i], "-")[[1]], collapse = "|")
     t2$action[i] <- delta_grp(t2, "vector", value, i)
   }
 
@@ -84,17 +83,17 @@ simulate_non_independence <- function(
       t2$members[i] <- t2$members[index_back(t2, "vector", t2$vector[i], i)]
       # look forward
       if(t2$start[i] == max(t2$start)){next}
-      curr_vec <- str_split(t2$vector[i], "-")[[1]]
+      curr_vec <- stringr::str_split(t2$vector[i], "-")[[1]]
       n <- length(curr_vec)
       mbrs_list <- list()
       for(j in 1:n){
         mbrs_list[[j]] <- t2$members[index_back(t2, "vector", curr_vec[j], i)]
         names(mbrs_list)[j] <- curr_vec[[j]]
       }
-      t2 <- ff_forward(t2, curr_vec, n, mbrs_list)
+      t2 <- ff_forward(t2, curr_vec, n, mbrs_list, i)
     }else if(t2$action[i] == "fusion"){
       # take care of current, but these will also be used looking forward
-      curr_vec <- str_split(t2$vector[i], "-")[[1]]
+      curr_vec <- stringr::str_split(t2$vector[i], "-")[[1]]
       n <- length(curr_vec)
       mbrs_list <- list()
       for(j in 1:n){
@@ -104,33 +103,33 @@ simulate_non_independence <- function(
       t2$members[i] <- paste(unlist(mbrs_list), collapse = "/") # assign current
       # look forward
       if(t2$start[i] == max(t2$start)){next}
-      t2 <- ff_forward(t2, curr_vec, n, mbrs_list)
+      t2 <- ff_forward(t2, curr_vec, n, mbrs_list, i)
     } else if(t2$action[i] == "fission"){
       # members should always be accounted for to start
       if(t2$vector[i] != t2$holding[i]){stop(paste("All groups not accounted for at start of line", i, ", fission group."))}
       # look forward
       if(t2$start[i] == max(t2$start)){next}
-      curr_vec <- str_split(t2$vector[i], "-")[[1]]
+      curr_vec <- stringr::str_split(t2$vector[i], "-")[[1]]
       n <- length(curr_vec)
       mbrs_list <- list()
       for(j in 1:n){
         mbrs_list[[j]] <- t2$members[index_back(t2, "vector", curr_vec[j], i)]
         names(mbrs_list)[j] <- curr_vec[[j]]
       }
-      t2 <- ff_forward(t2, curr_vec, n, mbrs_list)
+      t2 <- ff_forward(t2, curr_vec, n, mbrs_list, i)
     }else if(t2$action[i] == "fission-fusion"){
       # members should always be accounted for to start
       if(t2$vector[i] != t2$holding[i]){stop(paste("All groups not accounted for at start of line", i, ", fission-fusion group"))}
       # look forward
       if(t2$start[i] == max(t2$start)){next}
-      curr_vec <- str_split(t2$vector[i], "-")[[1]]
+      curr_vec <- stringr::str_split(t2$vector[i], "-")[[1]]
       n <- length(curr_vec)
       mbrs_list <- list()
       for(j in 1:n){
         mbrs_list[[j]] <- t2$members[index_back(t2, "vector", curr_vec[j], i)]
         names(mbrs_list)[j] <- curr_vec[[j]]
       }
-      t2 <- ff_forward(t2, curr_vec, n, mbrs_list)
+      t2 <- ff_forward(t2, curr_vec, n, mbrs_list, i)
     }
   }
   return(t2)

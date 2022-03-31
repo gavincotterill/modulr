@@ -1,8 +1,8 @@
-#' Title
-#' @param df
-#' @param column_name
-#' @param value
-#' @param i
+#' Pulls the row number of the last occurrence of a group
+#' @param df the t2 dataframe
+#' @param column_name the column to reference, usually 'vector'
+#' @param value usually the group number
+#' @param i the row index
 
 index_back <- function(df, column_name, value, i){
   mx_rows <- which(df[, column_name] == value)

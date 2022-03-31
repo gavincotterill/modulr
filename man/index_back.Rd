@@ -2,10 +2,19 @@
 % Please edit documentation in R/index_back.R
 \name{index_back}
 \alias{index_back}
-\title{Title}
+\title{Pulls the row number of the last occurrence of a group}
 \usage{
 index_back(df, column_name, value, i)
 }
+\arguments{
+\item{df}{the t2 dataframe}
+
+\item{column_name}{the column to reference, usually 'vector'}
+
+\item{value}{usually the group number}
+
+\item{i}{the row index}
+}
 \description{
-Title
+Pulls the row number of the last occurrence of a group
 }
