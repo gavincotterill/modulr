@@ -134,7 +134,8 @@ simulate_graph <- function(n_animals,
         dplyr::select("state", "start","end") %>%
         data.table::setDT()
 
-      t2 <- data.table::setkey(t1, t1$start, t1$end) # don't add .data$ here, trying to get around import note
+      keycols <- c("start", "end")
+      t2 <- data.table::setkeyv(t1, keycols)
       t2
     }
     animals_transformed <- lapply(animal_list, dt_fxn)
