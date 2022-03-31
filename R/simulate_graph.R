@@ -1,37 +1,32 @@
 #' Simulate the true simple ratio index values for each dyad in a network.
 #'
 #' @param n_animals The number of nodes to include in the network.
-#' @param n_groups The number of modules in the network.
-#' @param time_to_leave The average number of days spent in the home group.
-#' @param time_to_return The average number of days spent away from the home
-#'   group.
-#' @param sampling_duration The number of days in the sampling period.
 #' @param sampler Takes one of c("discrete", "continuous"). Whether group
 #' composition should be monitored instantaneously (truth), or sampled in
 #' discrete time. Continuous monitoring is much slower.
-#' @param samples_per_day Optional. If sampler == "discrete", the number of
-#' samples taken per day in order to estimate the simple ratio index for each
-#' dyad.
+#' @inheritParams simulate_animal
 #'
-#' @return an igraph graph object.
+#' @return sim_igraph, an igraph graph object.
 #' @export
 #'
 #' @examples
-#' \donttest{
 #' set.seed(123)
+#'
 #' g <- simulate_graph(n_animals = 25,
 #'                     n_groups = 4,
 #'                     time_to_leave = 5,
 #'                     time_to_return = 2,
+#'                     travel_time = c(0,1),
 #'                     sampling_duration = 7,
 #'                     sampler = "discrete",
 #'                     samples_per_day = 1
 #'                     )
-#'}
+#' @seealso \code{\link{plot_simulated_graph}}
 simulate_graph <- function(n_animals,
                            n_groups,
                            time_to_leave,
                            time_to_return,
+                           travel_time = c(0,1),
                            sampling_duration,
                            sampler = "discrete",
                            samples_per_day = 1) {
@@ -60,24 +55,26 @@ simulate_graph <- function(n_animals,
     for(a in 1:n_animals){  # for-loop over animals.
       animal_list[[a]] <- simulate_animal(time_to_leave = time_to_leave,
                                           time_to_return = time_to_return,
+                                          travel_time = travel_time,
                                           n_groups = n_groups,
                                           samples_per_day = samples_per_day,
                                           sampling_duration = sampling_duration)
       animal_sample_df[[a]] <- cbind(animal_list[[a]]$samples,
                                      id = rep(paste("Animal_", a, sep = ""), nrow(animal_list[[a]]$samples)))
-      names(animal_sample_df)[a] <- (paste0("Animal_", a))
+      names(animal_sample_df)[a] <- paste0("Animal_", a)
     }
 
   } else if(length(time_to_leave) == length(time_to_return) & length(time_to_return) == n_animals){
     for(a in 1:n_animals){  # for-loop over animals.
       animal_list[[a]] <- simulate_animal(time_to_leave = time_to_leave[a],
                                           time_to_return = time_to_return[a],
+                                          travel_time = travel_time,
                                           n_groups = n_groups,
                                           samples_per_day = samples_per_day,
                                           sampling_duration = sampling_duration)
       animal_sample_df[[a]] <- cbind(animal_list[[a]]$samples,
                                      id = rep(paste("Animal_", a, sep = ""), nrow(animal_list[[a]]$samples)))
-      names(animal_sample_df)[a] <- (paste0("Animal_", a))
+      names(animal_sample_df)[a] <- paste0("Animal_", a)
 
     }
   } else if( length(time_to_leave) != length(time_to_return) | !length(time_to_leave) %in% c(1, n_animals) | !length(time_to_return) %in% c(1, n_animals)){
@@ -95,52 +92,69 @@ simulate_graph <- function(n_animals,
     names(samples_out) <- c("time", "location", "id")
 
     # build SRI adjacency matrix -----
-    animals <- paste0("Animal_", rep(1:length(animal_list)))
-    dyads <- expand.grid(animals, animals)
-    dyads <- dyads[which(dyads[, 1] != dyads[, 2]), ] # this still includes eg A--B and B--A, but that shouldn't add much time
+    ids <- names(animal_sample_df)
+    vals <- unique(c(ids, ids))
+    dyads <- data.frame(t(combn(vals, 2)))
+    names(dyads) <- c("Var1", "Var2")
+
+    # dyads <- expand.grid(1:n_animals, 1:n_animals)
+    # dyads <- dyads[which(dyads[, 1] != dyads[, 2]), ] # this still includes eg A--B and B--A, but that shouldn't add much time
 
     adj_mat <- matrix(NA, nrow = n_animals, ncol = n_animals)
+    row.names(adj_mat) <- colnames(adj_mat) <- ids
 
     for(d in 1:nrow(dyads)){
-      anim1 <- samples_out %>% dplyr::filter(.data$id == dyads[d, 1])
-      anim2 <- samples_out %>% dplyr::filter(.data$id == dyads[d, 2])
-      together <- length(which(anim1$location == anim2$location & anim1$time == anim2$time))
+      anim1 <- samples_out %>% dplyr::filter(id == dyads[d, 1])
+      anim2 <- samples_out %>% dplyr::filter(id == dyads[d, 2])
+      # anim1 <- subset(samples_out, id == levels(factor(samples_out$id))[dyads[d, 1]])
+      # anim2 <- subset(samples_out, id == levels(factor(samples_out$id))[dyads[d, 2]])
+      together <- length(which(anim1$location == anim2$location))
       adj_mat[dyads[d, 1], dyads[d, 2]] <- together / nrow(anim1)
     }
 
-    rownames(adj_mat) <- colnames(adj_mat) <- animals
+    # rownames(adj_mat) <- colnames(adj_mat) <- levels(factor(samples_out$id))
     diag(adj_mat) <- rep(0, n_animals) # zero diagonal and lower tri
     adj_mat[lower.tri(adj_mat)] <- 0
   }
 
 
   if(sampler == "continuous"){
-    names(animal_list) <- 1:length(animal_list)
+    ids <- names(animal_sample_df)
+    names(animal_list) <- ids
+    # names(animal_list) <- 1:length(animal_list)
 
     mem_df <- data.frame(ids = names(animal_list),
                          membership = unlist(lapply(animal_list, function(x) x[['animals_home']])))
 
-    # build SRI adjacency matrix -----
-    dyads <- expand.grid(1:n_animals, 1:n_animals)
-    dyads <- dyads[which(dyads[, 1] != dyads[, 2]), ] # this still includes eg A--B and B--A, but that shouldn't add much time
+    # # build SRI adjacency matrix -----
+    # dyads <- expand.grid(1:n_animals, 1:n_animals)
+    # dyads <- dyads[which(dyads[, 1] != dyads[, 2]), ] # this still includes eg A--B and B--A, but that shouldn't add much time
+    # create dyads df
+    vals <- unique(c(ids, ids))
+    dyads <- data.frame(t(combn(vals, 2)))
+    names(dyads) <- c("Var1", "Var2")
+    dyads$ew <- NA
 
-    dt_fxn <- function(animal){
-      one <- animal
-      t1 <- one$locations %>%
-        dplyr::mutate(end = dplyr::lead(.data$cumulative_time),
-                      state = dplyr::lead(.data$current_state)) %>%
-        dplyr::slice(1:(nrow(.)-1)) %>%
-        dplyr::rename(start = .data$cumulative_time) %>%
-        dplyr::select("state", "start","end") %>%
-        data.table::setDT()
-
-      keycols <- c("start", "end")
-      t2 <- data.table::setkeyv(t1, keycols)
-      t2
-    }
+    # dt_fxn <- function(animal){
+    #   # one <- group_list[[1]]
+    #   one <- animal
+    #   t1 <- one$locations  %>%
+    #     dplyr::mutate(end = dplyr::lead(.data$cumulative_time),
+    #                   state = dplyr::lead(.data$current_state)) %>%
+    #     dplyr::rename(start = .data$cumulative_time) %>%
+    #     dplyr::select("state", "start","end") %>%
+    #     na.omit() %>%
+    #     dplyr::mutate_all(~as.numeric(.)) %>%
+    #     data.table::setDT()
+    #
+    #   keycols <- c("start", "end")
+    #   t2 <- data.table::setkeyv(t1, keycols)
+    #   t2
+    # }
     animals_transformed <- lapply(animal_list, dt_fxn)
 
-    adj_mat <- matrix(NA, nrow = n_animals,ncol = n_animals)
+    adj_mat <- matrix(NA, nrow = n_animals, ncol = n_animals)
+    row.names(adj_mat) <- colnames(adj_mat) <- ids
 
     for(d in 1:nrow(dyads)){
 
@@ -150,7 +164,8 @@ simulate_graph <- function(n_animals,
       intervals <- data.table::foverlaps(t1, t2) %>%
         dplyr::mutate(start_max = pmax(.data$start, .data$i.start),
                       end_min = pmin(.data$end, .data$i.end),
-                      together = ifelse(.data$state == .data$i.state, 1, 0))
+                      together = ifelse(.data$state == .data$i.state, 1, 0)) %>%
+        na.omit()
 
       g_int <- data.frame(intervals) %>%
         dplyr::select(1,4,7:9)
@@ -164,20 +179,27 @@ simulate_graph <- function(n_animals,
         dplyr::mutate(time = .data$end_min - .data$start_max)
 
       numer <- sum(time_overlap$time)
-      # denom <- intervals[nrow(intervals), "end_min"]$end_min # this was slower, but appears to create $ not valid for atomic vectors when using packge normally
-      # denom <- intervals[nrow(intervals), "end_min"]["end_min"] # this was faster but buggy
-      denom <- as.numeric(intervals[nrow(intervals), "end_min"])
+      # denom <- intervals[nrow(intervals), "end_min"]$end_min #
+      # denom <- intervals[nrow(intervals), "end_min"]["end_min"] # throwing an error after travel time incorporated
+      # denom <- max(intervals$end_min)
+      denom <- intervals[[nrow(intervals), "end_min"]]
 
+      if(is.na(numer)){
+        edge_weight <- 0
+      }else{
+        edge_weight <- numer / denom
 
-      edge_weight <- numer / denom
+      }
 
       dyads$ew[d] <- edge_weight
       adj_mat[dyads[d, 1], dyads[d, 2]] <- dyads$ew[d]
     }
 
-    rownames(adj_mat) <- colnames(adj_mat) <- names(animal_list)
-    diag(adj_mat) <- rep(0, n_animals) # zero diagonal and lower tri
+    # rownames(adj_mat) <- colnames(adj_mat) <- names(animal_list)
+    # diag(adj_mat) <- rep(0, n_animals) # zero diagonal and lower tri
+    diag(adj_mat) <- 0
     adj_mat[lower.tri(adj_mat)] <- 0
+    adj_mat[is.na(adj_mat)] <- 0
   }
 
   # convert to igraph object and plot with f-r layout

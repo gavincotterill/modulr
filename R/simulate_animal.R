@@ -5,6 +5,8 @@
 #'   group prior to leaving (days per sampling period).
 #' @param time_to_return The average amount of time spent abroad before
 #'   returning to home group.
+#' @param travel_time Vector of the range of values that travel to the next group can take,
+#'  drawn from a uniform distribution. Default == c(0,1)
 #' @param sampling_duration Default == 365.
 #' @param samples_per_day Default == 1.
 #'
@@ -15,16 +17,19 @@
 #' \donttest{
 #' simulate_animal(time_to_leave = 3,
 #'                 time_to_return = 1,
+#'                 travel_time = c(0, 1),
 #'                 n_groups = 4,
 #'                 samples_per_day = 1,
 #'                 sampling_duration = 7)
 #'}
+#'
 simulate_animal <- function(n_groups,
-                            time_to_leave,
-                            time_to_return,
-                            sampling_duration = 365,
-                            samples_per_day = 1
-                            ){
+                           time_to_leave,
+                           time_to_return,
+                           travel_time = c(0, 1),
+                           sampling_duration = 365,
+                           samples_per_day = 1
+){
 
   if (!requireNamespace(c("stats"), quietly = TRUE)) {
     stop(
@@ -55,26 +60,55 @@ simulate_animal <- function(n_groups,
 
   # build empty storage df
   locations <- data.frame(current_state = c(animals_home),
-                            waiting_time = NA,
-                            cumulative_time = 0)
+                          waiting_time = NA,
+                          cumulative_time = 0)
+
   while(cumulative_time < sampling_duration){
 
     current_state_last <- current_state_now
     waiting_time_now <- ifelse(current_state_last == animals_home,
                                stats::rexp(n = 1, delta), # waiting time from an exponential with delta if they're at home
                                stats::rexp(n = 1, xi)) # waiting time from an exponential with xi if they're away.
-    cumulative_time <- cumulative_time + waiting_time_now
 
-    current_state_now <- ifelse(current_state_last == animals_home,
-                                sample(animals_other_groups, size = 1),
-                                animals_home)
+    # travel can be instantaneous or up to 1 day long
+    # coin flip for it
+    if(rbinom(1, 1, 0.5) == 1){
 
-    new_row <- c(current_state_last,
-                 waiting_time_now,
-                 cumulative_time)
+      cumulative_time <- cumulative_time + waiting_time_now
 
-    locations <- as.data.frame(rbind(locations, new_row))
+      current_state_now <- ifelse(current_state_last == animals_home,
+                                  sample(animals_other_groups, size = 1),
+                                  animals_home)
 
+      travel_row <- c(current_state_last,
+                      waiting_time_now,
+                      cumulative_time)
+
+      locations <- as.data.frame(rbind(locations, travel_row))
+
+      travelling_time <- sample(seq(from = travel_time[1], to = travel_time[2], by = .01), 1)
+
+      cumulative_time <- cumulative_time + travelling_time
+
+      new_row <- c(sample(seq(0.01,0.099, by = 0.01), 1),
+                   travelling_time,
+                   cumulative_time)
+
+      locations <- as.data.frame(rbind(locations, new_row))
+
+    }else{ # instantaneous switching
+      cumulative_time <- cumulative_time + waiting_time_now
+
+      current_state_now <- ifelse(current_state_last == animals_home,
+                                  sample(animals_other_groups, size = 1),
+                                  animals_home)
+
+      new_row <- c(current_state_last,
+                   waiting_time_now,
+                   cumulative_time)
+
+      locations <- as.data.frame(rbind(locations, new_row))
+    }
   }
 
   # add variable for whether animal is in its "home" group
@@ -90,7 +124,7 @@ simulate_animal <- function(n_groups,
   # build df of samples
   samples <- as.data.frame(cbind(sample_times, sample_locations))
 
-  # return inputs, (continuous-time) locations, and (disrete-time) samples
+  # return inputs, (continuous-time) locations, and (discrete-time) samples
   outlist <- list(inputs = inputs,
                   locations = locations,
                   samples = samples,

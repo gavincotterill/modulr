@@ -9,6 +9,7 @@ simulate_graph(
   n_groups,
   time_to_leave,
   time_to_return,
+  travel_time = c(0, 1),
   sampling_duration,
   sampler = "discrete",
   samples_per_day = 1
@@ -19,37 +20,42 @@ simulate_graph(
 
 \item{n_groups}{The number of modules in the network.}
 
-\item{time_to_leave}{The average number of days spent in the home group.}
+\item{time_to_leave}{The average amount of time spent within the home
+group prior to leaving (days per sampling period).}
 
-\item{time_to_return}{The average number of days spent away from the home
-group.}
+\item{time_to_return}{The average amount of time spent abroad before
+returning to home group.}
 
-\item{sampling_duration}{The number of days in the sampling period.}
+\item{travel_time}{Vector of the range of values that travel to the next group can take,
+drawn from a uniform distribution. Default == c(0,1)}
+
+\item{sampling_duration}{Default == 365.}
 
 \item{sampler}{Takes one of c("discrete", "continuous"). Whether group
 composition should be monitored instantaneously (truth), or sampled in
 discrete time. Continuous monitoring is much slower.}
 
-\item{samples_per_day}{Optional. If sampler == "discrete", the number of
-samples taken per day in order to estimate the simple ratio index for each
-dyad.}
+\item{samples_per_day}{Default == 1.}
 }
 \value{
-an igraph graph object.
+sim_igraph, an igraph graph object.
 }
 \description{
 Simulate the true simple ratio index values for each dyad in a network.
 }
 \examples{
-\donttest{
 set.seed(123)
+
 g <- simulate_graph(n_animals = 25,
                     n_groups = 4,
                     time_to_leave = 5,
                     time_to_return = 2,
+                    travel_time = c(0,1),
                     sampling_duration = 7,
                     sampler = "discrete",
                     samples_per_day = 1
                     )
 }
+\seealso{
+\code{\link{plot_simulated_graph}}
 }

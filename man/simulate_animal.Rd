@@ -8,6 +8,7 @@ simulate_animal(
   n_groups,
   time_to_leave,
   time_to_return,
+  travel_time = c(0, 1),
   sampling_duration = 365,
   samples_per_day = 1
 )
@@ -20,6 +21,9 @@ group prior to leaving (days per sampling period).}
 
 \item{time_to_return}{The average amount of time spent abroad before
 returning to home group.}
+
+\item{travel_time}{Vector of the range of values that travel to the next group can take,
+drawn from a uniform distribution. Default == c(0,1)}
 
 \item{sampling_duration}{Default == 365.}
 
@@ -35,8 +39,10 @@ The backbone of the network simulator, called from within simulate_graph
 \donttest{
 simulate_animal(time_to_leave = 3,
                 time_to_return = 1,
+                travel_time = c(0, 1),
                 n_groups = 4,
                 samples_per_day = 1,
                 sampling_duration = 7)
 }
+
 }
