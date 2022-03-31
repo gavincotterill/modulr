@@ -46,7 +46,7 @@ simulate_non_independence <- function(
     dplyr::slice(1) %>%
     dplyr::ungroup() %>%
     dplyr::mutate(end = dplyr::lead(start)) %>%
-    dplyr::slice(1:n()-1)
+    dplyr::slice(1:dplyr::n()-1)
 
   # now I have a list, one data.frame per id. intervals match across all dfs in list. location is tracked
   comp_ints_list <- lapply(groups_transformed, interval_function, complete_intervals)
@@ -73,7 +73,7 @@ simulate_non_independence <- function(
     t2$action[i] <- delta_grp(t2, "vector", value, i)
   }
 
-  cohesion = cohesion # how much should they stick to their previous group?
+  # cohesion = cohesion # how much should they stick to their previous group?
 
   for(i in 1:nrow(t2)){
     if(!t2$members[i] %in% NA & t2$action[i] %in% c(NA)){
@@ -90,7 +90,7 @@ simulate_non_independence <- function(
         mbrs_list[[j]] <- t2$members[index_back(t2, "vector", curr_vec[j], i)]
         names(mbrs_list)[j] <- curr_vec[[j]]
       }
-      t2 <- ff_forward(t2, curr_vec, n, mbrs_list, i)
+      t2 <- ff_forward(t2, curr_vec, n, mbrs_list, i, cohesion)
     }else if(t2$action[i] == "fusion"){
       # take care of current, but these will also be used looking forward
       curr_vec <- stringr::str_split(t2$vector[i], "-")[[1]]
@@ -103,7 +103,7 @@ simulate_non_independence <- function(
       t2$members[i] <- paste(unlist(mbrs_list), collapse = "/") # assign current
       # look forward
       if(t2$start[i] == max(t2$start)){next}
-      t2 <- ff_forward(t2, curr_vec, n, mbrs_list, i)
+      t2 <- ff_forward(t2, curr_vec, n, mbrs_list, i, cohesion)
     } else if(t2$action[i] == "fission"){
       # members should always be accounted for to start
       if(t2$vector[i] != t2$holding[i]){stop(paste("All groups not accounted for at start of line", i, ", fission group."))}
@@ -116,7 +116,7 @@ simulate_non_independence <- function(
         mbrs_list[[j]] <- t2$members[index_back(t2, "vector", curr_vec[j], i)]
         names(mbrs_list)[j] <- curr_vec[[j]]
       }
-      t2 <- ff_forward(t2, curr_vec, n, mbrs_list, i)
+      t2 <- ff_forward(t2, curr_vec, n, mbrs_list, i, cohesion)
     }else if(t2$action[i] == "fission-fusion"){
       # members should always be accounted for to start
       if(t2$vector[i] != t2$holding[i]){stop(paste("All groups not accounted for at start of line", i, ", fission-fusion group"))}
@@ -129,7 +129,7 @@ simulate_non_independence <- function(
         mbrs_list[[j]] <- t2$members[index_back(t2, "vector", curr_vec[j], i)]
         names(mbrs_list)[j] <- curr_vec[[j]]
       }
-      t2 <- ff_forward(t2, curr_vec, n, mbrs_list, i)
+      t2 <- ff_forward(t2, curr_vec, n, mbrs_list, i, cohesion)
     }
   }
   return(t2)

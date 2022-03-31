@@ -1,6 +1,6 @@
 #' ff_fwd
 #' @keywords internal
-ff_forward <- function(t2, curr_vec, n, mbrs_list, i){
+ff_forward <- function(t2, curr_vec, n, mbrs_list, i, cohesion){
   fwd_inds <- list()
   next_actions <- list()
   for(k in seq_along(curr_vec)){

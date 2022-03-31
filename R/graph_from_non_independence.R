@@ -2,13 +2,14 @@
 #' @param t2 a dataframe from simulate_non_independence()
 
 graph_from_non_independence <- function(t2){
-  ids <- str_split(paste(t2$members[1:n_groups], collapse = "-"), "-")[[1]]
+  n_groups <- max(t2$state)
+  ids <- stringr::str_split(paste(t2$members[1:n_groups], collapse = "-"), "-")[[1]]
   animals_list = replicate(n = length(ids),
                            expr = {t2},
                            simplify = F)
   names(animals_list) <- ids
 
-  a2 <- purrr::map2(animals_list, ids, ~ dplyr::filter(., str_detect(members, .y) ) %>%
+  a2 <- purrr::map2(animals_list, ids, ~ dplyr::filter(., stringr::str_detect(members, .y) ) %>%
                       dplyr::select(state, start, end) %>%
                       dplyr::mutate(id = .y,
                                     time = end - start))
@@ -26,7 +27,7 @@ graph_from_non_independence <- function(t2){
   for(d in 1:nrow(dyads)){
     tt1 <- a2[[dyads[d,"Var2"]]]
     tt2 <- a2[[dyads[d,"Var1"]]]
-    a3 <- inner_join(tt1, tt2, by = c("state", "start", "end"))
+    a3 <- dplyr::inner_join(tt1, tt2, by = c("state", "start", "end"))
 
     time_together <- sum(a3$time.x)
     max_time <- sum(tt1$time)
@@ -36,7 +37,7 @@ graph_from_non_independence <- function(t2){
   }
 
   g <- igraph::graph.adjacency(adj_mat, mode = "upper", weighted = TRUE, diag = FALSE)
-  memberships <- str_extract(ids, "\\d")
+  memberships <- stringr::str_extract(ids, "\\d")
   igraph::V(g)$membership <- as.numeric(memberships) # memberships need to be numeric
   return(g)
 }
