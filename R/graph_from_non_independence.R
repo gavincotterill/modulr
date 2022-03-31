@@ -1,0 +1,45 @@
+#' graph non independence
+#' make the list of unique individuals and use str_detect on t2 to get all rows for that id
+#' then you'd have n_individuals data.frames with state, start, end, id
+#' then you'd run dyads
+
+graph_from_non_independence <- function(t2){
+  ids <- str_split(paste(t2$members[1:n_groups], collapse = "-"), "-")[[1]]
+  animals_list = replicate(n = length(ids),
+                           expr = {t2},
+                           simplify = F)
+  names(animals_list) <- ids
+
+  a2 <- purrr::map2(animals_list, ids, ~ dplyr::filter(., str_detect(members, .y) ) %>%
+                      dplyr::select(state, start, end) %>%
+                      dplyr::mutate(id = .y,
+                                    time = end - start))
+
+  # create dyads df
+  vals <- unique(c(ids, ids))
+  dyads <- data.frame(t(combn(vals, 2)))
+  names(dyads) <- c("Var1", "Var2")
+
+  adj_mat <- matrix(NA, 5 * n_groups, 5 * n_groups)
+  row.names(adj_mat) <- colnames(adj_mat) <- ids
+
+  dyads$time_together <- NA
+  dyads$max_time <- NA
+  for(d in 1:nrow(dyads)){
+    tt1 <- a2[[dyads[d,"Var2"]]]
+    tt2 <- a2[[dyads[d,"Var1"]]]
+    a3 <- inner_join(tt1, tt2, by = c("state", "start", "end"))
+
+    time_together <- sum(a3$time.x)
+    max_time <- sum(tt1$time)
+    dyads$time_together[d] <- time_together
+    dyads$max_time <- max_time
+    adj_mat[dyads[d,"Var1"], dyads[d,"Var2"]] <- time_together / max_time
+  }
+
+  g <- igraph::graph.adjacency(adj_mat, mode = "upper", weighted = TRUE, diag = FALSE)
+  memberships <- str_extract(ids, "\\d")
+  igraph::V(g)$membership <- as.numeric(memberships) # memberships need to be numeric
+  return(g)
+}
+
