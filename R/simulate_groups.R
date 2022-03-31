@@ -1,5 +1,6 @@
 #' Simulate groups
 #' @inheritParams simulate_graph
+#' @keywords internal
 simulate_groups <- function(animals_home,
                             n_groups,
                             time_to_leave,

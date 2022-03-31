@@ -14,3 +14,4 @@ interval_function(groups, intervals)
 \description{
 Extract data from list on individual basis and make keyed data.table
 }
+\keyword{internal}

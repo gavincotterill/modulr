@@ -1,6 +1,8 @@
 #' internal function to graph crossing
 #' @params animal
 #' @params infectious
+#' @keywords internal
+
 bolts <- function(animal, infectious){
   new_overlaps <- data.frame()
   for(i in 1:nrow(infectious)){

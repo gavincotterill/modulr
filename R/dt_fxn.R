@@ -1,7 +1,6 @@
 #' Extract data from list on individual basis and make keyed data.table
 #' @param animal an element of animal_list from simulate_graph
-
-
+#' @keywords internal
 dt_fxn <- function(animal){
   one <- animal
   t1 <- one$locations  %>%

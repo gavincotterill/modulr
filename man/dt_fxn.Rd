@@ -12,3 +12,4 @@ dt_fxn(animal)
 \description{
 Extract data from list on individual basis and make keyed data.table
 }
+\keyword{internal}

@@ -33,3 +33,4 @@ drawn from a uniform distribution. Default == c(0,1)}
 \description{
 Simulate groups
 }
+\keyword{internal}

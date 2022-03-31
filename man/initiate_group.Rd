@@ -14,3 +14,4 @@ initiate_group(x, n)
 \description{
 Extract data from list on individual basis and make keyed data.table
 }
+\keyword{internal}

@@ -1,4 +1,5 @@
 #' ff_fwd
+#' @keywords internal
 ff_forward <- function(t2, curr_vec, n, mbrs_list, i){
   fwd_inds <- list()
   next_actions <- list()

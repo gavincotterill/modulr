@@ -9,3 +9,4 @@ bolts(animal, infectious)
 \description{
 internal function to graph crossing
 }
+\keyword{internal}

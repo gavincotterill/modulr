@@ -18,3 +18,4 @@ index_back(df, column_name, value, i)
 \description{
 Pulls the row number of the last occurrence of a group
 }
+\keyword{internal}
