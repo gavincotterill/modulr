@@ -2,6 +2,16 @@
 #' @inheritParams simulate_graph
 #' @param cohesion the probability that individuals stay with their group from
 #' the previous time step during fission.
+#' @examples
+#' \donttest{
+#' t2 <- simulate_non_independence(n_groups = 4,
+#' time_to_leave = 5,
+#' time_to_return = 2,
+#' cohesion = 0.8,
+#' travel_time = c(0,2),
+#' sampling_duration = 7,
+#' samples_per_day = 1)
+#' }
 
 simulate_non_independence <- function(
   n_groups = 4,

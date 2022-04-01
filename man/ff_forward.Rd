@@ -4,7 +4,7 @@
 \alias{ff_forward}
 \title{ff_fwd}
 \usage{
-ff_forward(t2, curr_vec, n, mbrs_list, i)
+ff_forward(t2, curr_vec, n, mbrs_list, i, cohesion)
 }
 \description{
 ff_fwd

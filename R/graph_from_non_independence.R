@@ -1,5 +1,16 @@
 #' graph non independence
 #' @param t2 a dataframe from simulate_non_independence()
+#' #' @examples
+#' \donttest{
+#' t2 <- simulate_non_independence(n_groups = 4,
+#' time_to_leave = 5,
+#' time_to_return = 2,
+#' cohesion = 0.8,
+#' travel_time = c(0,2),
+#' sampling_duration = 7,
+#' samples_per_day = 1)
+#' g <- graph_from_non_independence(t2)
+#' }
 
 graph_from_non_independence <- function(t2){
   n_groups <- max(t2$state)

@@ -36,3 +36,14 @@ drawn from a uniform distribution. Default == c(0,1)}
 \description{
 simulate non-independent group-switching
 }
+\examples{
+\donttest{
+t2 <- simulate_non_independence(n_groups = 4,
+time_to_leave = 5,
+time_to_return = 2,
+cohesion = 0.8,
+travel_time = c(0,2),
+sampling_duration = 7,
+samples_per_day = 1)
+}
+}
