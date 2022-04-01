@@ -34,27 +34,27 @@ ff_forward <- function(t2, curr_vec, n, mbrs_list, i, cohesion){
   if(any(c("fission", "fission-fusion") %in% next_actions) & n_next_locs > 1){
     curr_mem_split <- stringr::str_split(t2$members[i], "/")[[1]] # who was there with blank space divider and length = n groups
     curr_mem_vec <- stringr::str_split(paste(curr_mem_split, collapse = "-"), "-")[[1]] # separated individuals for sampling
-    groups_in <- mbrs_list
-    # use mbrs_list
+
+    # SAMPLING HAPPENS HERE
     split_list <- list()
-    for(j in 1:length(groups_in)){
-      group_id <- names(groups_in)[[j]]
-      home_group <- stringr::str_split(groups_in[[group_id]], "-")[[1]][stringr::str_split(groups_in[[group_id]], "-")[[1]] %in% curr_mem_vec]
-      other_group <- unlist(stringr::str_split(unlist(groups_in[!names(groups_in) %in% group_id]), "-"))[unlist(stringr::str_split(unlist(groups_in[!names(groups_in) %in% group_id]), "-")) %in% curr_mem_vec]
+    for(j in 1:length(mbrs_list)){
+      group_id <- names(mbrs_list)[[j]]
+      home_group <- stringr::str_split(mbrs_list[[group_id]], "-")[[1]][stringr::str_split(mbrs_list[[group_id]], "-")[[1]] %in% curr_mem_vec]
+      other_group <- unlist(stringr::str_split(unlist(mbrs_list[!names(mbrs_list) %in% group_id]), "-"))[unlist(stringr::str_split(unlist(mbrs_list[!names(mbrs_list) %in% group_id]), "-")) %in% curr_mem_vec]
       l_m <- length(home_group)
       l_n_m <- length(other_group)
-      if(j < n){ # is it safe to use n here?
+      if(j < n){
         split_list[[j]] <- paste( c(sample(home_group, round(l_m * cohesion, 0)),
                                     sample(other_group, round(l_n_m * (1 - cohesion), 0))),
                                   collapse = "-" )
         names(split_list)[j] <- group_id
         curr_mem_vec <- curr_mem_vec[!curr_mem_vec %in% stringr::str_split(paste(unlist(split_list), collapse = "-"), "-")[[1]]]
-        # }else if(j == n_grp_prev){
       }else if(j == n){
         split_list[[j]] <- paste(curr_mem_vec, collapse = "-")
         names(split_list)[j] <- group_id
       }
     }
+
     for(k in 1:length(split_list)){
       un_split_list <- unlist(split_list[k])[[1]]
       # function here goes forward to find where to put these based on vector and time interval
