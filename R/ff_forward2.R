@@ -28,20 +28,23 @@ ff_forward2 <- function(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_retur
     diff <- t2 %>% group_by(start) %>% summarise(diff = end - start) %>% slice(1)
     avg_int <- mean(diff$diff)
 
-    # crank them up just to see what happens: *3
-    lh_prob <- (1/time_to_leave) * avg_int * 3 # prob of leaving home
-    gh_prob <- (1/time_to_return) * avg_int * 3 # avg int / ttr is the prob of being sent to home group
+
+    (lh_prob <- (1/time_to_leave) * avg_int) # prob of leaving home
+    (gh_prob <- (1/time_to_return) * avg_int) # avg int / ttr is the prob of being sent to home group
 
     # who is with their home group?
     (at_home <- purrr::map2(t, id_tags, ~ stringr::str_subset(., .y) ))
     (at_home <- at_home[lengths(at_home) > 0])
     (ah_lengths <- lapply(at_home, length))
     if(length(ah_lengths) > 1){
-      leaves_home <- purrr::map2(at_home, rbinom(ah_lengths, 1, lh_prob), ~ sample(., .y))
-      leaves_home <- leaves_home[lengths(leaves_home) > 0]
+      # leaves_home <- purrr::map2(at_home, rbinom(ah_lengths, 1, lh_prob), ~ sample(., .y)) # something is wrong here
+      (f <- map(ah_lengths, function(x) rbinom(x, 1, lh_prob) %>% sum(.)))
+      (leaves_home <- map2(at_home, f, ~ sample(., size=.y)))
+      (leaves_home <- leaves_home[lengths(leaves_home) > 0])
     }else if(length(ah_lengths) == 1){
-      (leaves_home <- purrr::map2(at_home, rbinom(ah_lengths[[1]], 1, lh_prob), ~ sample(., .y)))
-      leaves_home <- leaves_home[lengths(leaves_home) > 0]
+       (f <- rbinom(ah_lengths[[1]], 1, lh_prob) %>% sum(.))
+       (leaves_home <- map2(at_home, f, ~ sample(., size=.y)))
+       leaves_home <- leaves_home[lengths(leaves_home) > 0]
     }
     # I think the problem is taht when its a single list, map2 doesn't work
 
@@ -56,10 +59,13 @@ ff_forward2 <- function(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_retur
     (can_rejoin <- can_rejoin[lengths(can_rejoin) > 0])
     (crj_lengths <- lapply(can_rejoin, length))
     if(length(crj_lengths) > 1){
-      does_rejoin <- purrr::map2(can_rejoin, rbinom(crj_lengths, 1, gh_prob), ~ sample(., .y))
+      # does_rejoin <- purrr::map2(can_rejoin, rbinom(crj_lengths, 1, gh_prob), ~ sample(., .y))
+      (f <- map(crj_lengths, function(x) rbinom(x, 1, gh_prob) %>% sum(.)))
+      (does_rejoin <- map2(can_rejoin, f, ~ sample(., size=.y)))
       does_rejoin <- does_rejoin[lengths(does_rejoin) > 0]
     }else if(length(crj_lengths) == 1){
-      does_rejoin <- purrr::map2(can_rejoin, rbinom(crj_lengths[[1]], 1, gh_prob), ~ sample(., .y))
+      (f <- rbinom(crj_lengths[[1]], 1, gh_prob) %>% sum(.)) # try this
+      (does_rejoin <- map2(can_rejoin, f, ~ sample(., size=.y)))
       does_rejoin <- does_rejoin[lengths(does_rejoin) > 0]
     }
 
@@ -68,10 +74,12 @@ ff_forward2 <- function(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_retur
     (can_go_home <- can_go_home[lengths(can_go_home) > 0])
     (cgh_lengths <- lapply(can_go_home, length))
     if(length(cgh_lengths) > 1){
-      does_go_home <- purrr::map2(can_go_home, rbinom(cgh_lengths, 1, gh_prob), ~ sample(., .y))
+      (f <- map(cgh_lengths, function(x) rbinom(x, 1, gh_prob) %>% sum(.)))
+      (does_go_home <- map2(can_go_home, f, ~ sample(., size=.y)))
       does_go_home <- does_go_home[lengths(does_go_home) > 0]
     }else if(length(cgh_lengths) == 1){
-      does_go_home <- purrr::map2(can_go_home, rbinom(cgh_lengths[[1]], 1, gh_prob), ~ sample(., .y))
+      (f <- rbinom(cgh_lengths[[1]], 1, gh_prob) %>% sum(.)) # try this
+      (does_go_home <- map2(can_go_home, f, ~ sample(., size=.y)))
       does_go_home <- does_go_home[lengths(does_go_home) > 0]
     }
 
@@ -126,7 +134,6 @@ ff_forward2 <- function(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_retur
   }
 
   if(any(c("fission", "fission-fusion") %in% next_actions) & n_next_locs > 1){
-
     for(k in 1:length(mbrs_list2)){
       un_mbrs_list2 <- unlist(mbrs_list2[k])[[1]]
       # function here goes forward to find where to put these based on vector and time interval
