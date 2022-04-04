@@ -6,6 +6,11 @@
 #' @keywords internal
 
 index_back <- function(df, column_name, value, i){
-  mx_rows <- which(df[, column_name] == value)
-  mx_rows[max(which(mx_rows < i))]
+  # mx_rows <- which(df[, column_name] == value)
+  # mx_rows[max(which(mx_rows < i))]
+  q <- str_split(df[, column_name], "-")
+  q2 <- map2(q, value, ~str_detect(.x, .y) %>% any())
+  q3 <- which(q2 %in% TRUE)
+  max(q3[q3 < i])
+
 }

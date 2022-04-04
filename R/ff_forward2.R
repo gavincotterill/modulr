@@ -2,10 +2,10 @@
 #' individuals transition between home and non-home groups that they, in some cases
 #' 'magically' find (i.e., they aren't sent to home base, they're sent to their home
 #' group as if they knew where to find them with perfect accuracy.)
-#'
 #' @keywords internal
 ff_forward2 <- function(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_return){
 
+  # based on the number of groups currently here, how many destinations are there in the next time step?
   fwd_inds <- list()
   next_actions <- list()
   for(k in seq_along(curr_vec)){
@@ -17,6 +17,7 @@ ff_forward2 <- function(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_retur
   next_locs <- unique(unlist(fwd_inds))
   n_next_locs <- length(next_locs)
 
+  # if there is any fission in the next time step and more than one destination-- you could have a single group going to fission-fusion, in which case it's just a fusion for this group
   if(any(c("fission", "fission-fusion") %in% next_actions) & length(curr_vec) > 1){
     (t <- str_split(mbrs_list, "-") %>% `names<-`(names(mbrs_list)))
     (grps <- names(mbrs_list))
@@ -27,8 +28,6 @@ ff_forward2 <- function(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_retur
     # possibly because they only occur at fission events and aren't possible at every time step
     diff <- t2 %>% group_by(start) %>% summarise(diff = end - start) %>% slice(1)
     avg_int <- mean(diff$diff)
-
-
     (lh_prob <- (1/time_to_leave) * avg_int) # prob of leaving home
     (gh_prob <- (1/time_to_return) * avg_int) # avg int / ttr is the prob of being sent to home group
 
@@ -37,7 +36,6 @@ ff_forward2 <- function(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_retur
     (at_home <- at_home[lengths(at_home) > 0])
     (ah_lengths <- lapply(at_home, length))
     if(length(ah_lengths) > 1){
-      # leaves_home <- purrr::map2(at_home, rbinom(ah_lengths, 1, lh_prob), ~ sample(., .y)) # something is wrong here
       (f <- map(ah_lengths, function(x) rbinom(x, 1, lh_prob) %>% sum(.)))
       (leaves_home <- map2(at_home, f, ~ sample(., size=.y)))
       (leaves_home <- leaves_home[lengths(leaves_home) > 0])
@@ -46,8 +44,6 @@ ff_forward2 <- function(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_retur
        (leaves_home <- map2(at_home, f, ~ sample(., size=.y)))
        leaves_home <- leaves_home[lengths(leaves_home) > 0]
     }
-    # I think the problem is taht when its a single list, map2 doesn't work
-
 
     # who is not with their home group?
     (not_at_home <- purrr::map2(t, id_tags, ~ stringr::str_subset(., .y, negate = TRUE) ))
@@ -59,7 +55,6 @@ ff_forward2 <- function(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_retur
     (can_rejoin <- can_rejoin[lengths(can_rejoin) > 0])
     (crj_lengths <- lapply(can_rejoin, length))
     if(length(crj_lengths) > 1){
-      # does_rejoin <- purrr::map2(can_rejoin, rbinom(crj_lengths, 1, gh_prob), ~ sample(., .y))
       (f <- map(crj_lengths, function(x) rbinom(x, 1, gh_prob) %>% sum(.)))
       (does_rejoin <- map2(can_rejoin, f, ~ sample(., size=.y)))
       does_rejoin <- does_rejoin[lengths(does_rejoin) > 0]
@@ -100,10 +95,7 @@ ff_forward2 <- function(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_retur
         mbrs_list2 <- relocate_animals(mbrs_list2, does_go_home)
       }
     }
-    # try putting it back together
     mbrs_list2 <- purrr::map(mbrs_list2, ~ paste(., collapse = "-"))
-    # the sampling is done.
-
     curr_vec2 <- names(mbrs_list2)
 
     fwd_inds <- list()
@@ -127,12 +119,30 @@ ff_forward2 <- function(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_retur
       t2$members[next_locs] <- gsub("NA| NA|NA ", "", paste(t2$members[next_locs], unlist(mbrs_list)[[1]])) %>% gsub(" ", "/", .)
       t2$holding[next_locs] <- gsub("NA| NA|NA ", "", paste(t2$holding[next_locs], names(mbrs_list))) %>% gsub(" ", "-", .)
 
-      new_order <- stringr::str_split(t2$holding[next_locs], "-")[[1]] %>% as.numeric() %>% base::order()
+      new_order <- stringr::str_split(t2$holding[next_locs], "-")[[1]]%>% as.numeric() %>% base::order()
       t2$holding[next_locs] <- paste(stringr::str_split(t2$holding[next_locs], "-")[[1]][new_order], collapse = "-")
       t2$members[next_locs] <- paste(stringr::str_split(t2$members[next_locs], "/")[[1]][new_order], collapse = "/")
+
+      # check for duplicate groups
+      x <- str_split(t2$holding[next_locs], "-")[[1]]
+      if( any(duplicated(x)) ){
+        out_n <- length(unique(x))
+        out_list <- list()
+        for(p in 1:out_n){
+          grab_index <- which(x == unique(x)[p])
+          mems <- str_split(t2$members[next_locs], "/")[[1]]
+          out_list[[p]] <- paste(mems[grab_index], collapse = "-")
+        }
+        t2$members[next_locs] <- paste(out_list, collapse = "/")
+        t2$holding[next_locs] <- paste(unique(x), collapse = "-")
+      }
+
+
     }
   }
 
+  # need a condition handler if curr_vec2 is longer than curr_vec
+  # and if the names(mbrs_list2)[k] is already at t2$holding[fwd_index], combine the groups
   if(any(c("fission", "fission-fusion") %in% next_actions) & n_next_locs > 1){
     for(k in 1:length(mbrs_list2)){
       un_mbrs_list2 <- unlist(mbrs_list2[k])[[1]]
@@ -150,6 +160,22 @@ ff_forward2 <- function(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_retur
         new_order <- stringr::str_split(t2$holding[fwd_index], "-")[[1]] %>% as.numeric() %>% base::order()
         t2$holding[fwd_index] <- paste(stringr::str_split(t2$holding[fwd_index], "-")[[1]][new_order], collapse = "-")
         t2$members[fwd_index] <- paste(stringr::str_split(t2$members[fwd_index], "/")[[1]][new_order], collapse = "/")
+
+        # add a regular expression for holding, if there's a duplicate, somehow drop one
+        # add a regular expression for members...
+        x <- str_split(t2$holding[fwd_index], "-")[[1]]
+        if( any(duplicated(x)) ){
+          out_n <- length(unique(x))
+          out_list <- list()
+          for(p in 1:out_n){
+            grab_index <- which(x == unique(x)[p])
+            mems <- str_split(t2$members[fwd_index], "/")[[1]]
+            out_list[[p]] <- paste(mems[grab_index], collapse = "-")
+          }
+          t2$members[fwd_index] <- paste(out_list, collapse = "/")
+          t2$holding[fwd_index] <- paste(unique(x), collapse = "-")
+        }
+
       }
     }
   }

@@ -1,7 +1,11 @@
 #' Index forward
 #' @inheritParams index_back
 #' @keywords internal
-index_forward <- function(df, column_name, value, i){
-  value_rows <- stringr::str_which(df[, column_name], value)
-  value_rows[min(which(value_rows > i))]
+index_forward <- function(df, column_name, value, i, idx = t2$idx){
+  (w <- df[idx == idx[i]+1,])
+  (value_rows <- stringr::str_which(df[, column_name], value))
+  value_rows[value_rows %in% rownames(w)]
+  # value_rows[min(which(value_rows > i))]
+  # value_rows[min(which(value_rows > i) & which(idx == idx[i] + 1)) ]
+
 }

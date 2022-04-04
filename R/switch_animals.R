@@ -4,7 +4,9 @@
 #' fromt heir home group
 #' @keywords internal
 switch_animals <- function(inlist, elem_leave){
-  elem_leave = paste(unlist(elem_leave), sep = " ")#[[1]]
+  # inlist = mbrs_list2
+  # elem_leave = leaves_home
+  elem_leave = paste(unlist(elem_leave), sep = " ")
   removed = lapply(inlist, setdiff, elem_leave)
   for(i in seq_along(elem_leave)){
     home_group <- str_extract(elem_leave[i], "\\d{1,}(?=_)")
