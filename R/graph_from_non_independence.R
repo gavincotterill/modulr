@@ -30,7 +30,9 @@ graph_from_non_independence <- function(t2){
   dyads <- data.frame(t(combn(vals, 2)))
   names(dyads) <- c("Var1", "Var2")
 
-  adj_mat <- matrix(NA, 5 * n_groups, 5 * n_groups)
+  # adj_mat <- matrix(NA, 5 * n_groups, 5 * n_groups)
+  adj_mat <- matrix(NA, length(ids), length(ids))
+
   row.names(adj_mat) <- colnames(adj_mat) <- ids
 
   dyads$time_together <- NA
@@ -48,7 +50,7 @@ graph_from_non_independence <- function(t2){
   }
 
   g <- igraph::graph.adjacency(adj_mat, mode = "upper", weighted = TRUE, diag = FALSE)
-  memberships <- stringr::str_extract(ids, "\\d")
+  memberships <- stringr::str_extract(ids, "\\d{1,}(?=_)")
   igraph::V(g)$membership <- as.numeric(memberships) # memberships need to be numeric
   return(g)
 }

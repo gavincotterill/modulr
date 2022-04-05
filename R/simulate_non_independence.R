@@ -12,6 +12,7 @@
 
 simulate_non_independence <- function(
   n_groups = 4,
+  n_animals = 16,
   time_to_leave = 5,
   time_to_return = 2,
   travel_time = c(0,2),
@@ -66,7 +67,12 @@ simulate_non_independence <- function(
     dplyr::arrange(state, start, end)
 
   # initiate groups
-  test$members <- mapply(function(start, vector) ifelse(start==0, initiate_group(vector, 5), NA), test$start, test$vector)
+  # test$members <- mapply(function(start, vector) ifelse(start==0, initiate_group(vector, animals_per_group), NA), test$start, test$vector)
+  grp_lengths_vector <- rand_vect(n_groups, n_animals, sd = 1)
+  p <- test %>% dplyr::filter(start == 0) %>% dplyr::arrange(start, end, state)
+  p$members <- purrr::map2(p$vector, grp_lengths_vector, ~initiate_group(.x, .y))
+  test <- dplyr::left_join(test, p) %>%
+    dplyr::mutate(dplyr::across(dplyr::everything(), dplyr::na_if, "NULL"))
 
   t2 <- test %>%
     dplyr::arrange(start) %>%
