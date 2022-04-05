@@ -17,7 +17,7 @@ Whole group movements between location-states occur as a function of time_to_lea
 Individual transitions between groups occur as groups happen to come together, and departures from the home group are driven by fission events as individuals 'stick' to co-located groups (tied to time_to_return rates... but this part probably needs improvement). Returning to the home groups is similarly tied to time_to_return rates.
 ```{r, include = FALSE}
 #---- load packages --------
-sapply(c("modulr"), require, character = T)
+devtools::load_all()
 ```
 
 ```{r sim non independ}
