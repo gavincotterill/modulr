@@ -8,7 +8,6 @@ simulate_non_independence(
   n_groups = 4,
   time_to_leave = 5,
   time_to_return = 2,
-  cohesion = 0.8,
   travel_time = c(0, 2),
   sampling_duration = 7,
   samples_per_day = 1
@@ -22,9 +21,6 @@ group prior to leaving (days per sampling period).}
 
 \item{time_to_return}{The average amount of time spent abroad before
 returning to home group.}
-
-\item{cohesion}{the probability that individuals stay with their group from
-the previous time step during fission.}
 
 \item{travel_time}{Vector of the range of values that travel to the next group can take,
 drawn from a uniform distribution. Default == c(0,1)}
@@ -41,7 +37,6 @@ simulate non-independent group-switching
 t2 <- simulate_non_independence(n_groups = 4,
 time_to_leave = 5,
 time_to_return = 2,
-cohesion = 0.8,
 travel_time = c(0,2),
 sampling_duration = 7,
 samples_per_day = 1)

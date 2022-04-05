@@ -3,14 +3,16 @@
 #' @keywords internal
 delta_grp <- function(df, column_name, value, i){
   out <- tryCatch({
-    if(stringr::str_length(df[i, column_name]) > 1){
+    # if(stringr::str_length(df[i, column_name]) > 1){
+    if(length(str_split(df[i, column_name], "-")[[1]]) > 1){
       vals <- stringr::str_split(df[i, column_name], "-")[[1]]
       find_vals <- list()
       prev_ocrs <- list()
       prev_vals <- list()
       for(j in seq_along(vals)){
         find_vals[j] <- vals[[j]]
-        prev_ocrs[[j]] <- grep(find_vals[[j]], df[,column_name])
+        # prev_ocrs[[j]] <- grep(find_vals[[j]], df[,column_name])
+        prev_ocrs[[j]] <- grep(paste0("\\b", find_vals[[j]], "\\b"), df[,column_name])
         prev_vals[j] <- df[prev_ocrs[[j]][max(which(prev_ocrs[[j]] < i))], column_name]
       }
       unique_prev_val <- unique(prev_vals)
@@ -30,8 +32,10 @@ delta_grp <- function(df, column_name, value, i){
       }else if(identical(prev_val[[1]], curr_val)){
         "same"
       }
-    }else if(stringr::str_length(df[i, column_name]) == 1){
-      prev_ocr <- grep(value, df[,column_name])
+      # }else if(stringr::str_length(df[i, column_name]) == 1){
+    }else if(length(str_split(df[i, column_name], "-")[[1]]) == 1){
+      # prev_ocr <- grep(value, df[,column_name])
+      prev_ocr <- grep(paste0("\\b", value, "\\b"), df[,column_name])
       prev_val <- df[prev_ocr[max(which(prev_ocr < i))], column_name]
       curr_val <- df[i, column_name]
       if(prev_val == curr_val){

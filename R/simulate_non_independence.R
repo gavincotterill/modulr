@@ -1,13 +1,10 @@
 #' simulate non-independent group-switching
 #' @inheritParams simulate_graph
-#' @param cohesion the probability that individuals stay with their group from
-#' the previous time step during fission.
 #' @examples
 #' \donttest{
 #' t2 <- simulate_non_independence(n_groups = 4,
 #' time_to_leave = 5,
 #' time_to_return = 2,
-#' cohesion = 0.8,
 #' travel_time = c(0,2),
 #' sampling_duration = 7,
 #' samples_per_day = 1)
@@ -17,7 +14,6 @@ simulate_non_independence <- function(
   n_groups = 4,
   time_to_leave = 5,
   time_to_return = 2,
-  cohesion = 0.8,
   travel_time = c(0,2),
   sampling_duration = 7,
   samples_per_day = 1
@@ -74,74 +70,88 @@ simulate_non_independence <- function(
 
   t2 <- test %>%
     dplyr::arrange(start) %>%
+    dplyr::mutate(idx = match(start, unique(start))) %>%
     data.frame() %>%
     dplyr::mutate(action = NA,
-           holding = NA)
+                  holding = NA)
 
   for(i in 1:nrow(t2)){
     value <- paste(stringr::str_split(t2$vector[i], "-")[[1]], collapse = "|")
     t2$action[i] <- delta_grp(t2, "vector", value, i)
   }
 
-  # cohesion = cohesion # how much should they stick to their previous group?
-
+  #--------------------------------------
+  # set.seed(123)
   for(i in 1:nrow(t2)){
-    if(!t2$members[i] %in% NA & t2$action[i] %in% c(NA)){
+    # if(i == 239){break}
+    if(t2$action[i] %in% c(NA)){
       next
     }else if(t2$action[i] == "same"){
       # take care of current line
-      t2$members[i] <- t2$members[index_back(t2, "vector", t2$vector[i], i)]
+      if(is.na(t2$members[i])){
+        t2$members[i] <- t2$members[index_back_same(t2, "vector", t2$vector[i], i)]
+      }else{
+        (grp_tags <- str_extract_all(t2$members[i], "\\d{1,}(?=_)")[[1]] %>% unique())
+        (incoming_grps <- str_split(t2$vector[i], "-")[[1]])
+        (incoming_ids <- str_split(t2$members[index_back_same(t2, "vector", t2$vector[i], i)], "/")[[1]])
+        (existing_mems <- str_split(t2$members[i], "/")[[1]])
+        for(k in seq_along(incoming_grps)){
+          if(incoming_grps[k] %in% grp_tags){
+            grp_to_paste <- grp_tags[which(grp_tags == incoming_grps[k])]
+            ids_to_paste <- existing_mems[str_detect(existing_mems, paste0(grp_to_paste,"_"))]
+            incoming_ids[k] <- paste(incoming_ids[k], ids_to_paste, sep = "-")
+          }
+        }
+        t2$members[i] <- paste(incoming_ids, collapse = "/")
+      }
       # look forward
       if(t2$start[i] == max(t2$start)){next}
       curr_vec <- stringr::str_split(t2$vector[i], "-")[[1]]
-      n <- length(curr_vec)
-      mbrs_list <- list()
-      for(j in 1:n){
-        mbrs_list[[j]] <- t2$members[index_back(t2, "vector", curr_vec[j], i)]
-        names(mbrs_list)[j] <- curr_vec[[j]]
-      }
-      t2 <- ff_forward(t2, curr_vec, n, mbrs_list, i, cohesion)
+      mbrs_list <- as.list(str_split(t2$members[i], "/")[[1]]) %>% `names<-`(curr_vec)
+      t2 <- ff_forward2(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_return)
     }else if(t2$action[i] == "fusion"){
       # take care of current, but these will also be used looking forward
       curr_vec <- stringr::str_split(t2$vector[i], "-")[[1]]
       n <- length(curr_vec)
       mbrs_list <- list()
       for(j in 1:n){
-        mbrs_list[[j]] <- t2$members[index_back(t2, "vector", curr_vec[j], i)]
+        all_mems_back <- str_split(t2$members[index_back(t2, "vector", curr_vec[j], i)] , "/")[[1]]
+        vec_back <- str_split(t2$vector[index_back(t2, "vector", curr_vec[j], i)] , "-")[[1]]
+        mem_idx <- which(vec_back == curr_vec[j])
+        mbrs_list[[j]] <- all_mems_back[mem_idx]
         names(mbrs_list)[j] <- curr_vec[[j]]
       }
-      t2$members[i] <- paste(unlist(mbrs_list), collapse = "/") # assign current
+      if(is.na(t2$members[i])){
+        t2$members[i] <- paste(unlist(mbrs_list), collapse = "/") # assign current
+      }else{
+        (grp_tags <- str_extract_all(t2$members[i], "\\d{1,}(?=_)")[[1]] %>% unique())
+        (incoming_grps <- str_split(t2$vector[i], "-")[[1]])
+        (incoming_ids <- paste(mbrs_list, sep = " "))
+        (existing_mems <- str_split(t2$members[i], "/")[[1]])
+        for(k in seq_along(incoming_grps)){
+          if(incoming_grps[k] %in% grp_tags){
+            grp_to_paste <- grp_tags[which(grp_tags == incoming_grps[k])]
+            ids_to_paste <- existing_mems[str_detect(existing_mems, paste0(grp_to_paste,"_"))]
+            incoming_ids[k] <- paste(incoming_ids[k], ids_to_paste, sep = "-")
+          }
+        }
+        t2$members[i] <- paste(incoming_ids, collapse = "/")
+      }
       # look forward
       if(t2$start[i] == max(t2$start)){next}
-      t2 <- ff_forward(t2, curr_vec, n, mbrs_list, i, cohesion)
-    } else if(t2$action[i] == "fission"){
+      mbrs_list <- as.list(str_split(t2$members[i], "/")[[1]]) %>% `names<-`(curr_vec)
+      t2 <- ff_forward2(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_return)
+    } else if(t2$action[i] %in% c("fission", "fission-fusion")){
       # members should always be accounted for to start
       if(t2$vector[i] != t2$holding[i]){stop(paste("All groups not accounted for at start of line", i, ", fission group."))}
       # look forward
       if(t2$start[i] == max(t2$start)){next}
       curr_vec <- stringr::str_split(t2$vector[i], "-")[[1]]
-      n <- length(curr_vec)
-      mbrs_list <- list()
-      for(j in 1:n){
-        mbrs_list[[j]] <- t2$members[index_back(t2, "vector", curr_vec[j], i)]
-        names(mbrs_list)[j] <- curr_vec[[j]]
-      }
-      t2 <- ff_forward(t2, curr_vec, n, mbrs_list, i, cohesion)
-    }else if(t2$action[i] == "fission-fusion"){
-      # members should always be accounted for to start
-      if(t2$vector[i] != t2$holding[i]){stop(paste("All groups not accounted for at start of line", i, ", fission-fusion group"))}
-      # look forward
-      if(t2$start[i] == max(t2$start)){next}
-      curr_vec <- stringr::str_split(t2$vector[i], "-")[[1]]
-      n <- length(curr_vec)
-      mbrs_list <- list()
-      for(j in 1:n){
-        mbrs_list[[j]] <- t2$members[index_back(t2, "vector", curr_vec[j], i)]
-        names(mbrs_list)[j] <- curr_vec[[j]]
-      }
-      t2 <- ff_forward(t2, curr_vec, n, mbrs_list, i, cohesion)
+      mbrs_list <- as.list(str_split(t2$members[i], "/")[[1]]) %>% `names<-`(curr_vec)
+      t2 <- ff_forward2(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_return)
     }
   }
+
   return(t2)
 }
 
