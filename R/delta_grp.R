@@ -4,7 +4,7 @@
 delta_grp <- function(df, column_name, value, i){
   out <- tryCatch({
     # if(stringr::str_length(df[i, column_name]) > 1){
-    if(length(str_split(df[i, column_name], "-")[[1]]) > 1){
+    if(length(stringr::str_split(df[i, column_name], "-")[[1]]) > 1){
       vals <- stringr::str_split(df[i, column_name], "-")[[1]]
       find_vals <- list()
       prev_ocrs <- list()
@@ -33,7 +33,7 @@ delta_grp <- function(df, column_name, value, i){
         "same"
       }
       # }else if(stringr::str_length(df[i, column_name]) == 1){
-    }else if(length(str_split(df[i, column_name], "-")[[1]]) == 1){
+    }else if(length(stringr::str_split(df[i, column_name], "-")[[1]]) == 1){
       # prev_ocr <- grep(value, df[,column_name])
       prev_ocr <- grep(paste0("\\b", value, "\\b"), df[,column_name])
       prev_val <- df[prev_ocr[max(which(prev_ocr < i))], column_name]
@@ -45,6 +45,7 @@ delta_grp <- function(df, column_name, value, i){
         "fission"
       }
     }
-  }, warning = function(w) { return(NA) })
+  }, warning = function(w) { return(NA) }
+  )
   out
 }
