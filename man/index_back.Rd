@@ -2,7 +2,7 @@
 % Please edit documentation in R/index_back.R
 \name{index_back}
 \alias{index_back}
-\title{Pulls the row number of the last occurrence of a group}
+\title{Pulls the row number of the last occurrence of a group from any combination of vector values}
 \usage{
 index_back(df, column_name, value, i)
 }
@@ -16,6 +16,6 @@ index_back(df, column_name, value, i)
 \item{i}{the row index}
 }
 \description{
-Pulls the row number of the last occurrence of a group
+Pulls the row number of the last occurrence of a group from any combination of vector values
 }
 \keyword{internal}

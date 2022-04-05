@@ -1,7 +1,10 @@
-#' ff_fwd2 relates group-switching rates to average time interval lengths to let
-#' individuals transition between home and non-home groups that they, in some cases
-#' 'magically' find (i.e., they aren't sent to home base, they're sent to their home
-#' group as if they knew where to find them with perfect accuracy.)
+#' ff_fwd2 relates group-switching rates to average time interval lengths to let individuals transition between home and non-home groups that they, in some cases 'magically' find (i.e., they aren't sent to home base, they're sent to their home group as if they knew where to find them with perfect accuracy.)
+#'
+#' @param t2 the dataframe of group and individual switching schedules over matched intervals
+#' @param curr_vec the group tags present in vector at i
+#' @param mbrs_list the list of groups and animals within groups at i
+#' @param i the loop index for t2
+#' @inheritParams simulate_animal
 #' @keywords internal
 ff_forward2 <- function(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_return){
 
@@ -17,8 +20,13 @@ ff_forward2 <- function(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_retur
   next_locs <- unique(unlist(fwd_inds))
   n_next_locs <- length(next_locs)
 
-  # if there is any fission in the next time step and more than one destination-- you could have a single group going to fission-fusion, in which case it's just a fusion for this group
+  # if there is any fission in the next time step and there are multiple groups currently
   if(any(c("fission", "fission-fusion") %in% next_actions) & length(curr_vec) > 1){
+  # if(any(c("fission", "fission-fusion") %in% next_actions)){ # If you're going to do this, you need to put a condition handler on switch, can't switch groups if there's only one
+
+    #' this logic isn't great because f-f events can be purely fusion from the perspective of a section of groups that are joining in, and the length of curr vec has nothing to do with that
+    #' it might make more sense to just have this apply to all next actions, but then I think I need to simulate forward for everything, which means additional restructuring
+    #' I'm gonna call this ok for now, but i may want to drop the length curr vec restriction?
     (t <- str_split(mbrs_list, "-") %>% `names<-`(names(mbrs_list)))
     (grps <- names(mbrs_list))
     (id_tags <- paste0(grps, "_"))
@@ -96,68 +104,78 @@ ff_forward2 <- function(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_retur
       }
     }
     mbrs_list2 <- purrr::map(mbrs_list2, ~ paste(., collapse = "-"))
-    curr_vec2 <- names(mbrs_list2)
+    mbrs_list <- mbrs_list2
+    curr_vec <- names(mbrs_list2)
 
     fwd_inds <- list()
     next_actions <- list()
-    for(k in seq_along(curr_vec2)){
-      fwd_index <- index_forward(t2, "vector", curr_vec2[[k]], i)
+    for(k in seq_along(curr_vec)){
+      fwd_index <- index_forward(t2, "vector", curr_vec[[k]], i)
       fwd_inds[[k]] <- fwd_index
       next_actions[[k]] <- t2[fwd_index, "action"]
-      names(next_actions)[k] <- curr_vec2[[k]]
+      names(next_actions)[k] <- curr_vec[[k]]
     }
     next_locs <- unique(unlist(fwd_inds))
     n_next_locs <- length(next_locs)
   }
 
-  if(any(c("fission", "fission-fusion") %in% next_actions) & n_next_locs == 1){
-    already_there <- t2$holding[next_locs] # if there are already groups there, try to make sure they get ordered ascending to match vector column
-    if(is.na(already_there)){
-      t2$members[next_locs] <- gsub("NA| NA|NA ", "", paste(t2$members[next_locs], unlist(mbrs_list)[[1]])) %>% gsub(" ", "/", .)
-      t2$holding[next_locs] <- gsub("NA| NA|NA ", "", paste(t2$holding[next_locs], names(mbrs_list))) %>% gsub(" ", "-", .)
-    }else{
-      t2$members[next_locs] <- gsub("NA| NA|NA ", "", paste(t2$members[next_locs], unlist(mbrs_list)[[1]])) %>% gsub(" ", "/", .)
-      t2$holding[next_locs] <- gsub("NA| NA|NA ", "", paste(t2$holding[next_locs], names(mbrs_list))) %>% gsub(" ", "-", .)
-
-      new_order <- stringr::str_split(t2$holding[next_locs], "-")[[1]]%>% as.numeric() %>% base::order()
-      t2$holding[next_locs] <- paste(stringr::str_split(t2$holding[next_locs], "-")[[1]][new_order], collapse = "-")
-      t2$members[next_locs] <- paste(stringr::str_split(t2$members[next_locs], "/")[[1]][new_order], collapse = "/")
-
-      # check for duplicate groups
-      x <- str_split(t2$holding[next_locs], "-")[[1]]
-      if( any(duplicated(x)) ){
-        out_n <- length(unique(x))
-        out_list <- list()
-        for(p in 1:out_n){
-          grab_index <- which(x == unique(x)[p])
-          mems <- str_split(t2$members[next_locs], "/")[[1]]
-          out_list[[p]] <- paste(mems[grab_index], collapse = "-")
-        }
-        t2$members[next_locs] <- paste(out_list, collapse = "/")
-        t2$holding[next_locs] <- paste(unique(x), collapse = "-")
-      }
-
-
-    }
-  }
+  # ### I FUCKED something up in this block with the assignment of new members... might be better to revert to prev commit
+  # if(any(c("fission", "fission-fusion") %in% next_actions) & n_next_locs == 1){
+  #   already_there <- t2$holding[next_locs] # if there are already groups there, try to make sure they get ordered ascending to match vector column
+  #   if(is.na(already_there)){
+  #     t2$members[next_locs] <- gsub("NA| NA|NA ", "", paste(t2$members[next_locs], unlist(mbrs_list2)[[1]])) %>% gsub(" ", "/", .)
+  #     t2$holding[next_locs] <- gsub("NA| NA|NA ", "", paste(t2$holding[next_locs], names(mbrs_list2))) %>% gsub(" ", "-", .)
+  #     # t2$members[next_locs] <- paste(unlist(mbrs_list2), collapse = "/")
+  #     # t2$holding[next_locs] <- paste(names(mbrs_list2), collapse = "-")
+  #   }else{
+  #     t2$members[next_locs] <- gsub("NA| NA|NA ", "", paste(t2$members[next_locs], unlist(mbrs_list2)[[1]])) %>% gsub(" ", "/", .)
+  #     t2$holding[next_locs] <- gsub("NA| NA|NA ", "", paste(t2$holding[next_locs], names(mbrs_list2))) %>% gsub(" ", "-", .)
+  #     # t2$members[next_locs] <- paste(t2$members[next_locs], unlist(mbrs_list2)[[1]], sep = "/")
+  #     # nms <- paste(names(mbrs_list2), collapse = "-")
+  #     # t2$holding[next_locs] <- paste(t2$holding[next_locs], nms, sep = "-")
+  #
+  #     new_order <- stringr::str_split(t2$holding[next_locs], "-")[[1]]%>% as.numeric() %>% base::order() # changed order to sort
+  #     t2$holding[next_locs] <- paste(stringr::str_split(t2$holding[next_locs], "-")[[1]][new_order], collapse = "-")
+  #     t2$members[next_locs] <- paste(stringr::str_split(t2$members[next_locs], "/")[[1]][new_order], collapse = "/")
+  #
+  #     # check for duplicate groups
+  #     x <- str_split(t2$holding[next_locs], "-")[[1]]
+  #     if( any(duplicated(x)) ){
+  #       out_n <- length(unique(x))
+  #       out_list <- list()
+  #       for(p in 1:out_n){
+  #         grab_index <- which(x == unique(x)[p])
+  #         mems <- str_split(t2$members[next_locs], "/")[[1]]
+  #         out_list[[p]] <- paste(mems[grab_index], collapse = "-")
+  #       }
+  #       t2$members[next_locs] <- paste(out_list, collapse = "/")
+  #       t2$holding[next_locs] <- paste(unique(x), collapse = "-")
+  #     }
+  #   }
+  # }
 
   # need a condition handler if curr_vec2 is longer than curr_vec
   # and if the names(mbrs_list2)[k] is already at t2$holding[fwd_index], combine the groups
-  if(any(c("fission", "fission-fusion") %in% next_actions) & n_next_locs > 1){
-    for(k in 1:length(mbrs_list2)){
-      un_mbrs_list2 <- unlist(mbrs_list2[k])[[1]]
+  # if(any(c("fission", "fission-fusion") %in% next_actions) & n_next_locs > 1){
+  if(any(c("fission", "fission-fusion") %in% next_actions)){
+
+    for(k in 1:length(mbrs_list)){
+      un_mbrs_list <- unlist(mbrs_list[k])[[1]]
       # function here goes forward to find where to put these based on vector and time interval
-      fwd_index <- index_forward(t2, "vector", value = names(mbrs_list2)[k], i)
+      fwd_index <- index_forward(t2, "vector", value = names(mbrs_list)[k], i)
 
       already_there <- t2$holding[fwd_index] # if there are already groups there, try to make sure they get ordered ascending to match vector column
       if(is.na(already_there)){
-        t2$members[fwd_index] <- gsub("NA| NA|NA ", "", paste(t2$members[fwd_index], un_mbrs_list2)) %>% gsub(" ", "/", .)
-        t2$holding[fwd_index] <- gsub("NA| NA|NA ", "", paste(t2$holding[fwd_index], names(mbrs_list2)[k])) %>% gsub(" ", "-", .)
+        t2$members[fwd_index] <- gsub("NA| NA|NA ", "", paste(t2$members[fwd_index], un_mbrs_list)) %>% gsub(" ", "/", .)
+        t2$holding[fwd_index] <- gsub("NA| NA|NA ", "", paste(t2$holding[fwd_index], names(mbrs_list)[k])) %>% gsub(" ", "-", .)
       }else{
-        t2$members[fwd_index] <- gsub("NA| NA|NA ", "", paste(t2$members[fwd_index], un_mbrs_list2)) %>% gsub(" ", "/", .)
-        t2$holding[fwd_index] <- gsub("NA| NA|NA ", "", paste(t2$holding[fwd_index], names(mbrs_list2)[k])) %>% gsub(" ", "-", .)
+        # t2$members[fwd_index] <- gsub("NA| NA|NA ", "", paste(t2$members[fwd_index], un_mbrs_list2)) %>% gsub(" ", "/", .)
+        # t2$holding[fwd_index] <- gsub("NA| NA|NA ", "", paste(t2$holding[fwd_index], names(mbrs_list2)[k])) %>% gsub(" ", "-", .)
+        t2$members[fwd_index] <- paste(t2$members[fwd_index], un_mbrs_list) %>% gsub(" ", "/", .)
+        t2$holding[fwd_index] <- paste(t2$holding[fwd_index], names(mbrs_list)[k]) %>% gsub(" ", "-", .)
 
-        new_order <- stringr::str_split(t2$holding[fwd_index], "-")[[1]] %>% as.numeric() %>% base::order()
+        new_order <- stringr::str_split(t2$holding[fwd_index], "-")[[1]] %>% as.numeric() %>% base::order() # get the order, don't sort the values
+
         t2$holding[fwd_index] <- paste(stringr::str_split(t2$holding[fwd_index], "-")[[1]][new_order], collapse = "-")
         t2$members[fwd_index] <- paste(stringr::str_split(t2$members[fwd_index], "/")[[1]][new_order], collapse = "/")
 

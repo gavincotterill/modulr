@@ -2,17 +2,91 @@
 % Please edit documentation in R/ff_forward2.R
 \name{ff_forward2}
 \alias{ff_forward2}
-\title{ff_fwd2 relates group-switching rates to average time interval lengths to let
-individuals transition between home and non-home groups that they, in some cases
-'magically' find (i.e., they aren't sent to home base, they're sent to their home
-group as if they knew where to find them with perfect accuracy.)}
+\title{ff_fwd2 relates group-switching rates to average time interval lengths to let individuals transition between home and non-home groups that they, in some cases 'magically' find (i.e., they aren't sent to home base, they're sent to their home group as if they knew where to find them with perfect accuracy.)}
 \usage{
 ff_forward2(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_return)
 }
-\description{
-ff_fwd2 relates group-switching rates to average time interval lengths to let
-individuals transition between home and non-home groups that they, in some cases
-'magically' find (i.e., they aren't sent to home base, they're sent to their home
-group as if they knew where to find them with perfect accuracy.)
+\arguments{
+\item{t2}{the dataframe of group and individual switching schedules over matched intervals}
+
+\item{curr_vec}{the group tags present in vector at i}
+
+\item{mbrs_list}{the list of groups and animals within groups at i}
+
+\item{i}{the loop index for t2}
+
+\item{time_to_leave}{The average amount of time spent within the home
+group prior to leaving (days per sampling period).}
+
+\item{time_to_return}{The average amount of time spent abroad before
+returning to home group.}
 }
+\description{
+ff_fwd2 relates group-switching rates to average time interval lengths to let individuals transition between home and non-home groups that they, in some cases 'magically' find (i.e., they aren't sent to home base, they're sent to their home group as if they knew where to find them with perfect accuracy.)
+}
+\keyword{I}
+\keyword{I'm}
+\keyword{a}
+\keyword{actions,}
+\keyword{additional}
+\keyword{all}
+\keyword{and}
+\keyword{apply}
+\keyword{are}
+\keyword{be}
+\keyword{because}
+\keyword{but}
+\keyword{call}
+\keyword{can}
+\keyword{curr}
+\keyword{do}
+\keyword{drop}
+\keyword{events}
+\keyword{everything,}
+\keyword{f-f}
+\keyword{for}
+\keyword{forward}
+\keyword{from}
+\keyword{fusion}
+\keyword{gonna}
+\keyword{great}
+\keyword{groups}
+\keyword{has}
+\keyword{have}
+\keyword{i}
+\keyword{in,}
 \keyword{internal}
+\keyword{isn't}
+\keyword{it}
+\keyword{joining}
+\keyword{just}
+\keyword{length}
+\keyword{logic}
+\keyword{make}
+\keyword{may}
+\keyword{means}
+\keyword{might}
+\keyword{more}
+\keyword{need}
+\keyword{next}
+\keyword{nothing}
+\keyword{now,}
+\keyword{of}
+\keyword{ok}
+\keyword{perspective}
+\keyword{purely}
+\keyword{restriction?}
+\keyword{restructuring}
+\keyword{section}
+\keyword{sense}
+\keyword{simulate}
+\keyword{that}
+\keyword{the}
+\keyword{then}
+\keyword{think}
+\keyword{this}
+\keyword{to}
+\keyword{vec}
+\keyword{want}
+\keyword{which}
+\keyword{with}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/index_back_same.R
 \name{index_back_same}
 \alias{index_back_same}
-\title{Pulls the row number of the last occurrence of a group}
+\title{Pulls the row number of the last occurrence of the identical group/vector configuration}
 \usage{
 index_back_same(df, column_name, value, i)
 }
@@ -16,6 +16,6 @@ index_back_same(df, column_name, value, i)
 \item{i}{the row index}
 }
 \description{
-Pulls the row number of the last occurrence of a group
+Pulls the row number of the last occurrence of the identical group/vector configuration
 }
 \keyword{internal}
