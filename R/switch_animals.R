@@ -9,7 +9,7 @@ switch_animals <- function(inlist, elem_leave){
   elem_leave = paste(unlist(elem_leave), sep = " ")
   removed = lapply(inlist, setdiff, elem_leave)
   for(i in seq_along(elem_leave)){
-    home_group <- str_extract(elem_leave[i], "\\d{1,}(?=_)")
+    home_group <- stringr::str_extract(elem_leave[i], "\\d{1,}(?=_)")
     other_groups <- names(removed)[!names(removed) %in% home_group]
     send_to_group <- sample(other_groups, 1)
     removed[[send_to_group]] <- c(removed[[send_to_group]], elem_leave[i])

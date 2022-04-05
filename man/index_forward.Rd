@@ -4,7 +4,7 @@
 \alias{index_forward}
 \title{Index forward}
 \usage{
-index_forward(df, column_name, value, i, idx = t2$idx)
+index_forward(df, column_name, value, i)
 }
 \arguments{
 \item{df}{the t2 dataframe}
