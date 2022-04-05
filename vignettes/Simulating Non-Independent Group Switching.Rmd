@@ -1,0 +1,50 @@
+---
+title: "Simulating Non-Independent Group Switching"
+author: "Gavin Cotterill"
+date: "4/5/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## The Basics
+
+The user-end of `simulate_non_independence()` looks similar to `simulate_animal()` and `simulate_graph()` in that you specify all of the same parameters. Internally it calls a modified version of `simulate_graph()` to first simulate entire-group movements between as many states as there are groups. Then it populates each group with individuals, and forward simulates their transitions within the group movements. Whenever groups come together ("fuse"), all individuals are in equal 'contact' with one another (ie, they're all considered to be 'together') but within the code they are still being tracked such that they may or may not be attached to their home group. Whenever groups split ("fission"), groups move as a unit but a sampling procedure occurs that can send animals back to their home group, or have them depart from their home group. "Returning" individuals can rejoin their home group if they were just in the same place ("together", but not attached to their home group, aka they were with a non-resident group that happened to join up with their home group), or they can be sent to their home group at the next time interval as though they magically knew the location of the home group. "Departing" individuals can switch to an adjacent non-resident group with which they just shared a location, as though two groups came together, and rather than following their best friends, they left with their new acquaintances.
+
+Whole group movements between location-states occur as a function of time_to_leave and time_to_return.
+Individual transitions between groups occur as groups happen to come together, and departures from the home group are driven by fission events as individuals 'stick' to co-located groups (tied to time_to_return rates... but this part probably needs improvement). Returning to the home groups is similarly tied to time_to_return rates.
+```{r, include = FALSE}
+#---- load packages --------
+sapply(c("modulr"), require, character = T)
+```
+
+```{r sim non independ}
+set.seed(123)
+t2 <- simulate_non_independence(n_groups = 6,
+                                n_animals = 6*5, # average group size will be 5 animals
+                                time_to_leave = 10,
+                                time_to_return = 2,
+                                travel_time = c(0,2), # travel states currently apply to 'whole group movements' but not individual switching in this function
+                                sampling_duration = 30,
+                                samples_per_day = 1) # this isn't actually being used... I think
+
+# code to check that all animal ids occur at all time intervals and that no one is being lost or duplicated:
+t3 <- t2 %>%
+  dplyr::group_by(start) %>%
+  dplyr::summarise(mems = paste(members, collapse = "-")) %>%
+  dplyr::mutate(mems = stringr::str_replace_all(mems, "/", "-")) %>%
+  dplyr::mutate(mems = stringr::str_split(mems, "-"))
+# mutate(mems = str_replace_all(mems, "-", " "))
+t4 <- lapply(t3$mems, unlist)
+t5 <- purrr::map(t4, sort)
+# length(unique(t5))
+allSame <- function(x) length(unique(x)) == 1
+allSame(t5) # should return TRUE
+
+g <- graph_from_non_independence(t2)
+plot_non_independence(g)
+```
+
+
