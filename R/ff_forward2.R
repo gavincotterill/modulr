@@ -24,27 +24,23 @@ ff_forward2 <- function(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_retur
 
   if(any(c("fission", "fission-fusion") %in% next_actions) & length(curr_vec) > 1){
 
-    (t <- str_split(mbrs_list, "-") %>% `names<-`(names(mbrs_list)))
+    (t <- stringr::str_split(mbrs_list, "-") %>% `names<-`(names(mbrs_list)))
     (grps <- names(mbrs_list))
     (id_tags <- paste0(grps, "_"))
 
-    diff <- t2 %>% group_by(start) %>% summarise(diff = end - start) %>% slice(1)
+    diff <- t2 %>% dplyr::group_by(start) %>% dplyr::summarise(diff = end - start) %>% dplyr::slice(1)
     avg_int <- mean(diff$diff)
     (lh_prob <- (1/time_to_leave) * avg_int) # prob of leaving home
-    (gh_prob <- (1/time_to_return) * avg_int) # avg int / ttr is the prob of being sent to home group
+    gh_prob <- ifelse((1/time_to_return) * avg_int >= 1, 0.9, (1/time_to_return) * avg_int) #### THIS IS AN ISSUE
+    # (gh_prob <- (1/time_to_return) * avg_int) # avg int / ttr is the prob of being sent to home group
 
     # who is with their home group?
     (at_home <- purrr::map2(t, id_tags, ~ stringr::str_subset(., .y) ))
     (at_home <- at_home[lengths(at_home) > 0])
-    (ah_lengths <- lapply(at_home, length))
-    if(length(ah_lengths) > 1){
-      (f <- map(ah_lengths, function(x) rbinom(x, 1, lh_prob) %>% sum(.)))
-      (leaves_home <- map2(at_home, f, ~ sample(., size=.y)))
+    if(length(at_home) >= 1){
+      (f <- purrr::map(lengths(at_home), function(x) rbinom(x, 1, lh_prob) %>% sum(.)))
+      (leaves_home <- purrr::map2(at_home, f, ~ sample(., size=.y)))
       (leaves_home <- leaves_home[lengths(leaves_home) > 0])
-    }else if(length(ah_lengths) == 1){
-       (f <- rbinom(ah_lengths[[1]], 1, lh_prob) %>% sum(.))
-       (leaves_home <- map2(at_home, f, ~ sample(., size=.y)))
-       leaves_home <- leaves_home[lengths(leaves_home) > 0]
     }
 
     # who is not with their home group?
@@ -55,31 +51,21 @@ ff_forward2 <- function(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_retur
 
     (can_rejoin <- purrr::map(not_at_home, ~ stringr::str_subset(., any_id_tags) ))
     (can_rejoin <- can_rejoin[lengths(can_rejoin) > 0])
-    (crj_lengths <- lapply(can_rejoin, length))
-    if(length(crj_lengths) > 1){
-      (f <- map(crj_lengths, function(x) rbinom(x, 1, gh_prob) %>% sum(.)))
-      (does_rejoin <- map2(can_rejoin, f, ~ sample(., size=.y)))
-      does_rejoin <- does_rejoin[lengths(does_rejoin) > 0]
-    }else if(length(crj_lengths) == 1){
-      (f <- rbinom(crj_lengths[[1]], 1, gh_prob) %>% sum(.)) # try this
-      (does_rejoin <- map2(can_rejoin, f, ~ sample(., size=.y)))
-      does_rejoin <- does_rejoin[lengths(does_rejoin) > 0]
+    if(length(can_rejoin) >= 1){
+      (f <- purrr::map(lengths(can_rejoin), function(x) rbinom(x, 1, gh_prob) %>% sum(.)))
+      (does_rejoin <- purrr::map2(can_rejoin, f, ~ sample(., size=.y)))
+      (does_rejoin <- does_rejoin[lengths(does_rejoin) > 0])
     }
     # whoever isn't the three other categories could be sent to their home group
     (can_go_home <- purrr::map(not_at_home, ~ stringr::str_subset(., any_id_tags, negate = TRUE) ))
     (can_go_home <- can_go_home[lengths(can_go_home) > 0])
-    (cgh_lengths <- lapply(can_go_home, length))
-    if(length(cgh_lengths) > 1){
-      (f <- map(cgh_lengths, function(x) rbinom(x, 1, gh_prob) %>% sum(.)))
-      (does_go_home <- map2(can_go_home, f, ~ sample(., size=.y)))
-      does_go_home <- does_go_home[lengths(does_go_home) > 0]
-    }else if(length(cgh_lengths) == 1){
-      (f <- rbinom(cgh_lengths[[1]], 1, gh_prob) %>% sum(.)) # try this
-      (does_go_home <- map2(can_go_home, f, ~ sample(., size=.y)))
-      does_go_home <- does_go_home[lengths(does_go_home) > 0]
+    if(length(can_go_home) >= 1){
+      (f <- purrr::map(lengths(can_go_home), function(x) rbinom(x, 1, gh_prob) %>% sum(.)))
+      (does_go_home <- purrr::map2(can_go_home, f, ~ sample(., size=.y)))
+      (does_go_home <- does_go_home[lengths(does_go_home) > 0])
     }
     # using custom functions to move animals around
-    mbrs_list2 <- str_split(mbrs_list, "-") %>% `names<-`(names(mbrs_list)) # structural bits here that could mess things up down the line
+    mbrs_list2 <- stringr::str_split(mbrs_list, "-") %>% `names<-`(names(mbrs_list)) # structural bits here that could mess things up down the line
     if(exists("does_rejoin")){
       if(length(does_rejoin) > 0){
         mbrs_list2 <- rejoin_animals(mbrs_list2, does_rejoin)
@@ -124,13 +110,13 @@ ff_forward2 <- function(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_retur
         new_order <- stringr::str_split(t2$holding[fwd_index], "-")[[1]] %>% as.numeric() %>% base::order() # get the order, don't sort the values
         t2$holding[fwd_index] <- paste(stringr::str_split(t2$holding[fwd_index], "-")[[1]][new_order], collapse = "-")
         t2$members[fwd_index] <- paste(stringr::str_split(t2$members[fwd_index], "/")[[1]][new_order], collapse = "/")
-        x <- str_split(t2$holding[fwd_index], "-")[[1]]
+        x <- stringr::str_split(t2$holding[fwd_index], "-")[[1]]
         if( any(duplicated(x)) ){
           out_n <- length(unique(x))
           out_list <- list()
           for(p in 1:out_n){
             grab_index <- which(x == unique(x)[p])
-            mems <- str_split(t2$members[fwd_index], "/")[[1]]
+            mems <- stringr::str_split(t2$members[fwd_index], "/")[[1]]
             out_list[[p]] <- paste(mems[grab_index], collapse = "-")
           }
           t2$members[fwd_index] <- paste(out_list, collapse = "/")
