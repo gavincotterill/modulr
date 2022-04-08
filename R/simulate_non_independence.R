@@ -71,7 +71,7 @@ simulate_non_independence <- function(
   grp_lengths_vector <- rand_vect(n_groups, n_animals, sd = 1)
   p <- test %>% dplyr::filter(start == 0) %>% dplyr::arrange(start, end, state)
   p$members <- purrr::map2(p$vector, grp_lengths_vector, ~initiate_group(.x, .y))
-  test <- dplyr::left_join(test, p) %>%
+  test <- dplyr::left_join(test, p, by = c("state", "start", "end", "vector")) %>%
     dplyr::mutate(dplyr::across(dplyr::everything(), dplyr::na_if, "NULL"))
 
   t2 <- test %>%
@@ -114,7 +114,7 @@ simulate_non_independence <- function(
       if(t2$start[i] == max(t2$start)){next}
       curr_vec <- stringr::str_split(t2$vector[i], "-")[[1]]
       mbrs_list <- as.list(stringr::str_split(t2$members[i], "/")[[1]]) %>% `names<-`(curr_vec)
-      t2 <- ff_forward2(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_return)
+      t2 <- ff_forward3(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_return)
     }else if(t2$action[i] == "fusion"){
       # take care of current, but these will also be used looking forward
       curr_vec <- stringr::str_split(t2$vector[i], "-")[[1]]
@@ -146,7 +146,7 @@ simulate_non_independence <- function(
       # look forward
       if(t2$start[i] == max(t2$start)){next}
       mbrs_list <- as.list(stringr::str_split(t2$members[i], "/")[[1]]) %>% `names<-`(curr_vec)
-      t2 <- ff_forward2(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_return)
+      t2 <- ff_forward3(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_return)
     } else if(t2$action[i] %in% c("fission", "fission-fusion")){
       # members should always be accounted for to start
       if(t2$vector[i] != t2$holding[i]){stop(paste("All groups not accounted for at start of line", i, ", fission group."))}
@@ -154,7 +154,7 @@ simulate_non_independence <- function(
       if(t2$start[i] == max(t2$start)){next}
       curr_vec <- stringr::str_split(t2$vector[i], "-")[[1]]
       mbrs_list <- as.list(stringr::str_split(t2$members[i], "/")[[1]]) %>% `names<-`(curr_vec)
-      t2 <- ff_forward2(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_return)
+      t2 <- ff_forward3(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_return)
     }
   }
   return(t2)
