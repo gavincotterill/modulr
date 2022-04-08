@@ -30,9 +30,12 @@ ff_forward3 <- function(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_retur
 
     diff <- t2 %>% dplyr::group_by(start) %>% dplyr::summarise(diff = end - start) %>% dplyr::slice(1)
     avg_int <- mean(diff$diff)
+
     lh_prob <- ifelse((1/time_to_leave) * avg_int >= 1, 0.99, (1/time_to_leave) * avg_int) # prob of leaving home
     gh_prob <- ifelse((1/time_to_return) * avg_int >= 1, 0.99, (1/time_to_return) * avg_int) #### THIS IS AN ISSUE
-    # (gh_prob <- (1/time_to_return) * avg_int) # avg int / ttr is the prob of being sent to home group
+
+    lh_prob <- ifelse(lh_prob <= 0, 0.01, lh_prob)
+    gh_prob <- ifelse(gh_prob <= 0, 0.01, gh_prob)
 
     # who is with their home group?
     (at_home <- purrr::map2(t, id_tags, ~ stringr::str_subset(., .y) ))

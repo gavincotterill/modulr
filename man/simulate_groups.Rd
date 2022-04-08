@@ -9,7 +9,7 @@ simulate_groups(
   n_groups,
   time_to_leave,
   time_to_return,
-  travel_time = c(0, 2),
+  travel_time = c(0.01, 2),
   sampling_duration = 7,
   samples_per_day = 1
 )

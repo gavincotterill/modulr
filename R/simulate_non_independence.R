@@ -5,7 +5,7 @@
 #' t2 <- simulate_non_independence(n_groups = 4,
 #' time_to_leave = 5,
 #' time_to_return = 2,
-#' travel_time = c(0,2),
+#' travel_time = c(0.01,2),
 #' sampling_duration = 7,
 #' samples_per_day = 1)
 #' }
@@ -15,7 +15,7 @@ simulate_non_independence <- function(
   n_animals = 16,
   time_to_leave = 5,
   time_to_return = 2,
-  travel_time = c(0,2),
+  travel_time = c(0.01,2),
   sampling_duration = 7,
   samples_per_day = 1
 ){
@@ -89,7 +89,7 @@ simulate_non_independence <- function(
   #--------------------------------------
   # set.seed(123)
   for(i in 1:nrow(t2)){
-    # if(i == 114){break}
+    # if(i == 120){break}
     if(t2$action[i] %in% c(NA)){
       next
     }else if(t2$action[i] == "same"){
