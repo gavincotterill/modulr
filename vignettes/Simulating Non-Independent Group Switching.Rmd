@@ -1,7 +1,7 @@
 ---
 title: "Simulating Non-Independent Group Switching"
 author: "Gavin Cotterill"
-date: "4/5/2022"
+date: "4/8/2022"
 output: html_document
 ---
 
@@ -11,10 +11,61 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## The Basics
 
-The user-end of `simulate_non_independence()` looks similar to `simulate_animal()` and `simulate_graph()` in that you specify all of the same parameters. Internally it calls a modified version of `simulate_graph()` to first simulate entire-group movements between as many states as there are groups. Then it populates each group with individuals, and forward simulates their transitions within the group movements. Whenever groups come together ("fuse"), all individuals are in equal 'contact' with one another (ie, they're all considered to be 'together') but within the code they are still being tracked such that they may or may not be attached to their home group. Whenever groups split ("fission"), groups move as a unit but a sampling procedure occurs that can send animals back to their home group, or have them depart from their home group. "Returning" individuals can rejoin their home group if they were just in the same place ("together", but not attached to their home group, aka they were with a non-resident group that happened to join up with their home group), or they can be sent to their home group at the next time interval as though they magically knew the location of the home group. "Departing" individuals can switch to an adjacent non-resident group with which they just shared a location, as though two groups came together, and rather than following their best friends, they left with their new acquaintances.
+`simulate_non_independence()` looks similar to `simulate_animal()` and `simulate_graph()` in that you specify all of the same parameters. Internally it calls a modified version of `simulate_graph()` to first generate entire-group movements between as many states as there are groups. This provides a 'schedule' of fission, fusion, fission-fusion, and 'no change' group-level interactions. Each group starts out on its own and I generate a list of individuals to populate each group at the first time step. Groups 'fuse' according to that group-level switching. Whenever 'fission' of groups occurs, there's a second level of sampling to determine whether individuals leave or return to their home groups. 
+
+Say group A and group B come together. When those groups split, individuals in A can go with B or stay with A, and vice versa. Additionally, whenever groups split, any animal not in its home group can be sent to their home group. If there's a C animal in A, when A and B split, C can go to C, or stay with A, or switch to B. 
+
+Currently, when animals 'relocate' to the home group, they just magically find their friends and this basically happens instantaneously. 
 
 Whole group movements between location-states occur as a function of time_to_leave and time_to_return.
-Individual transitions between groups occur as groups happen to come together, and departures from the home group are driven by fission events as individuals 'stick' to co-located groups (tied to time_to_return rates... but this part probably needs improvement). Returning to the home groups is similarly tied to time_to_return rates.
+time_to_leave and time_to_return also inform individual transition probabilities.
+
+When two groups split, individuals in their home group can (1) stay with their home group or (2) depart from the home group. Because these transitions occur on a predetermined time schedule (from the group switching events), individual switching probabilities are weighted by the average length of time interval in the 'switching schedule'. Sampling occurs in the ff_forward3 function: 
+
+```{r, eval = FALSE}
+  # calculating length of time intervals
+  diff <- t2 %>% dplyr::group_by(start) %>% dplyr::summarise(diff = end - start) %>% dplyr::slice(1)
+  avg_int <- mean(diff$diff) # getting the mean
+
+  # calculating the probabilities and making sure they're bound 0-1
+  lh_prob <- ifelse((1/time_to_leave) * avg_int >= 1, 0.99, (1/time_to_leave) * avg_int) # prob of leaving home
+  gh_prob <- ifelse((1/time_to_return) * avg_int >= 1, 0.99, (1/time_to_return) * avg_int) # prob of returning home
+
+  lh_prob <- ifelse(lh_prob <= 0, 0.01, lh_prob)
+  gh_prob <- ifelse(gh_prob <= 0, 0.01, gh_prob)
+
+  # who is with their home group?
+  (at_home <- purrr::map2(t, id_tags, ~ stringr::str_subset(., .y) ))
+  (at_home <- at_home[lengths(at_home) > 0])
+  if(length(at_home) >= 1){
+    (f <- purrr::map(lengths(at_home), function(x) rbinom(x, 1, lh_prob) %>% sum(.))) # binomial draw here
+    (leaves_home <- purrr::map2(at_home, f, ~ sample(., size=.y))) # sampling from the vector of ids with the results of binomial trials
+    (leaves_home <- leaves_home[lengths(leaves_home) > 0])
+  }
+```
+
+Similarly, when groups split, individuals not in their home group face a choice with three options. They can (1) go home, (2) stay where they are, or (3) switch to a different non-resident group with which they were just co-located. Here I used a multinomial draw where the probability of going home is as defined above, and the remaining probability is evenly split between options 2 and 3.
+
+```{r, eval = FALSE}
+  # who is not with their home group?
+  (not_at_home <- purrr::map2(t, id_tags, ~ stringr::str_subset(., .y, negate = TRUE) ))
+  (not_at_home <- not_at_home[lengths(not_at_home) > 0])
+  if(length(not_at_home) >= 1){
+    (f <- purrr::map(lengths(not_at_home), function(x) rmultinom(n = 1, size = x, prob = c( gh_prob, (1-gh_prob)/2, (1-gh_prob)/2 )))) # multinom draw
+    (go_home_samp <- purrr::flatten(purrr::map(f, 1))) # extract the right values for each
+    (switch_samp <- purrr::flatten(purrr::map(f, 3)))
+    # sample from not_at_home once
+    (does_go_home <- purrr::map2(not_at_home, go_home_samp, ~ sample(., size=.y)))
+    does_go_home <- does_go_home[lengths(does_go_home) > 0]
+    # then not_at_home needs to be updated so we don't double dip
+    if(length(does_go_home) > 0){
+      (not_at_home <- purrr::map2(not_at_home, paste(unlist(does_go_home), collapse = "|"), ~ stringr::str_subset(., .y, negate = T) ))
+    }
+    (does_switch <- purrr::map2(not_at_home, switch_samp, ~ sample(., size=.y)))
+    does_switch <- does_switch[lengths(does_switch) > 0]
+  }
+```
+
 ```{r, include = FALSE}
 #---- load packages --------
 devtools::load_all()
@@ -22,27 +73,78 @@ devtools::load_all()
 
 ```{r sim non independ}
 set.seed(123)
+ttl = 5
+ttr = 2
 t2 <- simulate_non_independence(n_groups = 6,
                                 n_animals = 6*5, # average group size will be 5 animals
-                                time_to_leave = 10,
-                                time_to_return = 2,
+                                time_to_leave = ttl,
+                                time_to_return = ttr,
                                 travel_time = c(0,2), # travel states currently apply to 'whole group movements' but not individual switching in this function
-                                sampling_duration = 30,
-                                samples_per_day = 1) # this isn't actually being used... I think
+                                sampling_duration = 90) 
+head(t2, n = 12)
+```
+The function returns a data.frame like so.
 
-# code to check that all animal ids occur at all time intervals and that no one is being lost or duplicated:
+We can also double check that all animal ids occur at all time intervals and that no one is being lost or duplicated:
+
+```{r}
 t3 <- t2 %>%
   dplyr::group_by(start) %>%
   dplyr::summarise(mems = paste(members, collapse = "-")) %>%
   dplyr::mutate(mems = stringr::str_replace_all(mems, "/", "-")) %>%
   dplyr::mutate(mems = stringr::str_split(mems, "-"))
-# mutate(mems = str_replace_all(mems, "-", " "))
 t4 <- lapply(t3$mems, unlist)
 t5 <- purrr::map(t4, sort)
-# length(unique(t5))
 allSame <- function(x) length(unique(x)) == 1
-allSame(t5) # should return TRUE
+t6 <- purrr::map2(t5, "", ~ stringr::str_subset(., .y) )
+allSame(t6) # should return true
+```
 
+In addition, we might want to be sure that our individual group-switching rates match with the rates we specified at the outset (since we had to get a little creative when we weighted by time interval length). On average, we expect that the ratio of time that individuals spend away from their home group as opposed to with their home group should be approximately time_to_return:time_to_leave.
+
+```{r}
+# time to return / time_to leave should be approximately equal (on average) to
+# time spent not at home/ time spent with home group (inclusive)
+get_times <- function(t2, id){
+
+  grp <- stringr::str_extract(id, "\\d{1,}_") %>% gsub("_", "", .)
+
+  max_time <- max(t2$end)
+
+  p <- t2[stringr::str_which(t2$members, id),] %>%
+    dplyr::mutate(time = end - start)
+
+  p2 <- p %>% dplyr::filter(vector == grp)
+  p3 <- p %>% dplyr::filter(stringr::str_detect(vector, grp))
+  p4 <- p %>% dplyr::filter(stringr::str_detect(vector, grp, negate = TRUE))
+
+  out <- data.frame(id = id,
+                    grp = grp,
+                    home_exclusive = sum(p2$time) / max_time,
+                    home_inclusive = sum(p3$time) / max_time,
+                    not_home = sum(p4$time) / max_time
+                    )
+  return(out)
+}
+
+ids <- t6[[1]]
+
+time_df <- get_times(t2 = t2, id = ids[[1]])
+for(i in 2:length(ids)){
+  time_df <- rbind(time_df, get_times(t2, id = ids[[i]]))
+}
+
+# this value should be close to 'mean2':
+ttr/ttl
+time_df %>% dplyr::mutate(#rat1 = not_home/home_exclusive,
+                          rat2 = not_home/home_inclusive) %>%
+  dplyr::summarise(#mean1 = mean(rat1),
+                   mean2 = mean(rat2))
+```
+Longer sampling periods will be required to get these numbers to match when the switching rates are longer.
+
+Last, we can create a graph where edge weights represent the pair-wise time spent together and plot it using these functions:
+```{r}
 g <- graph_from_non_independence(t2)
 plot_non_independence(g)
 ```
