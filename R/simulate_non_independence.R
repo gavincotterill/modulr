@@ -97,18 +97,27 @@ simulate_non_independence <- function(
       if(is.na(t2$members[i])){
         t2$members[i] <- t2$members[index_back_same(t2, "vector", t2$vector[i], i)]
       }else{
-        (grp_tags <- stringr::str_extract_all(t2$members[i], "\\d{1,}(?=_)")[[1]] %>% unique())
+        (existing_grps <- stringr::str_split(t2$holding[i], "-")[[1]])
+        (existing_mems <- stringr::str_split(t2$members[i], "/")[[1]])
+
         (incoming_grps <- stringr::str_split(t2$vector[i], "-")[[1]])
         (incoming_ids <- stringr::str_split(t2$members[index_back_same(t2, "vector", t2$vector[i], i)], "/")[[1]])
-        (existing_mems <- stringr::str_split(t2$members[i], "/")[[1]])
+
+        exist_mem_lst <- vector("list", length(incoming_ids))
+        missing_grp_vec <- !incoming_grps %in% existing_grps
+        exist_mem_lst[missing_grp_vec==FALSE] <- existing_mems
+
+        out_ids <- list()
         for(k in seq_along(incoming_grps)){
-          if(incoming_grps[k] %in% grp_tags){
-            grp_to_paste <- grp_tags[which(grp_tags == incoming_grps[k])]
-            ids_to_paste <- existing_mems[stringr::str_detect(existing_mems, paste0(grp_to_paste,"_"))]
-            incoming_ids[k] <- paste(incoming_ids[k], ids_to_paste, sep = "-")
+          if(!incoming_grps[k] %in% existing_grps){
+            (out_ids[k] <- incoming_ids[k])
+          }else if(incoming_grps[k] %in% existing_grps){
+            (grp_to_paste <- existing_grps[which(existing_grps == incoming_grps[k])])
+            (ids_to_paste <- exist_mem_lst[[k]])
+            (out_ids[k] <- paste(incoming_ids[k], ids_to_paste, sep = "-"))
           }
         }
-        t2$members[i] <- paste(incoming_ids, collapse = "/")
+        t2$members[i] <- paste(out_ids, collapse = "/")
       }
       # look forward
       if(t2$start[i] == max(t2$start)){next}
@@ -130,18 +139,27 @@ simulate_non_independence <- function(
       if(is.na(t2$members[i])){
         t2$members[i] <- paste(unlist(mbrs_list), collapse = "/") # assign current
       }else{
-        (grp_tags <- stringr::str_extract_all(t2$members[i], "\\d{1,}(?=_)")[[1]] %>% unique())
-        (incoming_grps <- stringr::str_split(t2$vector[i], "-")[[1]])
-        (incoming_ids <- paste(mbrs_list, sep = " "))
+        (existing_grps <- stringr::str_split(t2$holding[i], "-")[[1]])
         (existing_mems <- stringr::str_split(t2$members[i], "/")[[1]])
+
+        (incoming_grps <- stringr::str_split(t2$vector[i], "-")[[1]])
+        (incoming_ids <- stringr::str_split(t2$members[index_back_same(t2, "vector", t2$vector[i], i)], "/")[[1]])
+
+        exist_mem_lst <- vector("list", length(incoming_ids))
+        missing_grp_vec <- !incoming_grps %in% existing_grps
+        exist_mem_lst[missing_grp_vec==FALSE] <- existing_mems
+
+        out_ids <- list()
         for(k in seq_along(incoming_grps)){
-          if(incoming_grps[k] %in% grp_tags){
-            grp_to_paste <- grp_tags[which(grp_tags == incoming_grps[k])]
-            ids_to_paste <- existing_mems[stringr::str_detect(existing_mems, paste0(grp_to_paste,"_"))]
-            incoming_ids[k] <- paste(incoming_ids[k], ids_to_paste, sep = "-")
+          if(!incoming_grps[k] %in% existing_grps){
+            (out_ids[k] <- incoming_ids[k])
+          }else if(incoming_grps[k] %in% existing_grps){
+            (grp_to_paste <- existing_grps[which(existing_grps == incoming_grps[k])])
+            (ids_to_paste <- exist_mem_lst[[k]])
+            (out_ids[k] <- paste(incoming_ids[k], ids_to_paste, sep = "-"))
           }
         }
-        t2$members[i] <- paste(incoming_ids, collapse = "/")
+        t2$members[i] <- paste(out_ids, collapse = "/")
       }
       # look forward
       if(t2$start[i] == max(t2$start)){next}
