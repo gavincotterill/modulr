@@ -28,23 +28,14 @@ ff_forward3 <- function(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_retur
     (grps <- names(mbrs_list))
     (id_tags <- paste0(grps, "_"))
 
-    # diff <- t2 %>% dplyr::group_by(start) %>% dplyr::summarise(diff = end - start) %>% dplyr::slice(1)
-    # avg_int <- mean(diff$diff)
-#
-#     lh_prob <- ifelse((1/time_to_leave) * avg_int >= 1, 0.99, (1/time_to_leave) * avg_int) # prob of leaving home
-#     gh_prob <- ifelse((1/time_to_return) * avg_int >= 1, 0.99, (1/time_to_return) * avg_int) #### THIS IS AN ISSUE
-#
-#     lh_prob <- ifelse(lh_prob <= 0, 0.01, lh_prob)
-#     gh_prob <- ifelse(gh_prob <= 0, 0.01, gh_prob)
-
     (lh_prob <- (1/time_to_leave) / ((1/time_to_leave) + (1/time_to_return)))
     (gh_prob <- (1/time_to_return) /  ((1/time_to_leave) + (1/time_to_return)))
 
-    lh_prob <- ifelse(lh_prob >= 1, 0.99, lh_prob)
-    gh_prob <- ifelse(gh_prob >= 1, 0.99, gh_prob)
-
-    lh_prob <- ifelse(lh_prob <= 0, 0.01, lh_prob)
-    gh_prob <- ifelse(gh_prob <= 0, 0.01, gh_prob)
+    # lh_prob <- ifelse(lh_prob >= 1, 0.99, lh_prob)
+    # gh_prob <- ifelse(gh_prob >= 1, 0.99, gh_prob)
+    #
+    # lh_prob <- ifelse(lh_prob <= 0, 0.01, lh_prob)
+    # gh_prob <- ifelse(gh_prob <= 0, 0.01, gh_prob)
 
     # who is with their home group?
     (at_home <- purrr::map2(t, id_tags, ~ stringr::str_subset(., .y) ))
@@ -57,7 +48,9 @@ ff_forward3 <- function(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_retur
 
     # who is not with their home group?
     (not_at_home <- purrr::map2(t, id_tags, ~ stringr::str_subset(., .y, negate = TRUE) ))
-    (not_at_home <- not_at_home[lengths(not_at_home) > 0])
+    # (not_at_home <- not_at_home[lengths(not_at_home) > 0])
+    (not_at_home <- not_at_home[lengths(not_at_home) > 0 & not_at_home != '']) # added 'and not empty string'
+
     # n is always one because we're dealing with one group at a time
     # size is the number of individuals in the group
     # prob is a vector of probabilities for:
