@@ -39,11 +39,11 @@ ff_forward3 <- function(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_retur
 
     # who is with their home group?
     (at_home <- purrr::map2(t, id_tags, ~ stringr::str_subset(., .y) ))
-    (at_home <- at_home[lengths(at_home) > 0])
+    (at_home <- at_home[lengths(at_home) > 0 & at_home != ''])
     if(length(at_home) >= 1){
       (f <- purrr::map(lengths(at_home), function(x) rbinom(x, 1, lh_prob) %>% sum(.)))
       (leaves_home <- purrr::map2(at_home, f, ~ sample(., size=.y)))
-      (leaves_home <- leaves_home[lengths(leaves_home) > 0])
+      (leaves_home <- leaves_home[lengths(leaves_home) > 0 & leaves_home != ''])
     }
 
     # who is not with their home group?
@@ -63,13 +63,13 @@ ff_forward3 <- function(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_retur
       (switch_samp <- purrr::flatten(purrr::map(f, 3)))
       # sample from not_at_home once
       (does_go_home <- purrr::map2(not_at_home, go_home_samp, ~ sample(., size=.y)))
-      does_go_home <- does_go_home[lengths(does_go_home) > 0]
+      does_go_home <- does_go_home[lengths(does_go_home) > 0 & does_go_home != '']
       # then not_at_home needs to be updated
       if(length(does_go_home) > 0){
         (not_at_home <- purrr::map2(not_at_home, paste(unlist(does_go_home), collapse = "|"), ~ stringr::str_subset(., .y, negate = T) ))
       }
       (does_switch <- purrr::map2(not_at_home, switch_samp, ~ sample(., size=.y)))
-      does_switch <- does_switch[lengths(does_switch) > 0]
+      does_switch <- does_switch[lengths(does_switch) > 0 & does_switch != '']
     }
 
     # using custom functions to move animals around
