@@ -28,11 +28,20 @@ ff_forward3 <- function(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_retur
     (grps <- names(mbrs_list))
     (id_tags <- paste0(grps, "_"))
 
-    diff <- t2 %>% dplyr::group_by(start) %>% dplyr::summarise(diff = end - start) %>% dplyr::slice(1)
-    avg_int <- mean(diff$diff)
+    # diff <- t2 %>% dplyr::group_by(start) %>% dplyr::summarise(diff = end - start) %>% dplyr::slice(1)
+    # avg_int <- mean(diff$diff)
+#
+#     lh_prob <- ifelse((1/time_to_leave) * avg_int >= 1, 0.99, (1/time_to_leave) * avg_int) # prob of leaving home
+#     gh_prob <- ifelse((1/time_to_return) * avg_int >= 1, 0.99, (1/time_to_return) * avg_int) #### THIS IS AN ISSUE
+#
+#     lh_prob <- ifelse(lh_prob <= 0, 0.01, lh_prob)
+#     gh_prob <- ifelse(gh_prob <= 0, 0.01, gh_prob)
 
-    lh_prob <- ifelse((1/time_to_leave) * avg_int >= 1, 0.99, (1/time_to_leave) * avg_int) # prob of leaving home
-    gh_prob <- ifelse((1/time_to_return) * avg_int >= 1, 0.99, (1/time_to_return) * avg_int) #### THIS IS AN ISSUE
+    (lh_prob <- (1/time_to_leave) / ((1/time_to_leave) + (1/time_to_return)))
+    (gh_prob <- (1/time_to_return) /  ((1/time_to_leave) + (1/time_to_return)))
+
+    lh_prob <- ifelse(lh_prob >= 1, 0.99, lh_prob)
+    gh_prob <- ifelse(gh_prob >= 1, 0.99, gh_prob)
 
     lh_prob <- ifelse(lh_prob <= 0, 0.01, lh_prob)
     gh_prob <- ifelse(gh_prob <= 0, 0.01, gh_prob)
@@ -110,6 +119,7 @@ ff_forward3 <- function(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_retur
     for(k in 1:length(mbrs_list)){
       un_mbrs_list <- unlist(mbrs_list[k])[[1]]
       fwd_index <- index_forward(t2, "vector", value = names(mbrs_list)[k], i)
+      # if(!isTRUE(fwd_index)){next}
       already_there <- t2$holding[fwd_index]
       if(is.na(already_there)){
         t2$members[fwd_index] <- gsub("NA| NA|NA ", "", paste(t2$members[fwd_index], un_mbrs_list)) %>% gsub(" ", "/", .)
