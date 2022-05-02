@@ -11,16 +11,16 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## The Basics
 
-`simulate_non_independence()` looks similar to `simulate_animal()` and `simulate_graph()` in that you specify all of the same parameters. Internally it calls a modified version of `simulate_graph()` to first generate entire-group movements between as many states as there are groups. This provides a 'schedule' of fission, fusion, fission-fusion, and 'no change' group-level interactions. Each group starts out on its own and I generate a list of individuals to populate each group at the first time step. Groups 'fuse' according to that group-level switching. Whenever 'fission' of groups occurs, there's a second level of sampling to determine whether individuals leave or return to their home groups. 
+`simulate_non_independence()` looks similar to `simulate_animal()` and `simulate_graph()` in that you specify all of the same parameters. Internally it calls a modified version of `simulate_graph()` to first generate entire-group movements between as many states as there are groups. This provides a 'schedule' of fission, fusion, fission-fusion, and 'no change' group-level interactions. Each group starts out on its own and I generate a list of individuals to populate each group at the first time step. Groups 'fuse' according to that group-level switching. Whenever 'fission' of groups occurs, there's a second level of sampling to determine individual behavior. 
 
-Say group A and group B come together. When those groups split, individuals in A can go with B or stay with A, and vice versa. Additionally, whenever groups split, any animal not in its home group can be sent to their home group. If there's a C animal in A, when A and B split, C can go to C, or stay with A, or switch to B. 
+Say group A and group B come together. When those groups split, individuals in A can go with B or stay with A and vice versa. Additionally, whenever groups split, any animal not in its home group can be sent to their home group. For example, if there's a group C animal in A when A and B split, the group C animal can go find C, or stay with A, or switch to B. Currently, if 'C' chooses to go home, they just magically find their friends and this basically happens instantaneously. 
 
-Currently, when animals 'relocate' to the home group, they just magically find their friends and this basically happens instantaneously. 
+## Switching Rates and Probabilities
 
 Whole group movements between location-states occur as a function of time_to_leave and time_to_return.
-time_to_leave and time_to_return also inform individual transition probabilities.
+time_to_leave and time_to_return also inform the individual transition probabilities.
 
-When two groups split, individuals in their home group can (1) stay with their home group or (2) depart from the home group. Because these transitions occur on a predetermined time schedule (from the group switching events), individual switching probabilities are weighted by the average length of time interval in the 'switching schedule'. Sampling occurs in the ff_forward3 function: 
+When two groups split, individuals in their home group can (1) stay with their home group or (2) depart from the home group. Because these transitions occur on a predetermined time schedule (created by the group-level events), individual switching probabilities are weighted by the average length of time interval in the 'switching schedule'. Sampling occurs in an internal function called `ff_forward3()`, excerpted here: 
 
 ```{r, eval = FALSE}
   # calculating length of time intervals
@@ -44,14 +44,17 @@ When two groups split, individuals in their home group can (1) stay with their h
   }
 ```
 
-Similarly, when groups split, individuals not in their home group face a choice with three options. They can (1) go home, (2) stay where they are, or (3) switch to a different non-resident group with which they were just co-located. Here I used a multinomial draw where the probability of going home is as defined above, and the remaining probability is evenly split between options 2 and 3.
+Similarly, when groups split, individuals not in their home group face a choice, this time with three options. They can (1) go home, (2) stay where they are, or (3) switch to a different non-resident group with which they were just co-located. Here I used a multinomial draw where the probability of going home is as defined above, and the remaining probability is evenly split between options 2 and 3.
 
 ```{r, eval = FALSE}
   # who is not with their home group?
   (not_at_home <- purrr::map2(t, id_tags, ~ stringr::str_subset(., .y, negate = TRUE) ))
   (not_at_home <- not_at_home[lengths(not_at_home) > 0])
   if(length(not_at_home) >= 1){
-    (f <- purrr::map(lengths(not_at_home), function(x) rmultinom(n = 1, size = x, prob = c( gh_prob, (1-gh_prob)/2, (1-gh_prob)/2 )))) # multinom draw
+    (f <- purrr::map(lengths(not_at_home), function(x) rmultinom(n = 1, size = x, 
+                                                                 prob = c( gh_prob, 
+                                                                           (1-gh_prob)/2, 
+                                                                           (1-gh_prob)/2 )))) 
     (go_home_samp <- purrr::flatten(purrr::map(f, 1))) # extract the right values for each
     (switch_samp <- purrr::flatten(purrr::map(f, 3)))
     # sample from not_at_home once
@@ -71,22 +74,33 @@ Similarly, when groups split, individuals not in their home group face a choice 
 devtools::load_all()
 ```
 
+## In Practice
+
+Let's simulate a network with 6 groups and 30 animals for 90 days:
 ```{r sim non independ}
 set.seed(123)
-ttl = 5
-ttr = 2
+ttl = 10
+ttr = 5
 t2 <- simulate_non_independence(n_groups = 6,
-                                n_animals = 6*5, # average group size will be 5 animals
+                                n_animals = 30, # average group size will be 5 animals
                                 time_to_leave = ttl,
                                 time_to_return = ttr,
-                                travel_time = c(0,2), # travel states currently apply to 'whole group movements' but not individual switching in this function
+                                travel_time = c(0.01, 2), # travel states currently apply to 'whole group movements' but not individual switching in this function
                                 sampling_duration = 90) 
-head(t2, n = 12)
 ```
-The function returns a data.frame like so.
+The function returns a data.frame and the first time interval looks like:
+```{r}
+head(t2)
+```
 
-We can also double check that all animal ids occur at all time intervals and that no one is being lost or duplicated:
+The last time interval looks like:
+```{r} 
+tail(t2, n = 5)
+```
 
+### Error Checking
+
+We can double check that all animal ids occur at all time intervals and that no one is being lost or duplicated in the sampling chaos:
 ```{r}
 t3 <- t2 %>%
   dplyr::group_by(start) %>%
@@ -100,24 +114,18 @@ t6 <- purrr::map2(t5, "", ~ stringr::str_subset(., .y) )
 allSame(t6) # should return true
 ```
 
-In addition, we might want to be sure that our individual group-switching rates match with the rates we specified at the outset (since we had to get a little creative when we weighted by time interval length). On average, we expect that the ratio of time that individuals spend away from their home group as opposed to with their home group should be approximately time_to_return:time_to_leave.
+In addition, we might want to be sure that our individual group-switching rates match with the rates we specified at the outset (since we had to get a little creative when we weighted by time interval length). On average, we expect that the ratio of time that individuals spend away from their home group versus with their home group should be approximately time_to_return / time_to_leave.
 
 ```{r}
-# time to return / time_to leave should be approximately equal (on average) to
-# time spent not at home/ time spent with home group (inclusive)
+# Make a little function to perform calculations for each individual:
 get_times <- function(t2, id){
-
   grp <- stringr::str_extract(id, "\\d{1,}_") %>% gsub("_", "", .)
-
   max_time <- max(t2$end)
-
   p <- t2[stringr::str_which(t2$members, id),] %>%
     dplyr::mutate(time = end - start)
-
   p2 <- p %>% dplyr::filter(vector == grp)
   p3 <- p %>% dplyr::filter(stringr::str_detect(vector, grp))
   p4 <- p %>% dplyr::filter(stringr::str_detect(vector, grp, negate = TRUE))
-
   out <- data.frame(id = id,
                     grp = grp,
                     home_exclusive = sum(p2$time) / max_time,
@@ -127,8 +135,10 @@ get_times <- function(t2, id){
   return(out)
 }
 
+# grab all the ids:
 ids <- t6[[1]]
 
+# create a data.frame with all of the times calculated:
 time_df <- get_times(t2 = t2, id = ids[[1]])
 for(i in 2:length(ids)){
   time_df <- rbind(time_df, get_times(t2, id = ids[[i]]))
@@ -136,12 +146,12 @@ for(i in 2:length(ids)){
 
 # this value should be close to 'mean2':
 ttr/ttl
-time_df %>% dplyr::mutate(#rat1 = not_home/home_exclusive,
-                          rat2 = not_home/home_inclusive) %>%
-  dplyr::summarise(#mean1 = mean(rat1),
-                   mean2 = mean(rat2))
+time_df %>% dplyr::mutate(rat2 = not_home/home_inclusive) %>%
+  dplyr::summarise(mean2 = mean(rat2))
 ```
-Longer sampling periods will be required to get these numbers to match when the switching rates are longer.
+I think in principle this works. The first few times I calculated 'mean2', I just happened (?) to get similar values, and the more I mess with it, the less precise it seems. Cranking the sampling period up to a full year seems to reliably generate a close value. Longer sampling periods and/or more individuals are probably required to get these numbers in the same ballpark as the switching rates themselves become longer. That might have important implications for minimum sampling periods, but might also not be terrible interesting. So far it seems like this approach works ok, but maybe there are ways to improve on it.
+
+### Graphs
 
 Last, we can create a graph where edge weights represent the pair-wise time spent together and plot it using these functions:
 ```{r}
@@ -149,4 +159,7 @@ g <- graph_from_non_independence(t2)
 plot_non_independence(g)
 ```
 
+### Run Time 
+
+`simulate_non_independence()` isn't directly comparable to `simulate_graph()` because the latter outputs an igraph object rather than dataframe. In terms of run time, that makes the former faster than the latter. But if you sum the time to run `simulate_non_independence()` and `graph_from_non_independence()`, it's about 1.5 X longer than `simulate_graph()`. IMO that's not too bad considering all of the extra stuff it has to do.
 
