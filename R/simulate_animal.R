@@ -70,7 +70,7 @@ simulate_animal <- function(n_groups,
                                stats::rexp(n = 1, delta), # waiting time from an exponential with delta if they're at home
                                stats::rexp(n = 1, xi)) # waiting time from an exponential with xi if they're away.
 
-    # travel can be instantaneous or up to 1 day long
+    # travel can be instantaneous or there can be travel time
     # coin flip for it
     if(rbinom(1, 1, 0.5) == 1){
 
