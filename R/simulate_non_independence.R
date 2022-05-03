@@ -9,6 +9,8 @@
 #' sampling_duration = 7,
 #' samples_per_day = 1)
 #' }
+#' @export
+
 
 simulate_non_independence <- function(
   n_groups = 4,

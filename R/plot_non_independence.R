@@ -1,5 +1,7 @@
 #' plot non independence
 #' @inheritParams plot_simulated_graph
+#' @export
+
 
 plot_non_independence <- function(g,
                                   vertex.size = 40,
