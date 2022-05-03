@@ -25,12 +25,13 @@ graph_crossing <- function(animals_transformed, exposure_time, infectious_time, 
       end_infectious <- time_step + exposure_time + infectious_time
 
       infectious <- animals_transformed[[index_case]] %>%
-        filter(start <= end_infectious,
-               end >= start_infectious) %>%
-        mutate(start = ifelse(start <= start_infectious, start_infectious, start),
-               end = ifelse(end >= end_infectious, end_infectious, end))
+        dplyr::filter(start <= end_infectious,
+                      end >= start_infectious) %>%
+        dplyr::mutate(start = ifelse(start <= start_infectious, start_infectious, start),
+                      end = ifelse(end >= end_infectious, end_infectious, end))
 
-      new_modules <- infectious[,"state"]$state # not sure if $ is going to work down the road
+      # new_modules <- infectious[,"state"]$state # not sure if $ is going to work down the road
+      new_modules <- infectious[,"state"][[1]] # not sure if $ is going to work down the road
 
       first_row <- data.frame(from = "imported",
                               to = index_case,
@@ -58,7 +59,7 @@ graph_crossing <- function(animals_transformed, exposure_time, infectious_time, 
                               time_step = time_step)
 
         transmissions <- rbind(transmissions, new_row) %>%
-          filter(from != to) # when exposure time is really low (zero) we don't want self-loops
+          dplyr::filter(from != to) # when exposure time is really low (zero) we don't want self-loops
 
       }
 
@@ -78,7 +79,7 @@ graph_crossing <- function(animals_transformed, exposure_time, infectious_time, 
           if(!index_case %in% transmissions$to){next} # if they're not infected yet, skip
           if(is.null(index_case)){ return(transmissions) } # if there are no new infections we should be done
 
-          tmp <- transmissions %>% filter(to == index_case)
+          tmp <- transmissions %>% dplyr::filter(to == index_case)
           start_infectious <- tmp$time_infected
           end_infectious <- tmp$time_infected + infectious_time
 
@@ -86,12 +87,13 @@ graph_crossing <- function(animals_transformed, exposure_time, infectious_time, 
           if(!is.null(new_infectious)){ # this check might not be necessary if everything else is working
 
             infectious <- animals_transformed[[index_case]]%>%
-              filter(start <= end_infectious, # this filter is throwing error
+              dplyr::filter(start <= end_infectious, # this filter is throwing error
                      end >= start_infectious) %>%
-              mutate(start = ifelse(start <= start_infectious, start_infectious, start),
+              dplyr::mutate(start = ifelse(start <= start_infectious, start_infectious, start),
                      end = ifelse(end >= end_infectious, end_infectious, end))
 
-            new_modules <- infectious[,"state"]$state # not sure if $ is going to work down the road
+            # new_modules <- infectious[,"state"]$state # not sure if $ is going to work down the road
+            new_modules <- infectious[,"state"][[1]] # not sure if $ is going to work down the road
 
             animals_transformed[[index_case]] <- NULL
             new_list <- lapply(animals_transformed, bolts, infectious)
@@ -113,13 +115,13 @@ graph_crossing <- function(animals_transformed, exposure_time, infectious_time, 
 
               # use only first exposure
               transmissions <<- rbind(transmissions, new_row) %>%
-                filter(from != to) %>% # when exposure time is really low (zero) we don't want self-loops
-                group_by(to) %>%
-                arrange(time_exposed) %>%
-                filter(time_exposed == min(time_exposed)) %>% # checked this filter
-                sample_n(1) %>% # is this redundant?... not if there are multiples at same time
-                ungroup() %>%
-                arrange(time_exposed, from)
+                dplyr::filter(from != to) %>% # when exposure time is really low (zero) we don't want self-loops
+                dplyr::group_by(to) %>%
+                dplyr::arrange(time_exposed) %>%
+                dplyr::filter(time_exposed == min(time_exposed)) %>% # checked this filter
+                dplyr::sample_n(1) %>% # is this redundant?... not if there are multiples at same time
+                dplyr::ungroup() %>%
+                dplyr::arrange(time_exposed, from)
             } # close j loop
 
           }# close if !is.null new infectious
