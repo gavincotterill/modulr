@@ -11,6 +11,7 @@
 #' samples_per_day = 1)
 #' g <- graph_from_non_independence(t2)
 #' }
+#' @export
 
 graph_from_non_independence <- function(t2){
   n_groups <- max(t2$state)

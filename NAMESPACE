@@ -2,6 +2,7 @@
 
 export("%>%")
 export(graph_crossing)
+export(graph_from_non_independence)
 export(module_summary)
 export(modulr_plot)
 export(plot_non_independence)
