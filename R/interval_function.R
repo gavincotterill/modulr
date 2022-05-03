@@ -9,5 +9,6 @@ interval_function <- function(groups, intervals){
     data.frame() %>%
     tidyr::fill(state) %>%
     dplyr::select(- end.y) %>%
-    dplyr::rename(end = end.x)
+    dplyr::rename(end = end.x)%>%
+    dplyr::mutate(trigger = ifelse(dplyr::lead(state) != state & state %% 1 == 0, 1 , 0))
 }
