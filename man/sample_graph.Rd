@@ -8,8 +8,9 @@ sample_graph(
   graph,
   sample_nNodes,
   prop_hi_res = 1,
-  hi_res = 30/365,
-  lo_res = 5/365,
+  sampling_duration,
+  hi_res = 12,
+  lo_res = 26/365,
   regime = "grab-two",
   alg = "fast_greedy"
 )
@@ -21,10 +22,11 @@ sample_graph(
 
 \item{prop_hi_res}{The proportion of high resolution data to use}
 
-\item{hi_res}{The observation frequency (observations per sampling period)
-of the high res data}
+\item{sampling_duration}{The number of days to monitor the nodes}
 
-\item{lo_res}{Observations per sampling period of the low res data}
+\item{hi_res}{The observation frequency of the high resolution data, expressed as the number of observations per day.}
+
+\item{lo_res}{The observation frequency of the low resolution data, expressed as the number of observations per day.}
 
 \item{regime}{Whether to sample modules randomly or impose 'evenness'. options include "random", "even", "grab-two"}
 

@@ -3,6 +3,7 @@
 export("%>%")
 export(animals_transformed)
 export(graph_crossing)
+export(graph_from_at)
 export(graph_from_non_independence)
 export(module_summary)
 export(modulr_plot)

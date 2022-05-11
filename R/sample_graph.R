@@ -3,9 +3,9 @@
 #' @param graph The true network to sample
 #' @param sample_nNodes the number of individuals to sample
 #' @param prop_hi_res The proportion of high resolution data to use
-#' @param hi_res The observation frequency (observations per sampling period)
-#'   of the high res data
-#' @param lo_res Observations per sampling period of the low res data
+#' @param sampling_duration The number of days to monitor the nodes
+#' @param hi_res The observation frequency of the high resolution data, expressed as the number of observations per day.
+#' @param lo_res The observation frequency of the low resolution data, expressed as the number of observations per day.
 #' @param regime Whether to sample modules randomly or impose 'evenness'. options include "random", "even", "grab-two"
 #' @param alg the clustering algorithm to use, one of: "fast_greedy", "louvain", "leading_eigen", "walktrap", or "netcarto"
 #'
@@ -33,7 +33,7 @@
 #'                 nModules_sim = length(unique(igraph::V(g_obs)$membership)),
 #'                 qrel_sim = qrel_hat)
 #'}
-sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, hi_res = 30/365, lo_res = 5/365, regime = "grab-two", alg = "fast_greedy"){
+sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, sampling_duration, hi_res = 12, lo_res = 26/365, regime = "grab-two", alg = "fast_greedy"){
   if (!requireNamespace(c("igraph", "dplyr"), quietly = TRUE)) {
     stop(
       "Packages \"igraph\" and \"dplyr\" must be installed to use this function.",
@@ -210,7 +210,7 @@ sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, hi_res = 30/365,
 
     ofd <- data.frame(id = row.names(am)) %>%
       dplyr::mutate(obs_freq = ifelse(as.numeric(row.names(.)) <= nGPS, hi_res, lo_res),
-             n_obs = .data$obs_freq * 365)
+             n_obs = ceiling(.data$obs_freq * sampling_duration)) # here
     ed$fromObs <- ofd$n_obs[match(ed$from, ofd$id)]
     ed$toObs <- ofd$n_obs[match(ed$to, ofd$id)]
     ed$minObs <- pmin(ed$fromObs, ed$toObs)

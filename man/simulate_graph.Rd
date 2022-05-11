@@ -9,7 +9,7 @@ simulate_graph(
   n_groups,
   time_to_leave,
   time_to_return,
-  travel_time = c(0, 1),
+  travel_time,
   sampling_duration,
   sampler = "discrete",
   samples_per_day = 1
