@@ -17,7 +17,7 @@
 #' \donttest{
 #' simulate_animal(time_to_leave = 3,
 #'                 time_to_return = 1,
-#'                 travel_time = c(0, 1),
+#'                 travel_time = c(0.01, 1),
 #'                 n_groups = 4,
 #'                 samples_per_day = 1,
 #'                 sampling_duration = 7)
@@ -26,9 +26,9 @@
 simulate_animal <- function(n_groups,
                            time_to_leave,
                            time_to_return,
-                           travel_time = c(0, 1),
-                           sampling_duration = 365,
-                           samples_per_day = 1
+                           travel_time = c(0.001, 0.002),
+                           sampling_duration,
+                           samples_per_day
 ){
 
   if (!requireNamespace(c("stats"), quietly = TRUE)) {
@@ -70,45 +70,29 @@ simulate_animal <- function(n_groups,
                                stats::rexp(n = 1, delta), # waiting time from an exponential with delta if they're at home
                                stats::rexp(n = 1, xi)) # waiting time from an exponential with xi if they're away.
 
-    # travel can be instantaneous or there can be travel time
-    # coin flip for it
-    if(rbinom(1, 1, 0.5) == 1){
+    cumulative_time <- cumulative_time + waiting_time_now
 
-      cumulative_time <- cumulative_time + waiting_time_now
+    current_state_now <- ifelse(current_state_last == animals_home,
+                                sample(animals_other_groups, size = 1),
+                                animals_home)
 
-      current_state_now <- ifelse(current_state_last == animals_home,
-                                  sample(animals_other_groups, size = 1),
-                                  animals_home)
+    travel_row <- c(current_state_last,
+                    waiting_time_now,
+                    cumulative_time)
 
-      travel_row <- c(current_state_last,
-                      waiting_time_now,
-                      cumulative_time)
+    locations <- as.data.frame(rbind(locations, travel_row))
 
-      locations <- as.data.frame(rbind(locations, travel_row))
+    travelling_time <- sample(seq(from = travel_time[1], to = travel_time[2], by = .001), 1)
 
-      travelling_time <- sample(seq(from = travel_time[1], to = travel_time[2], by = .01), 1)
+    cumulative_time <- cumulative_time + travelling_time
 
-      cumulative_time <- cumulative_time + travelling_time
+    new_row <- c(sample(seq(0.01,0.099, by = 0.01), 1),
+                 travelling_time,
+                 cumulative_time)
 
-      new_row <- c(sample(seq(0.01,0.099, by = 0.01), 1),
-                   travelling_time,
-                   cumulative_time)
+    locations <- as.data.frame(rbind(locations, new_row))
 
-      locations <- as.data.frame(rbind(locations, new_row))
 
-    }else{ # instantaneous switching
-      cumulative_time <- cumulative_time + waiting_time_now
-
-      current_state_now <- ifelse(current_state_last == animals_home,
-                                  sample(animals_other_groups, size = 1),
-                                  animals_home)
-
-      new_row <- c(current_state_last,
-                   waiting_time_now,
-                   cumulative_time)
-
-      locations <- as.data.frame(rbind(locations, new_row))
-    }
   }
 
   # add variable for whether animal is in its "home" group
