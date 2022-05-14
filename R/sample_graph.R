@@ -7,7 +7,8 @@
 #' @param hi_res The observation frequency of the high resolution data, expressed as the number of observations per day.
 #' @param lo_res The observation frequency of the low resolution data, expressed as the number of observations per day.
 #' @param regime Whether to sample modules randomly or impose 'evenness'. options include "random", "even", "grab-two"
-#' @param alg the clustering algorithm to use, one of: "fast_greedy", "louvain", "leading_eigen", "walktrap", or "netcarto"
+#' @param alg the clustering algorithm to use, one of: "fast_greedy","label_prop", "louvain", "leading_eigen", "optimal",
+#' "walktrap", or "netcarto"
 #'
 #' @return g_obs, the graph of the observed network
 #' @export
@@ -40,10 +41,10 @@ sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, sampling_duratio
       call. = FALSE
     )
   }
-  possible_algorithms <- c("netcarto", "fast_greedy", "label_prop", "leading_eigen", "leiden", "louvain", "spinglass", "walktrap")
+  possible_algorithms <- c("netcarto", "fast_greedy", "label_prop", "leading_eigen", "louvain", "optimal","spinglass", "walktrap")
   if(!alg %in% possible_algorithms){
     stop(
-      "alg must take one of the following values: \"netcarto\", \"fast_greedy\", \"label_prop\", \"leading_eigen\", \"leiden\", \"louvain\", \"spinglass\", or \"walktrap\""
+      "alg must take one of the following values: \"netcarto\", \"fast_greedy\", \"label_prop\", \"leading_eigen\", \"louvain\", \"optimal\", \"spinglass\", or \"walktrap\""
     )
   }
   if(alg %in% c("netcarto") & !requireNamespace(c("rnetcarto"), quietly = TRUE)){
