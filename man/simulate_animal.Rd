@@ -10,7 +10,7 @@ simulate_animal(
   time_to_return,
   travel_time = c(0.001, 0.002),
   sampling_duration,
-  samples_per_day
+  samples_per_day = 1
 )
 }
 \arguments{
