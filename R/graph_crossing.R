@@ -1,5 +1,5 @@
 #' Recursive function to calculate graph crossing time and do agent-based SEIR modeling
-#' @param animals_transformed
+#' @param animals_transformed output of the animals_transformed function
 #' @param exposure_time E
 #' @param infectious_time I
 #' @param index_case the animal to start the transmission chain with

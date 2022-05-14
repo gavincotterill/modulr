@@ -7,6 +7,8 @@
 graph_crossing(animals_transformed, exposure_time, infectious_time, index_case)
 }
 \arguments{
+\item{animals_transformed}{output of the animals_transformed function}
+
 \item{exposure_time}{E}
 
 \item{infectious_time}{I}

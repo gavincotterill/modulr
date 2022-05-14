@@ -1,6 +1,6 @@
 #' internal function to graph crossing
-#' @params animal
-#' @params infectious
+#' @param animal
+#' @param infectious
 #' @keywords internal
 
 bolts <- function(animal, infectious){

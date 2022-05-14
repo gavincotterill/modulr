@@ -20,7 +20,9 @@ animals_transformed <- function(n_animals,
   }
   names(animal_list) <- 1:length(animal_list)
   animals_transformed <- lapply(animal_list, dt_fxn)
-  return(animals_transformed)
+
+  out_list <- list(animals_transformed = animals_transformed, animal_list = animal_list)
+  return(out_list)
 }
 
 

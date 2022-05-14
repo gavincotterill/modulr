@@ -28,7 +28,7 @@ simulate_animal <- function(n_groups,
                            time_to_return,
                            travel_time = c(0.001, 0.002),
                            sampling_duration,
-                           samples_per_day
+                           samples_per_day = 1
 ){
 
   if (!requireNamespace(c("stats"), quietly = TRUE)) {
