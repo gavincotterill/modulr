@@ -41,10 +41,10 @@ sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, sampling_duratio
       call. = FALSE
     )
   }
-  possible_algorithms <- c("netcarto", "fast_greedy", "label_prop", "leading_eigen", "louvain", "optimal","spinglass", "walktrap")
+  possible_algorithms <- c("netcarto", "fast_greedy", "label_prop", "leading_eigen", "louvain", "spinglass", "walktrap")
   if(!alg %in% possible_algorithms){
     stop(
-      "alg must take one of the following values: \"netcarto\", \"fast_greedy\", \"label_prop\", \"leading_eigen\", \"louvain\", \"optimal\", \"spinglass\", or \"walktrap\""
+      "alg must take one of the following values: \"netcarto\", \"fast_greedy\",\"label_prop\", \"leading_eigen\", \"louvain\", \"spinglass\", or \"walktrap\""
     )
   }
   if(alg %in% c("netcarto") & !requireNamespace(c("rnetcarto"), quietly = TRUE)){
@@ -236,7 +236,7 @@ sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, sampling_duratio
       }
       igraph::V(g_obs)$membership <- colorOrder
 
-    } else if(length( igraph::E(g_obs) ) >= 2 & alg %in% possible_algorithms[2:8]){
+    } else if(length( igraph::E(g_obs) ) >= 2 & alg %in% possible_algorithms[2:length(possible_algorithms)]){
 
       foo <- eval(parse(text = paste0("cluster_", alg)))
 
