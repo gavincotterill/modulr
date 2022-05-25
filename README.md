@@ -1,4 +1,7 @@
-
+<!-- badges: start -->
+  [![Codecov test coverage](https://codecov.io/gh/gavincotterill/modulr/branch/main/graph/badge.svg)](https://app.codecov.io/gh/gavincotterill/modulr?branch=main)
+  <!-- badges: end -->
+  
 # modulr
 `modulr` is an R package for simulating fission-fusion dynamics as a continuous-time Markov process. It allows users to build `igraph` network graphs with controllable modularity and size. It further simulates sampling designs motivated by prevailing wildlife research methods to facilitate the estimation of network statistics through bootstrapping and optimize study design. 
 

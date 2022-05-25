@@ -32,8 +32,8 @@ Suggests:
     rnetcarto (>= 0.2.4),
     testthat (>= 3.0.0),
     rmarkdown,
-    ggh4x
+    ggh4x,
+    covr
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 Additional_repositories: https://gavincotterill.github.io/drat/
-

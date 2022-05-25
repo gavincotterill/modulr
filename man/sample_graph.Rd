@@ -30,7 +30,8 @@ sample_graph(
 
 \item{regime}{Whether to sample modules randomly or impose 'evenness'. options include "random", "even", "grab-two"}
 
-\item{alg}{the clustering algorithm to use, one of: "fast_greedy", "louvain", "leading_eigen", "walktrap", or "netcarto"}
+\item{alg}{the clustering algorithm to use, one of: "fast_greedy","label_prop", "louvain", "leading_eigen", "optimal",
+"walktrap", or "netcarto"}
 }
 \value{
 g_obs, the graph of the observed network
