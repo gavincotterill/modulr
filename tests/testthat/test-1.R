@@ -1,8 +1,6 @@
 library(testthat)
 library(modulr)
 
-# test_check("modulr")
-
 test_that("simulate_animal creates list", {
   animal <- simulate_animal(time_to_leave = 3,
                             time_to_return = 1,
@@ -157,8 +155,8 @@ test_that("modulr plot works with multiple algorithms", {
   adjmat[lower.tri(adjmat)] <- 0
   rownames(adjmat) <- colnames(adjmat) <- paste0("Animal_", 1:4)
 
-  expect_silent({  assortr_plot(adjmat, alg = "fast_greedy") })
-  expect_silent({  assortr_plot(adjmat) })
+  expect_silent({  modulr_plot(adjmat, alg = "fast_greedy") })
+  expect_silent({  modulr_plot(adjmat) })
 
 })
 
