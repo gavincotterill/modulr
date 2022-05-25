@@ -41,6 +41,11 @@ sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, sampling_duratio
       call. = FALSE
     )
   }
+  if(!regime %in% c("grab-two", "random", "even")){
+    stop(
+      "regime must take one of the following values: \"grab-two\", \"even\",\"random\"."
+    )
+  }
   possible_algorithms <- c("netcarto", "fast_greedy", "label_prop", "leading_eigen", "louvain", "spinglass", "walktrap")
   if(!alg %in% possible_algorithms){
     stop(
