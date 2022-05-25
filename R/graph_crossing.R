@@ -1,8 +1,8 @@
 #' Recursive function to calculate graph crossing time and do agent-based SEIR modeling
-#' @param animals_transformed output of the animals_transformed function
+#' @param animals_transformed first element(?) output of the animals_transformed function
 #' @param exposure_time E
 #' @param infectious_time I
-#' @param index_case the animal to start the transmission chain with
+#' @param index_case the animal to start the transmission chain-- an integer in quotes
 #' @export
 
 graph_crossing <- function(animals_transformed, exposure_time, infectious_time, index_case){

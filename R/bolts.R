@@ -1,6 +1,6 @@
 #' internal function to graph crossing
-#' @param animal
-#' @param infectious
+#' @param animal unique individual
+#' @param infectious a data.table with infectious individuals from previous time step
 #' @keywords internal
 
 bolts <- function(animal, infectious){

@@ -6,6 +6,11 @@
 \usage{
 bolts(animal, infectious)
 }
+\arguments{
+\item{animal}{unique individual}
+
+\item{infectious}{a data.table with infectious individuals from previous time step}
+}
 \description{
 internal function to graph crossing
 }
