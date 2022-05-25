@@ -68,6 +68,17 @@ test_that("simulate_non_independence has all individuals at all intervals", {
   expect_silent(plot_non_independence(g))
 })
 
+test_that("graph_from_at produces a graph", {
+  at <- animals_transformed(n_animals = 12,
+                            n_groups = 2,
+                            time_to_leave = 3,
+                            time_to_return = 1,
+                            travel_time = c(0.001, 1),
+                            sampling_duration = 7)
+  g <- graph_from_at(at[[1]], at[[2]])
+  expect_equal(is(g, "igraph"), TRUE)
+})
+
 
 
 
