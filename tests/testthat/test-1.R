@@ -59,7 +59,7 @@ test_that("simulate_graph continuous creates list", {
 
 test_that("sample_graph creates list", {
 
-  g_d <- simulate_graph(n_animals = 5,
+  g_d <- simulate_graph(n_animals = 12,
                         n_groups = 2,
                         time_to_leave = 5,
                         time_to_return = 2,
@@ -70,10 +70,10 @@ test_that("sample_graph creates list", {
 
   # this is a corner case where NA in membership because fewer than two edges, no qrel calculation possible
   g_obs <- sample_graph(graph = g_d,
-                        sample_nNodes = 3,
+                        sample_nNodes = 6,
                         prop_hi_res = 0.5,
-                        hi_res = 30/365,
-                        lo_res = 5/365,
+                        hi_res = 12,
+                        lo_res = 1/7,
                         sampling_duration = 7,
                         regime = "grab-two",
                         alg = "netcarto")
