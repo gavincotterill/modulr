@@ -58,6 +58,7 @@ for(p in 1:nrow(true_design)){
                                        n_groups = true_design$nModules[p],
                                        time_to_leave = true_design$ttlg[p],
                                        time_to_return = true_design$ttrg[p],
+                                       travel_time = c(0.001, 1),
                                        sampling_duration = dur,
                                        sampler = smpl,
                                        samples_per_day = spd)
@@ -102,9 +103,9 @@ df_nNodes <- data.frame(sample_nNodes = c(5, 10, 15))
 # for simplicity, all of our animals will be observed 5 times during the month
 study_design <- tidyr::crossing(true_design, df_nNodes) %>%
   filter(sample_nNodes <= nNodes) %>%
-  mutate(prop_hi_res = 1,
-         hi_res = 10/365,
-         lo_res = 5/365,
+  mutate(prop_hi_res = 0.5,
+         hi_res = 12,
+         lo_res = 1/7,
          qrel_sim = NA,
          nModules_sim = NA)
 ```
@@ -127,6 +128,7 @@ for(i in 1:nrow(study_design)){
                         prop_hi_res =  study_design$prop_hi_res[i],
                         hi_res = study_design$hi_res[i],
                         lo_res = study_design$lo_res[i],
+                        sampling_duration = dur,
                         regime = "grab-two",
                         alg = "netcarto")
   
@@ -156,6 +158,7 @@ for(i in 1:nrow(study_design)){
                         prop_hi_res =  study_design$prop_hi_res[i],
                         hi_res = study_design$hi_res[i],
                         lo_res = study_design$lo_res[i],
+                        sampling_duration = dur,
                         regime = "grab-two",
                         alg = "netcarto")
   
@@ -209,7 +212,7 @@ plot_sampled_graph(g = actual_graphs[[1]], g_obs = out_nc[[2]][[2]], title = pas
 
 ![](man/figures/unnamed-chunk-6-1.png)
 
-We are intentionally providing an example where netcarto really shines. `plot_sampled_graph()` preserves the layout from the corresponding 'true' network (which is why you have to provide that as the first argument). This means that the nodes are in the same place so we can see who was sampled, and the surrounding polygons are the same color indicating the 'true' community membserhip. Lastly, the node color in `plot_sampled_graph()` shows us the communities that were assigned using the algorithm we selected. These will be new colors, and in this case they tell us that each individual (node) was correctly grouped!
+`plot_sampled_graph()` preserves the layout from the corresponding 'true' network (which is why you have to provide that as the first argument). This means that the nodes are in the same place so we can see who was sampled, and the surrounding polygons are the same color indicating the 'true' community membserhip. Lastly, the node color in `plot_sampled_graph()` shows us the communities that were assigned using the algorithm we selected. These will be new colors, and in this case they tell us that each individual (node) was correctly grouped!
 
 We've already calculated our Qrel (modularity) estimates after sampling, so the last step is to assess how well these sampling designs (in conjunction with the community detection algorithms) performed.
 
