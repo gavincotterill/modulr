@@ -1,3 +1,6 @@
+codecov:
+  token: 42646d3f-1fe0-45d4-87bb-d8fc42fb3029
+
 comment: false
 
 coverage:
@@ -12,3 +15,4 @@ coverage:
         target: auto
         threshold: 1%
         informational: true
+
