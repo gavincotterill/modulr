@@ -79,6 +79,39 @@ test_that("graph_from_at produces a graph", {
   expect_equal(is(g, "igraph"), TRUE)
 })
 
+test_that("netcarto_modules returns expected", {
+  adjmat <- matrix(sample(seq(0, 1, .01), 16), nrow = 4)
+  diag(adjmat) <- 0
+  adjmat[lower.tri(adjmat)] <- 0
+  rownames(adjmat) <- colnames(adjmat) <- paste0("Animal_", 1:4)
+  y1 <- netcarto_modules(adjmat)
+
+  expect_equal(is.vector(y1), TRUE)
+  expect_equal(length(y1), 4)
+
+  g_d <- simulate_graph(n_animals = 5,
+                        n_groups = 2,
+                        time_to_leave = 5,
+                        time_to_return = 2,
+                        travel_time = c(0.001, 2),
+                        sampling_duration = 7,
+                        sampler = "discrete",
+                        samples_per_day = 1)
+
+  # this is a corner case where NA in membership because fewer than two edges, no qrel calculation possible
+  g_obs <- sample_graph(graph = g_d,
+                        sample_nNodes = 4,
+                        prop_hi_res = 0.5,
+                        hi_res = 12,
+                        lo_res = 1/7,
+                        sampling_duration = 7,
+                        regime = "random",
+                        alg = "fast_greedy")
+
+  y2 <- netcarto_modules(g_obs)
+  expect_equal(length(y2), 4)
+
+})
 
 
 
