@@ -1,15 +1,15 @@
 #' Simulate the true simple ratio index values for each dyad in a network
 #' using output from animals_transformed().
 #'
-#' @param animals_transformed output from the animals_transformed function
+#' @param schedule output from the animals_transformed function
 #'
 #' @return sim_igraph, an igraph graph object.
 #' @export
-graph_from_at <- function(animals_transformed) {
+graph_from_schedule <- function(schedule) {
 
 # graph_from_at <- function(animals_transformed, animal_list) {
 
-  ids <- names(animals_transformed)
+  ids <- names(schedule)
   grp_mem <- stringr::str_extract(ids, "\\d{1,}(?=_)")
   # mem_df <- data.frame(ids = ids,
   #                      membership = unlist(lapply(animal_list, function(x) x[['animals_home']])))
@@ -22,15 +22,15 @@ graph_from_at <- function(animals_transformed) {
   dyads$ew <- NA
 
   # n_animals <- length(animal_list)
-  n_animals <- length(animals_transformed)
+  n_animals <- length(schedule)
 
   adj_mat <- matrix(NA, nrow = n_animals, ncol = n_animals)
   row.names(adj_mat) <- colnames(adj_mat) <- ids
 
   for(d in 1:nrow(dyads)){
 
-    t1 <- animals_transformed[[dyads[d,"Var2"]]]
-    t2 <- animals_transformed[[dyads[d,"Var1"]]]
+    t1 <- schedule[[dyads[d,"Var2"]]]
+    t2 <- schedule[[dyads[d,"Var1"]]]
 
     intervals <- data.table::foverlaps(t1, t2) %>%
       dplyr::mutate(start_max = pmax(.data$start, .data$i.start),
