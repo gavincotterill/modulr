@@ -1,13 +1,13 @@
 #' Recursive function to calculate graph crossing time and do agent-based SEIR modeling
-#' @param animals_transformed first element(?) output of the animals_transformed function
+#' @param schedule first element(?) output of the animals_transformed function
 #' @param exposure_time E
 #' @param infectious_time I
 #' @param index_case the animal to start the transmission chain-- an integer in quotes
 #' @export
 
-graph_crossing <- function(animals_transformed, exposure_time, infectious_time, index_case){
+graph_crossing <- function(schedule, exposure_time, infectious_time, index_case){
 
-  N <- length(animals_transformed)
+  N <- length(schedule)
 
   transmissions <- data.frame(from = as.character(),
                               to = as.character(),
@@ -24,7 +24,7 @@ graph_crossing <- function(animals_transformed, exposure_time, infectious_time, 
       start_infectious <- time_step + exposure_time
       end_infectious <- time_step + exposure_time + infectious_time
 
-      infectious <- animals_transformed[[index_case]] %>%
+      infectious <- schedule[[index_case]] %>%
         dplyr::filter(start <= end_infectious,
                       end >= start_infectious) %>%
         dplyr::mutate(start = ifelse(start <= start_infectious, start_infectious, start),
@@ -45,9 +45,9 @@ graph_crossing <- function(animals_transformed, exposure_time, infectious_time, 
 
       time_step <- time_step + 1
 
-      print(paste0("There are ", length(animals_transformed), " animals in memo at the beginning of time_step ", time_step)) # 50 start 1
+      print(paste0("There are ", length(schedule), " animals in memo at the beginning of time_step ", time_step)) # 50 start 1
 
-      new_list <- lapply(animals_transformed, bolts, infectious)
+      new_list <- lapply(schedule, bolts, infectious)
       new_exposures <- new_list[unlist(lapply(new_list, function(x) nrow(x) > 0 ))]
 
       for(j in 1:length(new_exposures)){
@@ -64,18 +64,18 @@ graph_crossing <- function(animals_transformed, exposure_time, infectious_time, 
       }
 
       complete <- transmissions[which(transmissions$time_step == (time_step - 1)), "to"]
-      animals_transformed[which(names(animals_transformed) %in% complete)] <- NULL
+      schedule[which(names(schedule) %in% complete)] <- NULL
     }
 
-  recurser <- function(animals_transformed, exposure_time, infectious_time){
+  recurser <- function(schedule, exposure_time, infectious_time){
 
         time_step <<- time_step + 1
 
-        print(paste0("There are ", length(animals_transformed), " animals in memo the beginning of time_step ", time_step))
+        print(paste0("There are ", length(schedule), " animals in memo the beginning of time_step ", time_step))
 
-        for(m in 1:length(animals_transformed)){
+        for(m in 1:length(schedule)){
           # m = 1
-          index_case <- names(animals_transformed)[m] # was new_exposures
+          index_case <- names(schedule)[m] # was new_exposures
           if(!index_case %in% transmissions$to){next} # if they're not infected yet, skip
           if(is.null(index_case)){ return(transmissions) } # if there are no new infections we should be done
 
@@ -83,10 +83,10 @@ graph_crossing <- function(animals_transformed, exposure_time, infectious_time, 
           start_infectious <- tmp$time_infected
           end_infectious <- tmp$time_infected + infectious_time
 
-          new_infectious <- animals_transformed[[index_case]]
+          new_infectious <- schedule[[index_case]]
           if(!is.null(new_infectious)){ # this check might not be necessary if everything else is working
 
-            infectious <- animals_transformed[[index_case]]%>%
+            infectious <- schedule[[index_case]]%>%
               dplyr::filter(start <= end_infectious, # this filter is throwing error
                      end >= start_infectious) %>%
               dplyr::mutate(start = ifelse(start <= start_infectious, start_infectious, start),
@@ -95,8 +95,8 @@ graph_crossing <- function(animals_transformed, exposure_time, infectious_time, 
             # new_modules <- infectious[,"state"]$state # not sure if $ is going to work down the road
             new_modules <- infectious[,"state"][[1]] # not sure if $ is going to work down the road
 
-            animals_transformed[[index_case]] <- NULL
-            new_list <- lapply(animals_transformed, bolts, infectious)
+            schedule[[index_case]] <- NULL
+            new_list <- lapply(schedule, bolts, infectious)
             new_exposures <- new_list[unlist(lapply(new_list, function(x) nrow(x) > 0 ))]
 
             if(length(new_exposures) == 0){
@@ -129,17 +129,17 @@ graph_crossing <- function(animals_transformed, exposure_time, infectious_time, 
         } # close m loop
 
     complete <- transmissions[which(transmissions$time_step == (time_step - 1)), "to"]
-    animals_transformed[which(names(animals_transformed) %in% complete)] <- NULL # removed $to
+    schedule[which(names(schedule) %in% complete)] <- NULL # removed $to
 
     if(nrow(transmissions) < N){
-      Recall(animals_transformed, exposure_time, infectious_time)
+      Recall(schedule, exposure_time, infectious_time)
     }
 
     return(transmissions) # added for recurser
 
   } # close recurser
 
-  transmissions <- recurser(animals_transformed, exposure_time, infectious_time)
+  transmissions <- recurser(schedule, exposure_time, infectious_time)
 
   return(transmissions)
 

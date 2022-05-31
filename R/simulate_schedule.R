@@ -2,12 +2,12 @@
 #' @inheritParams simulate_groups
 #' @export
 simulate_schedule <- function(n_animals,
-                           n_groups,
-                           time_to_leave,
-                           time_to_return,
-                           travel_time,
-                           sampling_duration,
-                           simulator = "independent"){
+                               n_groups,
+                               time_to_leave,
+                               time_to_return,
+                               travel_time,
+                               sampling_duration,
+                               simulator = "independent"){
   if (!requireNamespace(c("igraph"), quietly = TRUE)) {
     stop("Package \"igraph\"  must be installed to use this function.",call. = FALSE )
   }
