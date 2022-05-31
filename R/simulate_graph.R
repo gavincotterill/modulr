@@ -32,22 +32,13 @@ simulate_graph <- function(n_animals,
                            samples_per_day = 1) {
 
   if (!requireNamespace(c("igraph"), quietly = TRUE)) {
-    stop(
-      "Package \"igraph\"  must be installed to use this function.",
-      call. = FALSE
-    )
+    stop("Package \"igraph\"  must be installed to use this function.",call. = FALSE)
   }
   if (n_groups == 1) {
-    stop(
-      "single module networks are currently not supported -- n_groups must be >= 2",
-      call. = FALSE
-    )
+    stop( "single module networks are currently not supported -- n_groups must be >= 2", call. = FALSE)
   }
   if (!sampler %in% c("discrete", "continuous")) {
-    stop(
-      "sampler must be either \"discrete\" or \"continuous\".",
-      call. = FALSE
-    )
+    stop("sampler must be either \"discrete\" or \"continuous\".",call. = FALSE)
   }
   animal_list <- animal_sample_df <- vector("list", length = n_animals)  # build storage objects
 
@@ -60,8 +51,9 @@ simulate_graph <- function(n_animals,
                                           samples_per_day = samples_per_day,
                                           sampling_duration = sampling_duration)
       animal_sample_df[[a]] <- cbind(animal_list[[a]]$samples,
-                                     id = rep(paste("Animal_", a, sep = ""), nrow(animal_list[[a]]$samples)))
-      names(animal_sample_df)[a] <- paste0("Animal_", a)
+                                     id = rep(paste(animal_list[[a]]$animals_home, a, sep = "_"),
+                                              nrow(animal_list[[a]]$samples)))
+      names(animal_sample_df)[a] <- paste(animal_list[[a]]$animals_home, a, sep = "_")
     }
 
   } else if(length(time_to_leave) == length(time_to_return) & length(time_to_return) == n_animals){
@@ -73,8 +65,9 @@ simulate_graph <- function(n_animals,
                                           samples_per_day = samples_per_day,
                                           sampling_duration = sampling_duration)
       animal_sample_df[[a]] <- cbind(animal_list[[a]]$samples,
-                                     id = rep(paste("Animal_", a, sep = ""), nrow(animal_list[[a]]$samples)))
-      names(animal_sample_df)[a] <- paste0("Animal_", a)
+                                     id = rep(paste(animal_list[[a]]$animals_home, a, sep = "_"),
+                                              nrow(animal_list[[a]]$samples)))
+      names(animal_sample_df)[a] <- paste(animal_list[[a]]$animals_home, a, sep = "_")
 
     }
   } else if( length(time_to_leave) != length(time_to_return) | !length(time_to_leave) %in% c(1, n_animals) | !length(time_to_return) %in% c(1, n_animals)){
@@ -96,9 +89,6 @@ simulate_graph <- function(n_animals,
     vals <- unique(c(ids, ids))
     dyads <- data.frame(t(combn(vals, 2)))
     names(dyads) <- c("Var1", "Var2")
-
-    # dyads <- expand.grid(1:n_animals, 1:n_animals)
-    # dyads <- dyads[which(dyads[, 1] != dyads[, 2]), ] # this still includes eg A--B and B--A, but that shouldn't add much time
 
     adj_mat <- matrix(NA, nrow = n_animals, ncol = n_animals)
     row.names(adj_mat) <- colnames(adj_mat) <- ids
@@ -126,31 +116,11 @@ simulate_graph <- function(n_animals,
     mem_df <- data.frame(ids = names(animal_list),
                          membership = unlist(lapply(animal_list, function(x) x[['animals_home']])))
 
-    # # build SRI adjacency matrix -----
-    # dyads <- expand.grid(1:n_animals, 1:n_animals)
-    # dyads <- dyads[which(dyads[, 1] != dyads[, 2]), ] # this still includes eg A--B and B--A, but that shouldn't add much time
-    # create dyads df
     vals <- unique(c(ids, ids))
     dyads <- data.frame(t(combn(vals, 2)))
     names(dyads) <- c("Var1", "Var2")
     dyads$ew <- NA
 
-    # dt_fxn <- function(animal){
-    #   # one <- group_list[[1]]
-    #   one <- animal
-    #   t1 <- one$locations  %>%
-    #     dplyr::mutate(end = dplyr::lead(.data$cumulative_time),
-    #                   state = dplyr::lead(.data$current_state)) %>%
-    #     dplyr::rename(start = .data$cumulative_time) %>%
-    #     dplyr::select("state", "start","end") %>%
-    #     na.omit() %>%
-    #     dplyr::mutate_all(~as.numeric(.)) %>%
-    #     data.table::setDT()
-    #
-    #   keycols <- c("start", "end")
-    #   t2 <- data.table::setkeyv(t1, keycols)
-    #   t2
-    # }
     animals_transformed <- lapply(animal_list, dt_fxn)
 
     adj_mat <- matrix(NA, nrow = n_animals, ncol = n_animals)

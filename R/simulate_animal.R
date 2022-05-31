@@ -24,18 +24,15 @@
 #'}
 #'
 simulate_animal <- function(n_groups,
-                           time_to_leave,
-                           time_to_return,
-                           travel_time = c(0.001, 0.002),
-                           sampling_duration,
-                           samples_per_day = 1
+                            time_to_leave,
+                            time_to_return,
+                            travel_time = c(0.001, 0.002),
+                            sampling_duration,
+                            samples_per_day = 1
 ){
 
   if (!requireNamespace(c("stats"), quietly = TRUE)) {
-    stop(
-      "Package \"stats\" must be installed to use this function.",
-      call. = FALSE
-    )
+    stop("Package \"stats\" must be installed to use this function.",call. = FALSE)
   }
   # generate home group for each animal at random
   # NOTE: this assumes that all animals are equally likely to choose all groups,

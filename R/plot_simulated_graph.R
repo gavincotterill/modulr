@@ -25,9 +25,10 @@
 #'}
 plot_simulated_graph <- function(g, vertex.size = 40, mark.expand = 25,
                                  vertex.label = NA,
+                                 # edge.arrow.size = NA,
                                  vertex.label.cex = 1.5, title = ""
                                  ){
-  igraph::V(g)$name <- stringr::str_extract(igraph::V(g)$name, "\\d{1,}")
+  # igraph::V(g)$name <- stringr::str_extract(igraph::V(g)$name, "\\d{1,}")
 
   grp <- data.frame(name = igraph::V(g)$name,
                     mem = igraph::V(g)$membership)
@@ -83,5 +84,6 @@ plot_simulated_graph <- function(g, vertex.size = 40, mark.expand = 25,
                        mark.border = mbs_whole,
                        vertex.size = vertex.size,
                        mark.expand = mark.expand,
+                       # edge.arrow.size = edge.arrow.size,
                        main = title)
 }

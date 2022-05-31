@@ -15,10 +15,11 @@ animals_transformed <- function(n_animals,
                                                 travel_time = travel_time,
                                                 sampling_duration = sampling_duration)
     animal_sample_df[[a]] <- cbind(animal_list[[a]]$samples,
-                                   id = rep(paste("Animal_", a, sep = ""), nrow(animal_list[[a]]$samples)))
-    names(animal_sample_df)[a] <- (paste0("Animal_", a))
+                                   id = rep(paste(animal_list[[a]]$animals_home, a, sep = "_"),
+                                            nrow(animal_list[[a]]$samples)))
+    names(animal_sample_df)[a] <- paste(animal_list[[a]]$animals_home, a, sep = "_")
   }
-  names(animal_list) <- 1:length(animal_list)
+  names(animal_list) <- names(animal_sample_df)
   animals_transformed <- lapply(animal_list, dt_fxn)
 
   out_list <- list(animals_transformed = animals_transformed, animal_list = animal_list)
