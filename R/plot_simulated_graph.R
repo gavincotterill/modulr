@@ -31,7 +31,7 @@ plot_simulated_graph <- function(g, vertex.size = 40, mark.expand = 25,
   # igraph::V(g)$name <- stringr::str_extract(igraph::V(g)$name, "\\d{1,}")
 
   grp <- data.frame(name = igraph::V(g)$name,
-                    mem = igraph::V(g)$membership)
+                    mem = as.numeric(igraph::V(g)$membership))
 
   mark_col <- grDevices::rainbow(length(unique(grp$mem)), alpha = 0.3)
   mark_border <- grDevices::rainbow(length(unique(grp$mem)), alpha = 1)

@@ -19,11 +19,19 @@ animals_transformed <- function(n_animals,
                                             nrow(animal_list[[a]]$samples)))
     names(animal_sample_df)[a] <- paste(animal_list[[a]]$animals_home, a, sep = "_")
   }
-  names(animal_list) <- names(animal_sample_df)
+  # names(animal_list) <- names(animal_sample_df)
   animals_transformed <- lapply(animal_list, dt_fxn)
+  names(animals_transformed) <- names(animal_sample_df)
 
-  out_list <- list(animals_transformed = animals_transformed, animal_list = animal_list)
-  return(out_list)
+  n_groups_out <- length(unique(stringr::str_extract(names(animals_transformed), "\\d{1,}(?=_)")))
+
+  if(n_groups_out != n_groups){warning(paste0(n_groups_out, " group(s) in simulated network, not ", n_groups, " as requested.
+  Individuals are randomly assigned to groups.
+  At small average group sizes it is possible that fewer groups are returned than desired."), call. = FALSE)}
+
+  # out_list <- list(animals_transformed = animals_transformed, animal_list = animal_list)
+  # return(out_list)
+  return(animals_transformed)
 }
 
 

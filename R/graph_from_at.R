@@ -2,23 +2,28 @@
 #' using output from animals_transformed().
 #'
 #' @param animals_transformed output from the animals_transformed function
-#' @param animal_list output from the at fxn
 #'
 #' @return sim_igraph, an igraph graph object.
 #' @export
-graph_from_at <- function(animals_transformed, animal_list) {
+graph_from_at <- function(animals_transformed) {
 
-  ids <- names(animal_list)
+# graph_from_at <- function(animals_transformed, animal_list) {
 
+  ids <- names(animals_transformed)
+  grp_mem <- stringr::str_extract(ids, "\\d{1,}(?=_)")
+  # mem_df <- data.frame(ids = ids,
+  #                      membership = unlist(lapply(animal_list, function(x) x[['animals_home']])))
   mem_df <- data.frame(ids = ids,
-                       membership = unlist(lapply(animal_list, function(x) x[['animals_home']])))
+                       membership = grp_mem)
 
   vals <- unique(c(ids, ids))
   dyads <- data.frame(t(combn(vals, 2)))
   names(dyads) <- c("Var1", "Var2")
   dyads$ew <- NA
 
-  n_animals <- length(animal_list)
+  # n_animals <- length(animal_list)
+  n_animals <- length(animals_transformed)
+
   adj_mat <- matrix(NA, nrow = n_animals, ncol = n_animals)
   row.names(adj_mat) <- colnames(adj_mat) <- ids
 
@@ -72,12 +77,16 @@ graph_from_at <- function(animals_transformed, animal_list) {
   nmsNC <- mem_df$ids
   membership <- mem_df$membership[match(nms, nmsNC)]
 
-  n_groups <- animal_list[[1]]$inputs$n_groups
-  if(length(unique(membership)) == n_groups){
-    igraph::V(sim_igraph)$membership <- membership
-  }else{warning(paste0(length(unique(membership)), " group(s) in simulated network, not ", n_groups, " as requested.
-  Individuals are randomly assigned to groups.
-  At very small network sizes it is possible that fewer groups are returned than desired."), call. = FALSE)}
+  igraph::V(sim_igraph)$membership <- as.numeric(membership)
+
+  # # n_groups <- animal_list[[1]]$inputs$n_groups
+  # n_groups <- length(unique(mem_df$membership))
+  #
+  # if(length(unique(membership)) == n_groups){
+  #   igraph::V(sim_igraph)$membership <- membership
+  # }else{warning(paste0(length(unique(membership)), " group(s) in simulated network, not ", n_groups, " as requested.
+  # Individuals are randomly assigned to groups.
+  # At small average group sizes it is possible that fewer groups are returned than desired."), call. = FALSE)}
 
   return(sim_igraph)
 
