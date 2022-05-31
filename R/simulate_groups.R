@@ -6,8 +6,7 @@ simulate_groups <- function(animals_home,
                             time_to_leave,
                             time_to_return,
                             travel_time = c(0.01, 2),
-                            sampling_duration = 7,
-                            samples_per_day = 1){
+                            sampling_duration = 7){
 
 
   animals_other_groups <- which(c(1:n_groups) != animals_home)
@@ -21,7 +20,7 @@ simulate_groups <- function(animals_home,
                  time_to_leave = time_to_leave,
                  time_to_return = time_to_return,
                  n_groups = n_groups,
-                 samples_per_day = samples_per_day,
+                 # samples_per_day = samples_per_day,
                  sampling_duration = sampling_duration)
 
   # specify starting conditions (animals always start in their home group at time 0)
@@ -84,20 +83,20 @@ simulate_groups <- function(animals_home,
   # add variable for whether animal is in its "home" group
   locations$at_home <- ifelse(locations$current_state == animals_home, "home", "away")
 
-  # sample group membership on a fixed time grid and record ----
-  sample_times <- seq(1:(sampling_duration * samples_per_day)) / samples_per_day # added parentheses around sampling dur * spd
-  sample_locations <- rep(NA, length(sample_times))
-  for(i in 1:length(sample_times)){
-    sample_locations[i] <- locations$current_state[min(which(as.numeric(locations$cumulative_time) >= sample_times[i]))]
-  }
-
-  # build df of samples
-  samples <- as.data.frame(cbind(sample_times, sample_locations))
+  # # sample group membership on a fixed time grid and record ----
+  # sample_times <- seq(1:(sampling_duration * samples_per_day)) / samples_per_day # added parentheses around sampling dur * spd
+  # sample_locations <- rep(NA, length(sample_times))
+  # for(i in 1:length(sample_times)){
+  #   sample_locations[i] <- locations$current_state[min(which(as.numeric(locations$cumulative_time) >= sample_times[i]))]
+  # }
+  #
+  # # build df of samples
+  # samples <- as.data.frame(cbind(sample_times, sample_locations))
 
   # return inputs, (continuous-time) locations, and (discrete-time) samples
   outlist <- list(inputs = inputs,
                   locations = locations,
-                  samples = samples,
+                  # samples = samples,
                   animals_home = animals_home)
 
   return(outlist)

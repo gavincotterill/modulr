@@ -18,8 +18,7 @@ simulate_non_independence <- function(
   time_to_leave = 5,
   time_to_return = 2,
   travel_time = c(0.01,2),
-  sampling_duration = 7,
-  samples_per_day = 1
+  sampling_duration = 7
 ){
   group_list <- list()
   for(m in 1:n_groups){
@@ -28,8 +27,7 @@ simulate_non_independence <- function(
                                        time_to_leave = time_to_leave,
                                        time_to_return = time_to_return,
                                        travel_time = travel_time,
-                                       sampling_duration = sampling_duration,
-                                       samples_per_day = samples_per_day)
+                                       sampling_duration = sampling_duration)
   }
 
   names(group_list) <- 1:length(group_list)
