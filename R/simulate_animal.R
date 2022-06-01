@@ -41,8 +41,8 @@ simulate_animal <- function(n_groups,
   animals_other_groups <- which(c(1:n_groups) != animals_home)
 
   # convert expected times to departure rates
-  delta <- 1/time_to_leave
-  xi <- 1/time_to_return
+  # delta <- 1/time_to_leave
+  # xi <- 1/time_to_return
 
   # store inputs in named list (returned at end of function)
   inputs <- list(time_to_leave = time_to_leave,
@@ -54,6 +54,7 @@ simulate_animal <- function(n_groups,
   # specify starting conditions (animals always start in their home group at time 0)
   current_state_now <- animals_home
   cumulative_time <- 0
+  travelling_time <- 0
 
   # build empty storage df
   locations <- data.frame(current_state = c(animals_home),
@@ -64,8 +65,8 @@ simulate_animal <- function(n_groups,
 
     current_state_last <- current_state_now
     waiting_time_now <- ifelse(current_state_last == animals_home,
-                               stats::rexp(n = 1, delta), # waiting time from an exponential with delta if they're at home
-                               stats::rexp(n = 1, xi)) # waiting time from an exponential with xi if they're away.
+                               stats::rexp(n = 1, 1 / (time_to_leave - travelling_time)), # waiting time from an exponential with delta if they're at home
+                               stats::rexp(n = 1, 1 / (time_to_return - travelling_time))) # waiting time from an exponential with xi if they're away.
 
     cumulative_time <- cumulative_time + waiting_time_now
 
@@ -83,7 +84,7 @@ simulate_animal <- function(n_groups,
 
     cumulative_time <- cumulative_time + travelling_time
 
-    new_row <- c(sample(seq(0.01,0.099, by = 0.01), 1),
+    new_row <- c(sample(seq(0.001,0.094, by = 0.001), 1), # state draw always less than 1 even with rounding (94 states to choose from means they'll almost never meet by chance during travel)
                  travelling_time,
                  cumulative_time)
 

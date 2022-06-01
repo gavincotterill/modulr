@@ -44,16 +44,16 @@ simulate_schedule <- function(n_animals,
 
     # convert to list of keyed data.tables
     at_non_ind <- purrr::map(ids, ~t2[stringr::str_which(t2$members, .x),] %>%
-                               dplyr::select(state, start, end) %>%
+                               # dplyr::select(state, start, end) %>%
+                               dplyr::select(vector, start, end) %>% # use vector rather than state
+                               dplyr::rename(state = vector) %>%
                                na.omit() %>%
-                               dplyr::mutate_all(~as.numeric(.)) %>%
+                               # dplyr::mutate_all(~as.numeric(.)) %>%
+                               dplyr::mutate_at(2:3, ~as.numeric(.)) %>%
+
                                data.table::setDT() %>%
                                data.table::setkeyv(c("start", "end"))) %>%
       `names<-`(ids)
     return(at_non_ind)
   }
-
-
-
-
 }
