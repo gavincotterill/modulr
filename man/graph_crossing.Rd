@@ -4,10 +4,10 @@
 \alias{graph_crossing}
 \title{Recursive function to calculate graph crossing time and do agent-based SEIR modeling}
 \usage{
-graph_crossing(animals_transformed, exposure_time, infectious_time, index_case)
+graph_crossing(schedule, exposure_time, infectious_time, index_case)
 }
 \arguments{
-\item{animals_transformed}{first element(?) output of the animals_transformed function}
+\item{schedule}{first element(?) output of the animals_transformed function}
 
 \item{exposure_time}{E}
 

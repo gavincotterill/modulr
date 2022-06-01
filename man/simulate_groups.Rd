@@ -9,9 +9,8 @@ simulate_groups(
   n_groups,
   time_to_leave,
   time_to_return,
-  travel_time = c(0.01, 2),
-  sampling_duration = 7,
-  samples_per_day = 1
+  travel_time = c(0.001, 2),
+  sampling_duration = 7
 )
 }
 \arguments{
@@ -27,8 +26,6 @@ returning to home group.}
 drawn from a uniform distribution. Default == c(0,1)}
 
 \item{sampling_duration}{Default == 365.}
-
-\item{samples_per_day}{Default == 1.}
 }
 \description{
 Simulate groups
