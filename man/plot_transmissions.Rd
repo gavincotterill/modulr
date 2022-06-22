@@ -7,10 +7,9 @@
 plot_transmissions(
   g,
   vertex.size = 40,
-  mark.expand = 25,
   vertex.label = NA,
-  edge.arrow.size = NA,
-  vertex.label.cex = 1.5,
+  edge.arrow.size = 0.5,
+  vertex.label.cex = 1,
   title = ""
 )
 }
@@ -19,13 +18,13 @@ plot_transmissions(
 
 \item{vertex.size, }{node size in plot}
 
-\item{mark.expand, }{padding of polygon denoting modules around nodes}
-
 \item{vertex.label, }{label for graph vertices}
 
 \item{vertex.label.cex, }{size for vertex labels}
 
 \item{title, }{plot title}
+
+\item{mark.expand, }{padding of polygon denoting modules around nodes}
 }
 \value{
 a plot of the igraph object
