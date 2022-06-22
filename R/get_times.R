@@ -1,7 +1,7 @@
 #' get times
 #' @param schedule a dataframe schedule of the type output by simulate_schedule
 #' @param id the character string name of an individual node
-#' @keywords internal
+#' @export
 get_times <- function(schedule, id, simulator){
   if(simulator == "independent"){
     grp <- stringr::str_extract(id, "\\d{1,}(?=_)")

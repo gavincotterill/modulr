@@ -14,4 +14,3 @@ get_times(schedule, id, simulator)
 \description{
 get times
 }
-\keyword{internal}
