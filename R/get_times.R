@@ -12,22 +12,20 @@ get_times <- function(schedule, id, simulator){
     out <- data.frame(id = id,
                       grp = grp,
                       time_at_home = sum(p3$time) / max_time,
-                      time_not_at_home = sum(p4$time) / max_time
-    )
+                      time_not_at_home = sum(p4$time) / max_time)
     return(out)
   }else if(simulator == "group-think"){
     grp <- stringr::str_extract(id, "\\d{1,}(?=_)")
     max_time <- max(schedule$end)
     p <- schedule %>% dplyr::mutate(time = end - start)
-    STR <- suppressWarnings(stringr::str_detect(stringr::str_split(p$state, "-"), grp)) # state is actually vector
-
-    p3 <- p[which(STR == TRUE),]
-    p4 <- p[which(STR == FALSE),]
+    STR <- purrr::map(stringr::str_split(p$state, "-"), stringr::str_detect, grp)
+    idx <- sapply(STR, function(x) any(x %in% TRUE))
+    p3 <- p[idx == TRUE,]
+    p4 <- p[idx == FALSE,]
     out <- data.frame(id = id,
                       grp = grp,
                       time_at_home = sum(p3$time) / max_time,
-                      time_not_at_home = sum(p4$time) / max_time
-    )
+                      time_not_at_home = sum(p4$time) / max_time)
     return(out)
   }
 
