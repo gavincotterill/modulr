@@ -2,6 +2,7 @@
 
 export("%>%")
 export(animals_transformed)
+export(check_ids)
 export(geom_split_violin)
 export(get_times)
 export(graph_crossing)

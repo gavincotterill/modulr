@@ -40,7 +40,7 @@ graph_from_schedule <- function(schedule) {
       dplyr::arrange(end_min) # make sure the last row has the max value for end_min
 
     g_int <- data.frame(intervals) %>%
-      dplyr::select(1,4,7:9)
+      dplyr::select(state, i.state,start_max, end_min, together)
 
     together <- g_int[,c(1,3:5)] %>%
       dplyr::mutate(id = "A") %>%

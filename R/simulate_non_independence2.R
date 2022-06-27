@@ -12,6 +12,7 @@ simulate_non_independence2 <- function(
   travel_time = c(0.01,2),
   sampling_duration = 7
 ){
+  # set.seed(1234)
   grp_lengths_vector <- rand_vect(n_groups, n_animals, sd = 1)
 
   # unfortunately this has groups always split into the same number of subgroups, but maybe still better than fixing all groups to same number of splits
@@ -35,12 +36,12 @@ simulate_non_independence2 <- function(
   group_list <- list()
   for(m in 1:n_groups){
     group_list[[m]] <- simulate_groups2(animals_home = m,
-                                       n_groups = n_groups,
-                                       n_splits = ifelse(length(n_split_list) == 1, n_split_list[[1]], n_split_list[[m]]),
-                                       time_to_leave = time_to_leave,
-                                       time_to_return = time_to_return,
-                                       travel_time = travel_time,
-                                       sampling_duration = sampling_duration)
+                                        n_groups = n_groups,
+                                        n_splits = ifelse(length(n_split_list) == 1, n_split_list[[1]], n_split_list[[m]]),
+                                        time_to_leave = time_to_leave,
+                                        time_to_return = time_to_return,
+                                        travel_time = travel_time,
+                                        sampling_duration = sampling_duration)
   }
 
   names(group_list) <- 1:length(group_list)
@@ -121,14 +122,14 @@ simulate_non_independence2 <- function(
 
   # if n_splits is undefined, make n_splits a function of number of animals in group
   for(i in 1:nrow(t2)){
-    # if(i == 362){break}
+    # if(i == 252){break}
     # i
     #' split vector[i] into a list of groups present
     curr_vec <- stringr::str_split(t2$vector[i], "-")[[1]]
     curr_vec
 
     # for empty travel states:
-    if(i > (n_groups + 1) & is.na(t2$holding[i])){
+    if(i > (n_groups + 1) & t2$holding[i] %in% c(NA, "")){
       t2$holding[i] <- paste0(stringr::str_split(t2$vector[i], "-")[[1]], "_0") %>% unlist() %>% sort() %>% paste(collapse = "/")
     }
 
@@ -189,6 +190,7 @@ simulate_non_independence2 <- function(
     }
     # %>% `names<-`(curr_vec)
 
+    # overwriting here which should be ok, just inefficient
     t2$members[i] <- mbrs_list %>% paste(collapse = "/") # make sure this works on lists longer than one
 
     mbrs_list
@@ -235,13 +237,17 @@ simulate_non_independence2 <- function(
           indivs <- indivs[which(!indivs %in% out_list[[k]])]
 
         }
+        out_list
         destinations <- index_forward(t2, "vector", names(mbrs_list)[j], i) %>% as.list()
         for(k in 1:length(out_list)){
           already_there <- t2$holding[destinations[[k]]]
+          already_there
           if(is.na(already_there)){
             t2$holding[destinations[[k]]] <- gsub("NA| NA|NA ", "", paste(t2$holding[destinations[[k]]], out_list[[k]])) %>% paste(., collapse = "-")
           }else{
-            t2$holding[destinations[[k]]] <- paste(t2$holding[destinations[[k]]], out_list[[k]], sep = "/") %>% gsub(" ", "-", .)
+            out_indivs <- paste(out_list[[k]], collapse = "-")
+            out_indivs
+            t2$holding[destinations[[k]]] <- paste(t2$holding[destinations[[k]]], out_indivs, sep = "/") %>% gsub(" ", "-", .)
           }
         }
 
@@ -262,6 +268,7 @@ simulate_non_independence2 <- function(
         destinations_list <- index_forward(t2, "vector", names(mbrs_list)[j], i) %>% as.list()
 
         already_there <- t2$holding[destinations_list[[rel_ind]]]
+        already_there
         if(is.na(already_there)){
           t2$holding[destinations_list[[rel_ind]]] <- gsub("NA| NA|NA ", "", paste(t2$holding[destinations_list[[rel_ind]]], mbrs_list[[j]])) %>% paste(., collapse = "-")
         }else{

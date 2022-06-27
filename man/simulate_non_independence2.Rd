@@ -7,7 +7,7 @@
 simulate_non_independence2(
   n_groups = 4,
   n_animals = 16,
-  n_splits = 2,
+  n_splits = NA,
   time_to_leave = 5,
   time_to_return = 2,
   travel_time = c(0.01, 2),
@@ -16,8 +16,6 @@ simulate_non_independence2(
 }
 \arguments{
 \item{n_groups}{The number of modules in the network.}
-
-\item{n_splits}{the number of splinter groups that leave home, one or more}
 
 \item{time_to_leave}{The average amount of time spent within the home
 group prior to leaving (days per sampling period).}
