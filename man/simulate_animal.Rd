@@ -35,4 +35,3 @@ A vector of sampling locations for a single animal.
 \description{
 The backbone of the network simulator, called from within simulate_graph
 }
-\keyword{internal}
