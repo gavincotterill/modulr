@@ -14,18 +14,15 @@ simulate_non_independence(
 )
 }
 \arguments{
-\item{n_groups}{The number of modules in the network.}
+\item{n_groups}{the number of social groups and/or distinct patches in the population}
 
-\item{time_to_leave}{The average amount of time spent within the home
-group prior to leaving (days per sampling period).}
+\item{time_to_leave}{the average number of days spent at home prior to leaving}
 
-\item{time_to_return}{The average amount of time spent abroad before
-returning to home group.}
+\item{time_to_return}{the average number of days spent away from home prior to returning}
 
-\item{travel_time}{Vector of the range of values that travel to the next group can take,
-drawn from a uniform distribution. Default == c(0,1)}
+\item{travel_time}{a list of two values in terms of days. These are the limits for draws from a uniform distribution governing how long it will take to get from one group to another.}
 
-\item{sampling_duration}{Default == 365.}
+\item{sampling_duration}{the number of days to simulate.}
 }
 \description{
 simulate non-independent group-switching

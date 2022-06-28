@@ -15,18 +15,37 @@ simulate_non_independence2(
 )
 }
 \arguments{
-\item{n_groups}{The number of modules in the network.}
+\item{n_groups}{the number of social groups and/or distinct patches in the population}
 
-\item{time_to_leave}{The average amount of time spent within the home
-group prior to leaving (days per sampling period).}
+\item{n_splits}{the number of subgroups that groups will splinter into when they leave home. If NA, the number of subgroups is dependent on the number of animals in a group.
+now collapse instances where sub_ids are together -- usually at home, but not always
+then remove duplicates
+initiate groups and hold them in reserve
+need to create vector column to see which groups are where
+split vector\link{i} into a list of groups present
+make a mbrs_list that has length n vectors and populate it with members from holding
+time_interval <- idx\link{i}
+look ahead to idx\link{i}+1, the next time interval
+number_of_current_locations <- the number of rows in which vector occurs at present time_interval
+number_of_destinations <- the number of rows in which vector/mbrs_list have to go next
+if number of current locations is > 1 and number of destinations == 1, send all mbrs_list to the single destination's holding at next time interval
+condition 2
+if number of current locations == 1 and number of destinations > 1, do multinomial draw to determine how many to send to each destination
+sample mbrs_list and send animals to destinations holding at next time interval
+condition 3
+else if number of current locations > 1 and == number of destinations
+theres at least one missing condition still:
+if n_curr_locs > 1 and n_next_locs != 1 and n_next_locs != n_curr_locs, subgroups split appropriately but due to sampling some sub groups ended at the same
+location after travelling separately, this handles the extra travelling state on the way home as well
+need a condition handler for the last idx}
 
-\item{time_to_return}{The average amount of time spent abroad before
-returning to home group.}
+\item{time_to_leave}{the average number of days spent at home prior to leaving}
 
-\item{travel_time}{Vector of the range of values that travel to the next group can take,
-drawn from a uniform distribution. Default == c(0,1)}
+\item{time_to_return}{the average number of days spent away from home prior to returning}
 
-\item{sampling_duration}{Default == 365.}
+\item{travel_time}{a list of two values in terms of days. These are the limits for draws from a uniform distribution governing how long it will take to get from one group to another.}
+
+\item{sampling_duration}{the number of days to simulate.}
 }
 \description{
 simulate non-independent group-switching experimental

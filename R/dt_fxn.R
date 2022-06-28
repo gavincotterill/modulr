@@ -2,8 +2,7 @@
 #' @param animal an element of animal_list from simulate_graph
 #' @keywords internal
 dt_fxn <- function(animal){
-  one <- animal
-  t1 <- one$locations  %>%
+  t1 <- animal$locations  %>%
     dplyr::mutate(end = dplyr::lead(.data$cumulative_time),
                   state = dplyr::lead(.data$current_state)) %>%
     dplyr::rename(start = .data$cumulative_time) %>%

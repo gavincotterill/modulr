@@ -1,5 +1,5 @@
 #' simulate non-independent group-switching
-#' @inheritParams simulate_graph
+#' @inheritParams simulate_groups
 #' @examples
 #' \donttest{
 #' t2 <- simulate_non_independence(n_groups = 4,

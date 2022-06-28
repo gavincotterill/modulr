@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulate_graph.R
 \name{simulate_graph}
 \alias{simulate_graph}
-\title{Simulate the true simple ratio index values for each dyad in a network.}
+\title{Simulate the true simple ratio index values for each dyad in a network. FLAGGED FOR REMOVAL}
 \usage{
 simulate_graph(
   n_animals,
@@ -41,7 +41,7 @@ discrete time. Continuous monitoring is much slower.}
 sim_igraph, an igraph graph object.
 }
 \description{
-Simulate the true simple ratio index values for each dyad in a network.
+Simulate the true simple ratio index values for each dyad in a network. FLAGGED FOR REMOVAL
 }
 \examples{
 set.seed(123)

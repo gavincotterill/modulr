@@ -1,4 +1,4 @@
-#' Simulate the true simple ratio index values for each dyad in a network.
+#' Simulate the true simple ratio index values for each dyad in a network. FLAGGED FOR REMOVAL
 #'
 #' @param n_animals The number of nodes to include in the network.
 #' @param sampler Takes one of c("discrete", "continuous"). Whether group

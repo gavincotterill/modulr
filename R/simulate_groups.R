@@ -1,5 +1,10 @@
 #' Simulate groups
-#' @inheritParams simulate_graph
+#' @param animals_home an integer value representing an individuals home or preferred patch
+#' @param n_groups the number of social groups and/or distinct patches in the population
+#' @param time_to_leave the average number of days spent at home prior to leaving
+#' @param time_to_return the average number of days spent away from home prior to returning
+#' @param travel_time a list of two values in terms of days. These are the limits for draws from a uniform distribution governing how long it will take to get from one group to another.
+#' @param sampling_duration the number of days to simulate.
 #' @keywords internal
 simulate_groups <- function(animals_home,
                             n_groups,

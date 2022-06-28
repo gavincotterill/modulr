@@ -1,4 +1,4 @@
-#' Delta grp
+#' Delta grp function called internally from 'simulate_non_independence' to categorize fission and fusion events
 #' @inheritParams index_back
 #' @keywords internal
 delta_grp <- function(df, column_name, value, i){

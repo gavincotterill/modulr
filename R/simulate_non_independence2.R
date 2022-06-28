@@ -1,7 +1,8 @@
 #' simulate non-independent group-switching experimental
 #'
-#' @inheritParams simulate_groups
 #' @export
+#' @inheritParams simulate_groups
+#' @param n_splits the number of subgroups that groups will splinter into when they leave home. If NA, the number of subgroups is dependent on the number of animals in a group.
 
 simulate_non_independence2 <- function(
   n_groups = 4,
@@ -115,7 +116,7 @@ simulate_non_independence2 <- function(
     dplyr::mutate(idx = match(start, unique(start))) %>%
     data.frame() %>%
     dplyr::mutate(holding = NA) %>%
-    dplyr::left_join(mem_df) %>%
+    dplyr::left_join(mem_df, by = c("state", "start", "end")) %>% # adding by to suppress message
     dplyr::select(state, start, end, idx, vector, members, holding) %>%
     dplyr::distinct() %>%
     dplyr::filter(start <= sampling_duration)
@@ -300,10 +301,7 @@ simulate_non_independence2 <- function(
       }
     } # end j loop
   } # end i
-
-
   # last thing to do is strip all _0 dummy animals out of t2$members
-
   t2$members <- stringr::str_replace(string = t2$members, pattern = "\\d{1,}_0/|\\d{1,}_0/|\\d{1,}_0", replacement = "")
   return(t2)
 }
