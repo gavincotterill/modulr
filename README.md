@@ -63,14 +63,13 @@ tl = 7  # time to leave ie. lambda
 tr = 2  # time to return ie. xi
 tt = c(0.01, 0.04)  # multiply by 1440 minutes per day: between ~15 minutes to an hour to switch groups
 sd = 100  # sampling duration in days
-
-set.seed(123)
 ```
 
 Then we make a call to `simulate_schedule()`, specifying the sampler to
 use.
 
 ``` r
+set.seed(123)
 ind <- simulate_schedule(n_animals = na, n_groups = ng, time_to_leave = tl,
     time_to_return = tr, travel_time = tt, sampling_duration = sd,
     simulator = "independent")
@@ -144,6 +143,7 @@ best guess at what the social groupings should be in this sampled graph.
 
 ``` r
 sn <- 10
+set.seed(123)
 g_obs <- sample_graph(graph = g, sample_nNodes = sn, sampling_duration = sd,
     prop_hi_res = 0.5, hi_res = 12, lo_res = 30/365, regime = "random",
     alg = "netcarto")
@@ -158,7 +158,7 @@ mem_sample <- V(g_obs)$membership
 Qest <- assortnet::assortment.discrete(adj_sample, types = mem_sample,
     weighted = T)$r
 Qest
-#> [1] 0.5895028
+#> [1] 0.4338999
 ```
 
 Now we can plot our sampled graph side-by-side with the original and
