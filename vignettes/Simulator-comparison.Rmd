@@ -1,8 +1,8 @@
 ---
-title: "Simulator-comparison"
+title: "Simulator Comparison"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Simulator-comparison}
+  %\VignetteIndexEntry{Simulator Comparison}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -11,11 +11,11 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.path = "man/figures/simulator-comparison-"
+  fig.path = "figures/simulator-comparison-",
+  tidy.opts = list(width.cutoff = 60), 
+  tidy = TRUE
 )
 ```
-
-# Simulators
 
 There are currently three simulators in the package called "independent", "non-independent" and "group-think". They are all spatially-explicit. 
 
@@ -36,7 +36,7 @@ Let's compare the simulators. We need to load some additional packages.
 sapply(c("modulr", "ggplot2", "ggthemes", "ggridges", "igraph"), require, character = TRUE)
 ```
 
-We start by specifying values. Our population will consist of 30 animals distributed across 6 patches or social groups. We'll leave `n_splits` undefined, so that smaller groups will split into fewer subgroups and vice versa. On average, animals will spend 5 days at their home patch before departing and be away from their home patch for 2 days before returning. We'll simulate the process for 14 days. Currently all of the 'time' components are specified in days. In the future this could be improved by converting units behind the scenes. There are 1440 minutes per day. $0.01 * 1440 = 14.4 minutes$. So we're dictating that travel times be drawn $~Uniform(14.4, 28.8)$ in minutes.
+We start by specifying values. Our population will consist of 30 animals distributed across 6 patches or social groups. We'll leave `n_splits` undefined, so that smaller groups will split into fewer subgroups and vice versa. On average, animals will spend 5 days at their home patch before departing and be away from their home patch for 2 days before returning. We'll simulate the process for 14 days. Currently all of the 'time' components are specified in days. In the future this could be improved by converting units behind the scenes. There are 1440 minutes per day. $0.01 * 1440 = 14.4$ minutes. So we're dictating that travel times be drawn $Unif(14.4, 28.8)$ in minutes.
 
 ```{r parameters}
 n_animals = 30
@@ -69,8 +69,7 @@ Each data.frame has this structure, hence the name 'schedule':
 head(ind[[1]], 6)
 ```
 
-The time intervals are the same for each individual regardless of whether or not they moved, which is why there are some rows where the state doesn't change.
-
+### Proportion of time spent 'home' vs. 'away'
 Next we'll use the `get_times()` function to calculate the amount of time each individual spent at home vs. away.
 
 ```{r sim-sched2}
@@ -174,7 +173,7 @@ paste("For the \'group-think\' simulator, the average proportion of time that in
 
 In this example it's not that far off, but it doesn't always end up that way. This is one reason I'm calling this simulator 'experimental' for now. We can reshape the data and plot the distributions of time home vs. away for all individuals in the three simulations.
 
-```{r ggplot-proportion-time}
+```{r ggplot-proportion-time, fig.width=7, fig.height=5}
 out <- out_ind %>% dplyr::mutate(sim = "independent") %>%
   rbind(out_ni %>% dplyr::mutate(sim = "non-independent")) %>%
   rbind(out_gt %>% dplyr::mutate(sim = "group-think"))
@@ -219,8 +218,11 @@ class(g_ind)
 
 It's that simple. Now we can plot them with `plot_simulated_graph()`.
 
-```{r plot-graphs}
-par(mfrow = c(1,3))
+```{r plot-graphs, fig.width=7, fig.height=2}
+par(mfrow = c(1,3),     
+    oma = c(0, 0, 1, 0), 
+    mar = c(0, 0, 2, 0), 
+    xpd = NA)
 plot_simulated_graph(g_ind, title = "independent")
 plot_simulated_graph(g_ni, title = "non-independent")
 plot_simulated_graph(g_gt, vertex.size = 35, title = "group-think")
@@ -231,7 +233,7 @@ These are pretty similar in appearance. Here, each circle (or node) represents a
 ### Edge weights
 Let's look at the distribution of edge weights from these graphs:
 
-```{r edge-weights}
+```{r edge-weights, fig.width=7, fig.height=3}
 # compare edge weight distributions
 ew_ind <- igraph::E(g_ind)$weight
 ew_non_ind <- igraph::E(g_ni)$weight
@@ -248,10 +250,10 @@ ggplot(df2)+
   scale_fill_viridis_d(option = "plasma", end = 0.6) +
   facet_wrap(~sim)+
   theme_clean()+
-  theme(axis.title = element_text(size = 20),
-        axis.text.x = element_text(size = 15),
-        axis.text.y = element_text(size = 20),
-        strip.text = element_text(size = 20))
+  theme(axis.title = element_text(size = 20/2),
+        axis.text.x = element_text(size = 15/2),
+        axis.text.y = element_text(size = 20/2),
+        strip.text = element_text(size = 20/2))
 
 mean(ew_ind)
 mean(ew_non_ind)
@@ -307,9 +309,9 @@ gc_gt <- graph_crossing(schedule = gt,
                              index_case = index_gt)
 
 # the graph crossing time is:
-max(gc_ind$time_infected) 
-max(gc_non_ind$time_infected) 
-max(gc_gt$time_infected) 
+max(gc_ind$time_infected)
+max(gc_non_ind$time_infected)
+max(gc_gt$time_infected)
 ```
 
 In this example the independent and group-think simulators had a similar graph-crossing time, while non-independent was slower (which makes sense because more individuals spent more time together). This function is a recursive individually-based SEIR model for closed systems (no births, deaths, immigration or emigration). With shorter infectious periods it will run faster and we can see if all individuals become infected, whether the epidemic fades out before that happens, and how long it takes.
@@ -337,7 +339,7 @@ seir_gt <- graph_crossing(schedule = gt,
 
 # independent sampler
 nrow(seir_ind) # number of infecteds
-max(seir_ind$time_infected) 
+max(seir_ind$time_infected)
 
 # non-independent sampler
 nrow(seir_non_ind) # number of infecteds
@@ -350,7 +352,7 @@ max(seir_gt$time_infected) # number of days it took
 
 We can also plot the chain of transmissions in each of these three simulations by converting the objects we just made into graphs and then using `plot_transmissions()`.
 
-```{r plot-transmissions}
+```{r plot-transmissions, fig.width=7, fig.height=2}
 
 # this could be incorporated in the plot_transmissions code down the road:
 g_seir_ind <- igraph::graph_from_edgelist(seir_ind[,1:2] %>% as.matrix())
@@ -366,20 +368,17 @@ g_seir_gt <- igraph::graph_from_edgelist(seir_gt[,1:2] %>% as.matrix())
 g6 <- igraph::graph_from_edgelist(seir_gt[-1,1:2] %>% as.matrix())
 igraph::V(g6)$membership <- stringr::str_extract(igraph::V(g6)$name, "\\d{1,}(?=_)") %>% as.numeric()
 
-par(mfrow = c(1,3))
+par(mfrow = c(1,3),     
+    oma = c(0, 0, 1, 0), 
+    mar = c(0, 0, 2, 0), 
+    xpd = NA)
 plot_transmissions(g4, title = "independent",
-                   vertex.size = 90,
-                   # vertex.label = V(g4)$name,
-                   vertex.label.cex = .6)
+                   vertex.size = 90)
 plot_transmissions(g5, title = "non-independent",
-                   vertex.size = 80,
-                   # vertex.label = V(g6)$name,
-                   vertex.label.cex = .5)
+                   vertex.size = 90)
 plot_transmissions(g6, title = "group-think",
-                   vertex.size = 80,
-                   # vertex.label = V(g6)$name,
-                   vertex.label.cex = .5)
+                   vertex.size = 75)
 ```
 I've turned off the node labels (individuals names) because they can clutter the plot, but I've retained the node color to reflect group membership so we can look for differences between the simulators in terms of how the disease progresses through social groups (or patches) in the population.
 
-
+Be sure to check out our other vignettes to explore all of the things we can do with `modulr`!
