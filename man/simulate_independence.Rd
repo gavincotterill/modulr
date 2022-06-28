@@ -27,3 +27,4 @@ simulate_independence(
 \description{
 simulate group switching to get animals_transformed df
 }
+\keyword{internal}

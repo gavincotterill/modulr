@@ -50,3 +50,4 @@ need a condition handler for the last idx}
 \description{
 simulate non-independent group-switching experimental
 }
+\keyword{internal}

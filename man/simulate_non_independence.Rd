@@ -27,13 +27,4 @@ simulate_non_independence(
 \description{
 simulate non-independent group-switching
 }
-\examples{
-\donttest{
-t2 <- simulate_non_independence(n_groups = 4,
-time_to_leave = 5,
-time_to_return = 2,
-travel_time = c(0.01,2),
-sampling_duration = 7,
-samples_per_day = 1)
-}
-}
+\keyword{internal}
