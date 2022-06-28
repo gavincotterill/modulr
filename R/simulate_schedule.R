@@ -20,7 +20,7 @@ simulate_schedule <- function(n_animals,
   }
 
   if(simulator == "independent"){
-    out <- animals_transformed(n_groups = n_groups,
+    out <- simulate_independence(n_groups = n_groups,
                                n_animals = n_animals,
                                time_to_leave = time_to_leave,
                                time_to_return = time_to_return,

@@ -1,7 +1,7 @@
 #' simulate group switching to get animals_transformed df
 #' @inheritParams simulate_groups
 #' @export
-animals_transformed <- function(n_animals,
+simulate_independence <- function(n_animals,
                                 n_groups,
                                 time_to_leave,
                                 time_to_return,
