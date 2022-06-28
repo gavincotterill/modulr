@@ -24,7 +24,6 @@ initiate groups and hold them in reserve
 need to create vector column to see which groups are where
 split vector\link{i} into a list of groups present
 make a mbrs_list that has length n vectors and populate it with members from holding
-time_interval <- idx\link{i}
 look ahead to idx\link{i}+1, the next time interval
 number_of_current_locations <- the number of rows in which vector occurs at present time_interval
 number_of_destinations <- the number of rows in which vector/mbrs_list have to go next
@@ -34,7 +33,6 @@ if number of current locations == 1 and number of destinations > 1, do multinomi
 sample mbrs_list and send animals to destinations holding at next time interval
 condition 3
 else if number of current locations > 1 and == number of destinations
-theres at least one missing condition still:
 if n_curr_locs > 1 and n_next_locs != 1 and n_next_locs != n_curr_locs, subgroups split appropriately but due to sampling some sub groups ended at the same
 location after travelling separately, this handles the extra travelling state on the way home as well
 need a condition handler for the last idx}
