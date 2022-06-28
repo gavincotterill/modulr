@@ -263,7 +263,7 @@ simulate_non_independence2 <- function(
       }
     } # end j loop
   } # end i
-  t2$members <- stringr::str_replace(string = t2$members, pattern = "\\d{1,}_0/|\\d{1,}_0/|\\d{1,}_0", replacement = "")
+  t2$members <- stringr::str_replace(string = t2$members, pattern = "\\d{1,}_0/|/\\d{1,}_0|\\d{1,}_0-|\\d{1,}_0|\\d{1,}_0-\\d{1,}_0-", replacement = "")
   return(t2)
 }
 

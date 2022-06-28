@@ -4,7 +4,7 @@ library(modulr)
 test_that("simulate_animal creates list", {
   animal <- simulate_animal(time_to_leave = 3,
                             time_to_return = 1,
-                            travel_time = c(0.001, 2),
+                            travel_time = c(0.001, 0.002),
                             n_groups = 4,
                             samples_per_day = 1,
                             sampling_duration = 7)
@@ -18,7 +18,7 @@ test_that("simulate_graph discrete creates list", {
                       n_groups = 1,
                       time_to_leave = 5,
                       time_to_return = 2,
-                      travel_time = c(0.001, 2),
+                      travel_time = c(0.001, 0.002),
                       sampling_duration = 7,
                       sampler = "discrete",
                       samples_per_day = 1)
@@ -27,7 +27,7 @@ test_that("simulate_graph discrete creates list", {
                         n_groups = 2,
                         time_to_leave = 5,
                         time_to_return = 2,
-                        travel_time = c(0.001, 2),
+                        travel_time = c(0.001, 0.002),
                         sampling_duration = 7,
                         sampler = "discrete",
                         samples_per_day = 1)
@@ -40,7 +40,7 @@ test_that("simulate_graph continuous creates list", {
                               n_groups = 1,
                               time_to_leave = 5,
                               time_to_return = 2,
-                              travel_time = c(0.001, 2),
+                              travel_time = c(0.001, 0.002),
                               sampling_duration = 7,
                               sampler = "continuous",
                               samples_per_day = 1)
@@ -49,7 +49,7 @@ test_that("simulate_graph continuous creates list", {
                         n_groups = 2,
                         time_to_leave = 5,
                         time_to_return = 2,
-                        travel_time = c(0.001, 2),
+                        travel_time = c(0.001, 0.002),
                         sampling_duration = 7,
                         sampler = "continuous",
                         samples_per_day = 1)
@@ -63,7 +63,7 @@ test_that("sample_graph creates list", {
                         n_groups = 2,
                         time_to_leave = 5,
                         time_to_return = 2,
-                        travel_time = c(0.001, 2),
+                        travel_time = c(0.001, 0.002),
                         sampling_duration = 7,
                         sampler = "discrete",
                         samples_per_day = 1)
