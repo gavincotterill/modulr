@@ -11,18 +11,7 @@
 #' @param samples_per_day Default == 1.
 #'
 #' @return A vector of sampling locations for a single animal.
-#' @export
-#'
-#' @examples
-#' \donttest{
-#' simulate_animal(time_to_leave = 3,
-#'                 time_to_return = 1,
-#'                 travel_time = c(0.01, 1),
-#'                 n_groups = 4,
-#'                 samples_per_day = 1,
-#'                 sampling_duration = 7)
-#'}
-#'
+#' @keywords internal
 simulate_animal <- function(n_groups,
                             time_to_leave,
                             time_to_return,

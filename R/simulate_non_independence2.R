@@ -1,6 +1,6 @@
 #' simulate non-independent group-switching experimental
 #'
-#' @export
+#' @keywords internal
 #' @inheritParams simulate_groups
 #' @param n_splits the number of subgroups that groups will splinter into when they leave home. If NA, the number of subgroups is dependent on the number of animals in a group.
 
