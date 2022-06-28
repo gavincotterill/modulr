@@ -16,8 +16,6 @@ simulate_non_independence(
 \arguments{
 \item{n_groups}{The number of modules in the network.}
 
-\item{n_animals}{The number of nodes to include in the network.}
-
 \item{time_to_leave}{The average amount of time spent within the home
 group prior to leaving (days per sampling period).}
 
