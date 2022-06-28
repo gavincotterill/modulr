@@ -172,17 +172,20 @@ plot_sampled_graph(g_obs = g_obs, g = g, title = paste0("Estimated Q = ",
     round(Qest, 2)))
 ```
 
-![](man/figures/README-plot-sampled-1.png) We can evaluate netcarto’s
-community assignments by comparing the node color in the right hand
-figure to the color of the encircling polygons. `plot_sampled_graph()`
-preserved the node location from the left hand plot to make it easier to
-see which animals were sampled. Whereas 4 of the 5 social groups were
-sampled, netcarto correctly assigned all individuals except the blue
-node on the right, which should have been in it’s own group. Netcarto
-did a good job in this example. Netcarto is also fast for the sizes of
-networks we are likely to encounter for many wildlife species. Different
-community detection algorithms vary in their strengths and abilities –
-some will perform better if the observation frequency is reduced. In
-this example the estimated value for Q is spot on!
+![](man/figures/README-plot-sampled-1.png)
+
+`plot_sampled_graph()` preserves the node location from the left hand
+plot to make it easier to see which animals were sampled. Netcarto’s
+community assignments are represented as the node color in the right
+hand figure and the encircling polygons indicate the “true membership”
+in both left and right. By chance, all 5 social groups were sampled, and
+netcarto correctly assigned all individuals except the white node up
+top, which should have been in it’s own group. Netcarto did a good job
+in this example. Netcarto is also fast for the sizes of networks we are
+likely to encounter for many wildlife species. Different community
+detection algorithms vary in their strengths and abilities – some will
+perform better if the observation frequency is reduced. As we can see
+the estimated modularity ended up being a little low, but not too far
+off.
 
 Be sure to check out the other vignettes to learn more about `modulr`!
