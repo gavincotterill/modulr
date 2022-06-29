@@ -24,7 +24,7 @@
 #'   prop_hi_res = 1,
 #'   regime = "grab-two",
 #'   alg = "fast_greedy")
-#' am_obs <- igraph::get.adjacency(g_obs, type = "upper", attr = "sim_weight") %>%
+#' am_obs <- igraph::get.adjacency(g_obs, type = "upper", attr = "weight") %>%
 #'   as.matrix()
 #' qrel_hat <- assortnet::assortment.discrete(am_obs,
 #' types = igraph::V(g_obs)$membership, weighted = TRUE)$r
@@ -247,9 +247,9 @@ sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, sampling_duratio
     ed$minObs <- pmin(ed$fromObs, ed$toObs)
     ed$sim_weight <- stats::rbinom(n = nrow(ed), size = ed$minObs, p = ed$weight) / ed$minObs
 
-    g_obs <- igraph::graph_from_data_frame(ed[,c("from", "to", "sim_weight")], directed = FALSE)
-    g_obs <- igraph::delete_edges(g_obs, which(igraph::E(g_obs)$sim_weight==0))
-    am_obs <- igraph::get.adjacency(g_obs, type = "upper", attr = "sim_weight") %>% as.matrix()
+    g_obs <- igraph::graph_from_data_frame(ed[,c("from", "to", "weight")], directed = FALSE)
+    g_obs <- igraph::delete_edges(g_obs, which(igraph::E(g_obs)$weight==0))
+    am_obs <- igraph::get.adjacency(g_obs, type = "upper", attr = "weight") %>% as.matrix()
 
     if( length( igraph::E(g_obs) ) >= 2 & alg == "netcarto"){
 
