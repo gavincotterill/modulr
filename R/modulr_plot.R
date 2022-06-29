@@ -27,10 +27,12 @@ modulr_plot <- function(x, alg = "walktrap"){
     )
   }
   if (alg == "netcarto") {
-    stop(
-      "Package \"rnetcarto\" must be installed to use this function.",
-      call. = FALSE
-    )
+    if (!requireNamespace(c("rnetcarto"), quietly = TRUE)) {
+      stop(
+        "Package \"rnetcarto\" must be installed to use this community detection algorithm.",
+        call. = FALSE
+      )
+    }
   }
   possible_algorithms <- c("netcarto", "fast_greedy", "leading_eigen", "louvain", "walktrap") # there are others
   if(!alg %in% possible_algorithms){
@@ -52,7 +54,7 @@ modulr_plot <- function(x, alg = "walktrap"){
     am_obs <- as.matrix(igraph::get.adjacency(g_obs, type = "upper", attr = "weight"))
 
   } else {
-    stop("Object must either be a square adjacency matrix of class matrix or an igraph object.")
+    stop("Object must either be a square adjacency matrix of class matrix or an igraph graph object.")
   }
 
   if( length( igraph::E(g_obs) ) >= 2 & alg == "netcarto"){
@@ -103,9 +105,7 @@ modulr_plot <- function(x, alg = "walktrap"){
     r <- 0
 
   }else if(length(igraph::E(g_obs)) == 0){
-
-    igraph::V(g_obs)$membership <- 1:length(igraph::V(g_obs))
-    r <- NA_real_
+    stop("There are no edges in this graph.")
   }
 # no way to make invisible with base r plotting?
   invisible(igraph::plot.igraph(g_obs, layout = igraph::layout.fruchterman.reingold(g_obs),

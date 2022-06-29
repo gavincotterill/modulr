@@ -28,7 +28,7 @@ simulate_non_independence2 <- function(
       if(x >= 6 & x <= 10){y = sample(2:4, 1, prob=c(1/3, 1/3, 1/3))} # two, three, or four
       if(x >= 11 & x <= 15){y = sample(3:5, 1, prob = c(1/3, 1/3, 1/3))} # 3:5
       if(x >= 16){y = sample(4:6, 1, prob = c(1/3, 1/3, 1/3))} # 4:6
-      if(y > n_groups - 1){y = ngroups - 1}else{y = y}
+      if(y > n_groups - 1){y = n_groups - 1}else{y = y}
       return(y)
     })
   }

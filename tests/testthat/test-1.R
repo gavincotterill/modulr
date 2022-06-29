@@ -149,19 +149,6 @@ test_that("plotting sampled graph works", {
 
 })
 
-test_that("modulr plot works with multiple algorithms", {
-
-  adjmat <- matrix(sample(seq(0, 1, .01), 16), nrow = 4)
-  diag(adjmat) <- 0
-  adjmat[lower.tri(adjmat)] <- 0
-  rownames(adjmat) <- colnames(adjmat) <- paste0("Animal_", 1:4)
-
-  expect_silent({  modulr_plot(adjmat, alg = "fast_greedy") })
-  expect_silent({  modulr_plot(adjmat) })
-
-})
-
-
 test_that("module_summary works", {
 
   g_d_1 <- simulate_graph(n_animals = 6,

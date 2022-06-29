@@ -27,17 +27,9 @@ netcarto_modules <- function(x) {
       am_obs <- as.matrix(igraph::get.adjacency(g_obs, type = "upper", attr = "weight"))
 
     } else if(class(x) == "igraph"){
-
       g_obs <- x
-
-      if(!is.null(igraph::E(g_obs)$sim_weight)){
-        g_obs <- igraph::delete_edges(g_obs, which(igraph::E(g_obs)$sim_weight==0))
-        am_obs <- as.matrix(igraph::get.adjacency(g_obs, type = "upper", attr = "sim_weight"))
-      }else{
-        g_obs <- igraph::delete_edges(g_obs, which(igraph::E(g_obs)$weight==0))
-        am_obs <- as.matrix(igraph::get.adjacency(g_obs, type = "upper", attr = "weight"))
-      }
-
+      g_obs <- igraph::delete_edges(g_obs, which(igraph::E(g_obs)$weight==0))
+      am_obs <- as.matrix(igraph::get.adjacency(g_obs, type = "upper", attr = "weight"))
     } else {
       stop("Object must either be a square adjacency matrix of class matrix or an igraph object.")
     }
@@ -68,8 +60,7 @@ netcarto_modules <- function(x) {
       igraph::V(g_obs)$membership <- colorOrder
 
     }else if(length(igraph::E(g_obs)) == 0){
-
-      igraph::V(g_obs)$membership <- 1:length(igraph::V(g_obs))
+      stop("There are no non-zero edges in this graph.")
     }
 
   y <- stats::setNames(igraph::V(g_obs)$membership, c(igraph::V(g_obs)$name))
