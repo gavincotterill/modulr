@@ -136,19 +136,14 @@ sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, sampling_duratio
   }
 
   if(regime == "even"){
-    membership <- igraph::V(graph)$membership    # pull the stored membership vector
-    # membership
+    membership <- igraph::V(graph)$membership
     id_df <- data.frame(ids = igraph::V(graph)$name, group = membership) %>%
       dplyr::group_by(.data$group) %>%
       dplyr::mutate(count = dplyr::n()) %>%
       dplyr::arrange(desc(.data$count)) %>%
       dplyr::ungroup()
-    id_df
 
-    nNodes <- ncol(adjmat)
     nGroups <- length(unique(membership))
-    nGroups
-
 
     if(floor(sample_nNodes / nGroups) == 0){ # if this is true you can only sample one individual per group, not all groups represented
       groups_to_sample <- id_df %>%
@@ -168,19 +163,13 @@ sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, sampling_duratio
     }else if(floor(sample_nNodes / nGroups) > 0){ # if this is true you can at least sample one individual per group
 
       initial_preference <- ceiling(sample_nNodes / nGroups)
-      initial_preference
-      # remainder <- sample_nNodes %% nGroups
-      # remainder
 
-      # I can take advantage of the fact that slice will let me select more ids than exist in the gorup
       initial_sample <- id_df %>%
         dplyr::group_by(.data$group) %>%
         dplyr::slice_sample(n = initial_preference) %>%
         dplyr::ungroup()
-      initial_sample
 
       number_to_remove <- nrow(initial_sample) - sample_nNodes
-      number_to_remove
 
       if(number_to_remove > 0){
         rows_to_remove <- initial_sample %>%
@@ -192,12 +181,14 @@ sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, sampling_duratio
 
         sample <- initial_sample %>%
           dplyr::filter(!.data$ids %in% rows_to_remove$ids)
+
       }else if(number_to_remove == 0){
         sample <- initial_sample
+
       }else if(number_to_remove < 0){
         remaining_ids <- id_df %>%
           dplyr::filter(!.data$ids %in% initial_sample$ids)
-        remaining_ids
+
         rows_to_add <- remaining_ids[sample(nrow(remaining_ids), abs(number_to_remove)),]
         sample <- rbind(initial_sample, rows_to_add)
       }
