@@ -137,57 +137,78 @@ sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, sampling_duratio
 
   if(regime == "even"){
     membership <- igraph::V(graph)$membership    # pull the stored membership vector
-    id_df <- data.frame(ids = igraph::V(graph)$name, group = membership)
-
-    min_sample <- id_df %>%
+    # membership
+    id_df <- data.frame(ids = igraph::V(graph)$name, group = membership) %>%
       dplyr::group_by(.data$group) %>%
-      dplyr::count() %>%
-      dplyr::ungroup() %>%
-      dplyr::select(.data$n) %>%
-      min()     # return smallest number of nodes per group
+      dplyr::mutate(count = dplyr::n()) %>%
+      dplyr::arrange(desc(.data$count)) %>%
+      dplyr::ungroup()
+    id_df
 
-    ngroups = length(unique(membership))
-    size = sample_nNodes # the number of animals to return
-    even_sampler <- floor(size/ngroups)
+    nNodes <- ncol(adjmat)
+    nGroups <- length(unique(membership))
+    nGroups
 
-      if(size > ngroups & even_sampler >= min_sample){ # start sampling if
 
-        initial_sampling <- id_df %>%
+    if(floor(sample_nNodes / nGroups) == 0){ # if this is true you can only sample one individual per group, not all groups represented
+      groups_to_sample <- id_df %>%
+        dplyr::group_by(.data$group) %>%
+        dplyr::count() %>%
+        dplyr::ungroup() %>%
+        dplyr::slice(1:sample_nNodes) %>%
+        dplyr::select(.data$group)
+
+      sample <- id_df %>%
+        dplyr::filter(group %in% groups_to_sample$group) %>%
+        dplyr::group_by(.data$group) %>%
+        dplyr::slice(1) %>%
+        dplyr::ungroup() %>%
+        dplyr::select(.data$ids)
+
+    }else if(floor(sample_nNodes / nGroups) > 0){ # if this is true you can at least sample one individual per group
+
+      initial_preference <- ceiling(sample_nNodes / nGroups)
+      initial_preference
+      # remainder <- sample_nNodes %% nGroups
+      # remainder
+
+      # I can take advantage of the fact that slice will let me select more ids than exist in the gorup
+      initial_sample <- id_df %>%
+        dplyr::group_by(.data$group) %>%
+        dplyr::slice_sample(n = initial_preference) %>%
+        dplyr::ungroup()
+      initial_sample
+
+      number_to_remove <- nrow(initial_sample) - sample_nNodes
+      number_to_remove
+
+      if(number_to_remove > 0){
+        rows_to_remove <- initial_sample %>%
           dplyr::group_by(.data$group) %>%
-          dplyr::sample_n(min_sample)
-        remainder <- size - nrow(initial_sampling)
+          dplyr::slice_sample(n = 1) %>%
+          dplyr::ungroup() %>%
+          dplyr::arrange(desc(.data$count)) %>%
+          dplyr::slice(1:number_to_remove)
 
-        if(remainder > 0){ # inner
-          unsampled_df <- id_df %>%
-            dplyr::filter(!.data$ids %in% initial_sampling$ids)
-          random_vec <- sample(1:nrow(unsampled_df), remainder, replace = F)
-          out <- rbind(initial_sampling, unsampled_df[random_vec,])
-        } else { out <- initial_sampling } # end inner
-
-      } else if(size > ngroups & even_sampler < min_sample){ # outer contd
-        initial_sampling <- id_df %>%
-          dplyr::group_by(.data$group) %>%
-          dplyr::sample_n(even_sampler)
-        remainder <- size - nrow(initial_sampling)
-
-        if(remainder > 0){ # inner
-          unsampled_df <- id_df %>%
-            dplyr::filter(!.data$ids %in% initial_sampling$ids)
-          random_vec <- sample(1:nrow(unsampled_df), remainder, replace = F)
-          out <- rbind(initial_sampling, unsampled_df[random_vec,])
-        } else { out <- initial_sampling } # end inner
-
-      } else if(size <= ngroups){ # outer contd
-        sampling <- id_df %>%
-          dplyr::group_by(.data$group) %>%
-          dplyr::slice(1) %>%
-          dplyr::ungroup() # these are randomly sorted by group
-        out <- sampling[1:size,]
-      } # end sampling if()
-
-    grab <- out$ids
-
+        sample <- initial_sample %>%
+          dplyr::filter(!.data$ids %in% rows_to_remove$ids)
+      }else if(number_to_remove == 0){
+        sample <- initial_sample
+      }else if(number_to_remove < 0){
+        remaining_ids <- id_df %>%
+          dplyr::filter(!.data$ids %in% initial_sample$ids)
+        remaining_ids
+        rows_to_add <- remaining_ids[sample(nrow(remaining_ids), abs(number_to_remove)),]
+        sample <- rbind(initial_sample, rows_to_add)
+      }
     }
+    grab <- sample$ids
+
+    if(length(grab) != sample_nNodes){
+      stop(paste0("sampled ", length(grab)," not ", sample_nNodes))
+    }
+
+  }
 
   if(regime == "random"){
     grab <- sample(1:netSize, size = sample_nNodes, replace = F)
