@@ -157,12 +157,12 @@ Let’s calculate estimated modularity of the sampled graph.
 
 ``` r
 adj_sample <- as.matrix(igraph::get.adjacency(g_obs, type = "upper",
-    attr = "sim_weight"))
+    attr = "weight"))
 mem_sample <- V(g_obs)$membership
 Qest <- assortnet::assortment.discrete(adj_sample, types = mem_sample,
     weighted = T)$r
 Qest
-#> [1] 0.4338999
+#> [1] 0.4281226
 ```
 
 Now we can plot our sampled graph side-by-side with the original and
