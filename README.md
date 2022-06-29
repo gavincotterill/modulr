@@ -96,8 +96,8 @@ which we can plot using `plot_simulated_graph()`.
 
 ``` r
 g <- graph_from_schedule(ind)
-par(oma = c(1, 0, 1, 0))
-plot_simulated_graph(g, title = "independent")
+plot_simulated_graph(g, title = "independent", vertex.size = 25,
+    mark.expand = 25)
 ```
 
 ![](man/figures/README-graph-1.png)
