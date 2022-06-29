@@ -96,7 +96,7 @@ which we can plot using `plot_simulated_graph()`.
 
 ``` r
 g <- graph_from_schedule(ind)
-par(mar = c(1, 0, 1, 0))
+par(oma = c(1, 0, 1, 0))
 plot_simulated_graph(g, title = "independent")
 ```
 
