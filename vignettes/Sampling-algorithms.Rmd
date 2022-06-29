@@ -49,11 +49,11 @@ g <- graph_from_schedule(ind)
 plot_simulated_graph(g, title = "independent", vertex.size = 25, mark.expand = 25)
 ```
 
-## `Sample_graph()`
+## `sample_graph()`
 
-In `modulr` we sample networks using the `sample_graph()` function. We provide it an undirected `igraph` graph object like the one we just made, where edge weights represent the proportion of time that each pair of individuals spend together over the observation period (`sampling_duration`). We also specify the number of individuals to mark for observation using `sample_nNodes`. We wanted this function be able to handle some situations where not all individuals are observed at the same rate. Currently we can provide two observation rates, `hi_res` for "high-resolution" or more frequent observations, and `lo_res` for "low-resolution" or less frequent observations. We can adjust the proportion of sampled individuals that fall into either category using `prop_hi_res`, which is the proportion of sampled individuals that will be observed at the higher rate. (If you just want to use one observation rate, set `prop_hi_res = 1`, `hi_res` = <your rate>, and `lo_res = 0`.) We also specify a community detection algorithm (CDA) to use via `alg`. This will support CDAs from `igraph` including "fast_greedy", "walktrap", "louvain", "label_prop" and if you have the `rnetcarto` package installed, also "netcarto".
+In `modulr` we sample networks using the `sample_graph()` function. We provide it an undirected `igraph` graph object like the one we just made, where edge weights represent the proportion of time that each pair of individuals spend together over the observation period (`sampling_duration`). We also specify the number of individuals to mark for observation using `sample_nNodes`. We wanted this function be able to handle some situations where not all individuals are observed at the same rate. Currently we can provide two observation rates, `hi_res` for "high-resolution" or more frequent observations, and `lo_res` for "low-resolution" or less frequent observations. We can adjust the proportion of sampled individuals that fall into either category using `prop_hi_res`, which is the proportion of sampled individuals that will be observed at the higher rate. (If you just want to use one observation rate, set `prop_hi_res = 1`, `hi_res = <your rate>`, and `lo_res = 0`.) We also specify a community detection algorithm (CDA) to use via `alg`. This will support CDAs from `igraph` including "fast_greedy", "walktrap", "louvain", "label_prop" and if you have the `rnetcarto` package installed, also "netcarto".
 
-The output of sample_graph() is an `igraph` graph where the edge weights represent the simple ratio index (SRI). Here SRI is calculated based on the probability that two individuals were jointly observed given their observation frequencies. The number of joint observations for a dyad, $Y$, is taken to be a random draw from a binomial distribution governed by the proportion of time the pair spends together ($p$), and the smallest number of observations per individual of the dyad according to the user-defined sampling intensities ($n$). The SRI is then the number of joint observations divided by $n$:
+The output of `sample_graph()` is an `igraph` graph where the edge weights represent the simple ratio index (SRI). Here SRI is calculated based on the probability that two individuals were jointly observed given their observation frequencies. The number of joint observations for a dyad, $Y$, is taken to be a random draw from a binomial distribution governed by the proportion of time the pair spends together ($p$), and the smallest number of observations per individual of the dyad according to the user-defined sampling intensities ($n$). The SRI is then the number of joint observations divided by $n$:
 
 $$
 Y \sim Binom(n,p)
@@ -69,12 +69,12 @@ The package’s current implementation assumes perfect detection. As in all appl
 
 ### Samplers
 
-Finally there are three 'flavors' to the sampling we can do. The first is *random* sampling and while this has useful statistical properties, it isn't always a realistic assumption -- and sometimes we knowingly violate it for good reason. Suppose we have a limited number of collars to deploy and limited resources for capturing, but we want to get at least one collar in each group so that we can monitor their movements and have a good idea of where most of the individuals are at any given time. This would be an example of our *"even"* sampler: it places one collar in each group before adding a second to any group. Once each group is represented with at least one collar it incrementally allocates remaining collars one per group. Once the smallest group is fully monitored it continues incrementally adding collars where possible. (It essentially allocates collars perfectly evenly.) The third and final 'flavor' is one we hypothesized would enhance our ability to estimate global network statistics like modularity when sample sizes are small and is also potentially more realistic to implement in practice than perfect 'evenness'. This sampled is called *"grab-two"*. In it, two individuals of a shared social group are sampled before sampling additional social groups. Once two individuals are sampled from each social group additional individuals are selected randomly. The general idea is that we want to maximize spread across social groups, but if you only sample one individual from a group you may be at a disadvantage when it comes to using community detection algorithms or estimating other global network properties.
+Finally there are three 'flavors' to the sampling we can do. The first is **random** sampling and while this has useful statistical properties, it isn't always a realistic assumption -- and sometimes we knowingly violate it for good reason. Suppose we have a limited number of collars to deploy and limited resources for capturing, but we want to get at least one collar in each group so that we can monitor their movements and have a good idea of where most of the individuals are at any given time. This would be an example of our **"even"** sampler: it places one collar in each group before adding a second to any group. Once each group is represented with at least one collar it incrementally allocates remaining collars one per group. Once the smallest group is fully monitored it continues incrementally adding collars where possible. It essentially allocates collars perfectly evenly. While this may be possible to accomplish when the number of groups and individuals to sample are few, it is likely very hard to "perfectly evenly" a large proportion of most populations. The third and final 'flavor' tries to strike a balance between optimizing coverage while maintaining realism. This sampler is called **"grab-two"**. In it, two individuals of a shared social group are sampled before sampling additional social groups and there's never any group that only has a single collar. We chose to do this in part because community detection algorithms tend not to group these 'solo' individuals correctly. Once two individuals are sampled from each social group additional individuals are selected randomly. In general, the differences between samplers should be most noticeable when a small proportion of the population is sampled for monitoring.
 
-Now let's put this into practice. We'll hold everything constant except the sampler. To help illustrate the difference between samplers we'll sample 9 animals, they'll be monitored for 100 days, and they'll have two observation frequencies. Half will be observed once per day, and the other half will be observed once per week. We'll apply the "netcarto" community detection algorithm from `rnetcarto` to make our best guess at what the social groupings should be in this sampled graph.
+Now let's put this into practice. We'll hold everything constant except the sampler. To help illustrate the difference between samplers we'll only sample 5 animals, they'll be monitored for 100 days, and they'll have two observation frequencies. Half will be observed once per day, and the other half will be observed once per week. We'll apply the "netcarto" community detection algorithm from `rnetcarto` to make our best guess at what the social groupings should be in this sampled graph.
 
 ```{r sample-graph, fig.width=7, fig.height=2}
-sn <- 9
+sn <- 5
 set.seed(1234)
 g_random <- sample_graph(graph = g, 
                          sample_nNodes = sn, 
@@ -109,12 +109,72 @@ plot_sampled_graph(g_obs = g_even, g = g, title = "Even")
 plot_sampled_graph(g_obs = g_grab, g = g, title = "Grab-two")
 ```
 
+In this example, the random sampler (left) selected individuals for monitoring from 3 of the 5 groups. The 'even' sampler put a collar in each group (center), while the 'grab-two' sampler (right) placed two collars in one group and three in another. This may seem a little arcane, so let's compare the modularity estimates that we get from these three different sampling events.
+
+```{r modularity}
+graph_list <- list("truth" = g, "random" = g_random, "even" = g_even, "grab-two" = g_grab)
+
+lapply(graph_list, function(grph){
+  adj <- as.matrix(igraph::get.adjacency(grph, type = "upper", attr = "weight"))
+  mem <- igraph::V(grph)$membership
+  assortnet::assortment.discrete(adj, types = mem, weighted = T)$r
+}) %>% `names<-`(names(graph_list)) 
+
+```
+
+There are some clear differences here, with "random" and "grab-two" performing much better than "even". "grab-two" is almost within 5% despite having so few animals monitored and only 2 of 5 groups monitored. This is also a consequence of `netcarto` performing so well: it accurately classified every individual when using "grab-two". For comparison, let's sample 9 animals and check these again.
+
+```{r final-chunk, fig.width=7, fig.height=2}
+sn <- 9
+set.seed(1234)
+g_random <- sample_graph(graph = g, 
+                         sample_nNodes = sn, 
+                         sampling_duration = sd,
+                         prop_hi_res = 0.5, 
+                         hi_res = 1, 
+                         lo_res = 1/7, 
+                         regime = "random", 
+                         alg = "netcarto")
+
+g_even <- sample_graph(graph = g, 
+                         sample_nNodes = sn, 
+                         sampling_duration = sd,
+                         prop_hi_res = 0.5, 
+                         hi_res = 1, 
+                         lo_res = 1/7, 
+                         regime = "even", 
+                         alg = "netcarto")
+
+g_grab <- sample_graph(graph = g, 
+                       sample_nNodes = sn, 
+                       sampling_duration = sd,
+                       prop_hi_res = 0.5, 
+                       hi_res = 1, 
+                       lo_res = 1/7, 
+                       regime = "grab-two", 
+                       alg = "netcarto")
+
+par(mfrow = c(1, 3), oma = c(0, 0, 1, 0), mar = c(0, 0, 2, 0), xpd = NA)
+plot_sampled_graph(g_obs = g_random, g = g, title = "Random")
+plot_sampled_graph(g_obs = g_even, g = g, title = "Even")
+plot_sampled_graph(g_obs = g_grab, g = g, title = "Grab-two")
+
+graph_list <- list("truth" = g, "random" = g_random, "even" = g_even, "grab-two" = g_grab)
+
+lapply(graph_list, function(grph){
+  adj <- as.matrix(igraph::get.adjacency(grph, type = "upper", attr = "weight"))
+  mem <- igraph::V(grph)$membership
+  assortnet::assortment.discrete(adj, types = mem, weighted = T)$r
+}) %>% `names<-`(names(graph_list)) 
+
+```
+In this example random sampling has given us the best modularity estimate, 'even' was again the worst. And again, these figures help illustrate the different ways in which the samplers select individuals from among the social groups for monitoring.
+
+Be sure to check out our other vignettes to explore all of the things we can do with `modulr`!
 
 
 
-
-
-
+Hoppitt, W. J. E., & Farine, D. R. (2018). Association indices for quantifying social relationships: How to deal with missing observations of individuals or groups. Animal Behaviour, 136, 227–238. https://doi.org/10.1016/j.anbehav.2017.08.029
 
 
 

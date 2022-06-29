@@ -24,7 +24,7 @@
 #'   prop_hi_res = 1,
 #'   regime = "grab-two",
 #'   alg = "fast_greedy")
-#' am_obs <- igraph::get.adjacency(g_obs, type = "upper", attr = "sim_weight") %>%
+#' am_obs <- igraph::get.adjacency(g_obs, type = "upper", attr = "weight") %>%
 #'   as.matrix()
 #' qrel_hat <- assortnet::assortment.discrete(am_obs,
 #' types = igraph::V(g_obs)$membership, weighted = TRUE)$r
@@ -64,7 +64,6 @@ sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, sampling_duratio
   }
   if(class(graph) != "igraph"){ stop("graph needs to be an igraph object.", call. = FALSE) }
 
-  # sample_nNodes <- sample_nNodes # what's this for?
   adjmat = igraph::as_adjacency_matrix(graph, attr = "weight", type = "both", sparse = FALSE)
   netSize <- ncol(adjmat)
 
@@ -78,14 +77,14 @@ sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, sampling_duratio
       dplyr::ungroup() %>%
       dplyr::arrange(-.data$n) %>%
       dplyr::filter(.data$n != 1) # drop single node modules
-
+    grouped_by_size
     min_sample <- id_df %>% # smallest module size
       dplyr::group_by(.data$group) %>%
       dplyr::count() %>%
       dplyr::ungroup() %>%
       dplyr::select(.data$n) %>%
       min()
-
+    min_sample
     ngroups = length(unique(membership)) # number of modules
     size = sample_nNodes # the number of animals to return (number needed)
     even_sampler <- floor(size/ngroups)
@@ -108,15 +107,29 @@ sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, sampling_duratio
         dplyr::ungroup() %>%
         dplyr::slice(1:(size - 1)) %>%
         dplyr::select(-.data$n)
-
+      initial_sampling
       remainder <- size - nrow(initial_sampling)
+      remainder
 
-      if(remainder > 0){ # start inner
+      if(remainder == 0){
+        out <- initial_sampling
+      }else if(remainder == 1){
+        unsampled_df <- id_df %>%
+          dplyr::filter(!.data$ids %in% initial_sampling$ids & .data$group %in% initial_sampling$group)
+        unsampled_df
+        random_vec <- sample(1:nrow(unsampled_df), remainder, replace = F)
+        unsampled_df[random_vec,]
+        out <- rbind(initial_sampling, unsampled_df[random_vec,])
+        out
+      }else if(remainder > 1){
         unsampled_df <- id_df %>%
           dplyr::filter(!.data$ids %in% initial_sampling$ids)
+        unsampled_df
         random_vec <- sample(1:nrow(unsampled_df), remainder, replace = F)
+        unsampled_df[random_vec,]
         out <- rbind(initial_sampling, unsampled_df[random_vec,])
-      } else { out <- initial_sampling } # end inner
+        out
+      }
 
     }else if(size > (ngroups * 2)){ # if you need more animals than twice the number of groups
       initial_sampling <- id_df %>%
@@ -234,9 +247,9 @@ sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, sampling_duratio
     ed$minObs <- pmin(ed$fromObs, ed$toObs)
     ed$sim_weight <- stats::rbinom(n = nrow(ed), size = ed$minObs, p = ed$weight) / ed$minObs
 
-    g_obs <- igraph::graph_from_data_frame(ed[,c("from", "to", "sim_weight")], directed = FALSE)
-    g_obs <- igraph::delete_edges(g_obs, which(igraph::E(g_obs)$sim_weight==0))
-    am_obs <- igraph::get.adjacency(g_obs, type = "upper", attr = "sim_weight") %>% as.matrix()
+    g_obs <- igraph::graph_from_data_frame(ed[,c("from", "to", "weight")], directed = FALSE)
+    g_obs <- igraph::delete_edges(g_obs, which(igraph::E(g_obs)$weight==0))
+    am_obs <- igraph::get.adjacency(g_obs, type = "upper", attr = "weight") %>% as.matrix()
 
     if( length( igraph::E(g_obs) ) >= 2 & alg == "netcarto"){
 
