@@ -19,8 +19,8 @@ plot_transmissions <- function(g,
                               edge.arrow.size = 0.5,
                               vertex.label.cex = 1,
                               title = ""){
-  grp <- data.frame(name = V(g)$name,
-                    mem = V(g)$membership)
+  grp <- data.frame(name = igraph::V(g)$name,
+                    mem = igraph::V(g)$membership)
 
   mark_col <- grDevices::rainbow(length(unique(grp$mem)), alpha = 0.3)
   mark_border <- grDevices::rainbow(length(unique(grp$mem)), alpha = 1)
