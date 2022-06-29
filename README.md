@@ -8,10 +8,13 @@
 **NOTE:** This package is under active development. A stable version
 will be available soon.
 
-`modulr` is an R package for stochastic simulation of fission-fusion
-dynamics and sampling processes. It provides a suite of tools for
-creating and working with modular `igraph` networks and investigating
-network statistic estimation.
+`modulr` is an R package that, among other things, simulates `igraph`
+network graphs with controllable modularity. Under the hood, these are
+stochastic simulations of fission-fusion dynamics. The package further
+provides tools for simulating sampling processes and visualization. The
+main motivation of the package is to investigate network statistic
+estimation through simulation. Over time additional tools have been
+added including an individually-based SEIR model.
 
 Some of the functions in this package can use the ‘netcarto’
 simulated-annealing community detection algorithm implemented via
@@ -57,12 +60,12 @@ sapply(c("tidyverse", "ggthemes", "igraph", "assortnet", "modulr"),
 We start by specifying some parameters:
 
 ``` r
-ng = 5  # number of groups
-na = 30  # number of animals
-tl = 7  # time to leave ie. lambda
-tr = 2  # time to return ie. xi
-tt = c(0.01, 0.04)  # multiply by 1440 minutes per day: between ~15 minutes to an hour to switch groups
-sd = 100  # sampling duration in days
+ng = 5  # number of groups in the network
+na = 30  # number of animals in the network
+tl = 7  # average number of days spent at a home patch before leaving
+tr = 2  # average number of days spent at a non-resident patch before returning home
+tt = c(0.01, 0.04)  # travel time distribution while switching (multiply by 1440 minutes per day: between ~15 minutes to an hour to switch groups)
+sd = 100  # sampling/observation duration in days
 ```
 
 Then we make a call to `simulate_schedule()`, specifying the sampler to
@@ -83,16 +86,17 @@ head(ind[[1]], 6)
 #> 6: 0.091 21.2657038 21.2797038
 ```
 
-Each of these schedule objects is a list of data.frames: one per
+Each of these schedule objects is a list of data.frames, one per
 individual, detailing where they were with time intervals. The time
 intervals are the same for each individual, regardless of whether or not
 they moved, which is why there are some rows where the state doesn’t
 change. We can use the “schedule” object `ind` for a few different
-things including making an `igraph` graph, which we can plot using
-`plot_simulated_graph()`.
+things including making an `igraph` graph with `graph_from_schedule()`,
+which we can plot using `plot_simulated_graph()`.
 
 ``` r
 g <- graph_from_schedule(ind)
+par(mar = c(1, 0, 1, 0))
 plot_simulated_graph(g, title = "independent")
 ```
 

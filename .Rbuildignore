@@ -5,3 +5,5 @@
 ^doc$
 ^Meta$
 ^codecov\.yml$
+^\vignettes\Simulator-comparison\.Rmd\.orig$
+^\vignettes\rebuild-simulator-comparison\.R$
