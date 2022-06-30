@@ -68,8 +68,8 @@ tt = c(0.01, 0.04)  # travel time distribution while switching (multiply by 1440
 sd = 100  # sampling/observation duration in days
 ```
 
-Then we make a call to `simulate_schedule()`, specifying the sampler to
-use.
+Then we make a call to `simulate_schedule()`, specifying the simulator
+to use.
 
 ``` r
 set.seed(123)
@@ -89,8 +89,7 @@ head(ind[[1]], 6)
 Each of these schedule objects is a list of data.frames, one per
 individual, detailing where they were with time intervals. The time
 intervals are the same for each individual, regardless of whether or not
-they moved, which is why there are some rows where the state doesn’t
-change. We can use the “schedule” object `ind` for a few different
+they moved. We can use the “schedule” object `ind` for a few different
 things including making an `igraph` graph with `graph_from_schedule()`,
 which we can plot using `plot_simulated_graph()`.
 
@@ -137,19 +136,17 @@ with a handful of animals from a few groups. We go into more details on
 this in other vignettes, so here we’ll just proceed with the random
 sampling assumption to illustrate the basics using `sample_graph()`.
 We’ll use it to sample 10 animals (one third of the 30 in our
-population), they’ll be monitored for 100 days, and they’ll have two
-collar types: half will have GPS collars and half will have VHF collars.
-The GPS collars will give us 12 locations per day (every two hours,
-which is a good GPS collar upload frequency) while the VHF collars will
-be observed at a rate of 30 times per year. Lastly we’ll apply the
-“netcarto” community detection algorithm from `rnetcarto` to make our
-best guess at what the social groupings should be in this sampled graph.
+population), they’ll be monitored for 100 days. Not all animals will be
+monitored with the same frequency: half will be monitored daily, and the
+other half will be monitored weekly. Last we’ll apply the “netcarto”
+community detection algorithm from `rnetcarto` to make our best guess at
+what the social groupings should be in this sampled graph.
 
 ``` r
 sn <- 10
 set.seed(123)
 g_obs <- sample_graph(graph = g, sample_nNodes = sn, sampling_duration = sd,
-    prop_hi_res = 0.5, hi_res = 12, lo_res = 30/365, regime = "random",
+    prop_hi_res = 0.5, hi_res = 1, lo_res = 1/7, regime = "random",
     alg = "netcarto")
 ```
 
@@ -162,7 +159,7 @@ mem_sample <- V(g_obs)$membership
 Qest <- assortnet::assortment.discrete(adj_sample, types = mem_sample,
     weighted = T)$r
 Qest
-#> [1] 0.4338999
+#> [1] 0.5091914
 ```
 
 Now we can plot our sampled graph side-by-side with the original and
