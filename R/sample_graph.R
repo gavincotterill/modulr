@@ -75,8 +75,9 @@ sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, sampling_duratio
       dplyr::group_by(.data$group) %>%
       dplyr::add_tally() %>%
       dplyr::ungroup() %>%
-      dplyr::arrange(-.data$n) %>%
-      dplyr::filter(.data$n != 1) # drop single node modules
+      dplyr::arrange(-.data$n, .data$group)
+    # %>%
+    #   dplyr::filter(.data$n != 1) # drop single node modules this interferes with the first condition when there is a true group of 1
     grouped_by_size
     min_sample <- id_df %>% # smallest module size
       dplyr::group_by(.data$group) %>%
@@ -89,23 +90,16 @@ sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, sampling_duratio
     size = sample_nNodes # the number of animals to return (number needed)
     even_sampler <- floor(size/ngroups)
 
-    # if you need fewer animals than there are ngroups * 2
+    # condition 1: if you need fewer animals than there are ngroups * 2
     if(size <= (ngroups * 2) & size %% 2 == 0){ # and is even,
-
-      out <- grouped_by_size %>%
-        dplyr::group_by(.data$group) %>%
-        dplyr::sample_n(2) %>%
-        dplyr::ungroup() %>%
-        dplyr::slice(1:size) %>% # you won't sample every group.
-        dplyr::select(-.data$n)
-
-    } else if(size < (ngroups * 2) & size %% 2 != 0){ # fewer animals then groups*2 and odd
-
       initial_sampling <- grouped_by_size %>%
         dplyr::group_by(.data$group) %>%
-        dplyr::sample_n(2) %>%
+        # dplyr::arrange(-.data$n) %>%
+        # dplyr::sample_n(2) %>% # this throws an error if there aren't at least two in each group to grab
+        dplyr::slice(1:2) %>%
         dplyr::ungroup() %>%
-        dplyr::slice(1:(size - 1)) %>%
+        dplyr::arrange(-.data$n, .data$group) %>%
+        dplyr::slice(1:size) %>% # you won't sample every group. # this is the only difference from the second condition
         dplyr::select(-.data$n)
       initial_sampling
       remainder <- size - nrow(initial_sampling)
@@ -130,23 +124,60 @@ sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, sampling_duratio
         out <- rbind(initial_sampling, unsampled_df[random_vec,])
         out
       }
-
+      # condition 2:
+    } else if(size < (ngroups * 2) & size %% 2 != 0){ # fewer animals then groups*2 and odd
+      initial_sampling <- grouped_by_size %>%
+        dplyr::group_by(.data$group) %>%
+        # dplyr::sample_n(2) %>%
+        dplyr::slice(1:2) %>%
+        dplyr::ungroup() %>%
+        dplyr::arrange(-.data$n, .data$group) %>%
+        dplyr::slice(1:(size - 1)) %>%
+        dplyr::select(-.data$n)
+      initial_sampling
+      remainder <- size - nrow(initial_sampling)
+      remainder
+      if(remainder == 0){
+        out <- initial_sampling
+      }else if(remainder == 1){
+        # first try to add on to existing groups
+        unsampled_df <- id_df %>%
+          dplyr::filter(!.data$ids %in% initial_sampling$ids & .data$group %in% initial_sampling$group)
+        unsampled_df
+        # if that's not possible, draw from any other group
+        if(nrow(unsampled_df) == 0){
+          unsampled_df <- id_df %>%
+            dplyr::filter(!.data$ids %in% initial_sampling$ids)
+          unsampled_df
+        }
+        random_vec <- sample(1:nrow(unsampled_df), remainder, replace = F)
+        unsampled_df[random_vec,]
+        out <- rbind(initial_sampling, unsampled_df[random_vec,])
+        out
+      }else if(remainder > 1){
+        unsampled_df <- id_df %>%
+          dplyr::filter(!.data$ids %in% initial_sampling$ids)
+        unsampled_df
+        random_vec <- sample(1:nrow(unsampled_df), remainder, replace = F)
+        unsampled_df[random_vec,]
+        out <- rbind(initial_sampling, unsampled_df[random_vec,])
+        out
+      }
+      # condition 3:
     }else if(size > (ngroups * 2)){ # if you need more animals than twice the number of groups
       initial_sampling <- id_df %>%
         dplyr::group_by(.data$group) %>%
         dplyr::sample_n(ifelse(min_sample < even_sampler, min_sample, even_sampler))
-
       remainder <- size - nrow(initial_sampling)
-
       if(remainder > 0){ # begin inner
         unsampled_df <- id_df %>%
           dplyr::filter(!.data$ids %in% initial_sampling$ids)
         random_vec <- sample(1:nrow(unsampled_df), remainder, replace = F)
         out <- rbind(initial_sampling, unsampled_df[random_vec,])
       } else { out <- initial_sampling } # end inner
-    }
+    }# end conditions
     grab <- out$ids
-  }
+  }# end grab-two
 
   if(regime == "even"){
     membership <- igraph::V(graph)$membership
@@ -208,27 +239,31 @@ sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, sampling_duratio
     }
     grab <- sample$ids
 
-    if(length(grab) != sample_nNodes){
-      stop(paste0("sampled ", length(grab)," not ", sample_nNodes))
-    }
-
   }
 
   if(regime == "random"){
     grab <- sample(1:netSize, size = sample_nNodes, replace = F)
-    }
+  }
 
-  # if(any(grab > netSize)){print("this is the problem")}
+  if(length(grab) != sample_nNodes){
+    stop(paste0("sampled ", length(grab)," not ", sample_nNodes))
+  }
 
   if(length(grab) > 2){
     am <- adjmat[grab, grab]
     g2 <- igraph::graph_from_adjacency_matrix(am, weighted = T, mode = "undirected", diag = F)
-    ed <- igraph::get.data.frame(g2)
+
+    ed <- igraph::get.data.frame(g2) # this is where nodes can get silently dropped, it is returning an edge.list df
+
+    ids <- igraph::V(g2)$name
+    dyads <- data.frame(t(combn(ids, 2)))
+    names(dyads) <- c("from", "to")
+    ed <- dplyr::left_join(dyads, ed, by = c("from", "to"))
+    ed[is.na(ed)] <- 0
 
     # nNodes_sim <- length(grab) # redundant, replace with sample_nNodes
     # nGPS <- ceiling(nNodes_sim * prop_hi_res)
     # nVHF <- nNodes_sim - nGPS
-
     ## is the problem here?
     nGPS <- ceiling(sample_nNodes * prop_hi_res)
     if(nGPS < sample_nNodes){
@@ -236,21 +271,23 @@ sample_graph <- function(graph, sample_nNodes, prop_hi_res = 1, sampling_duratio
     }else if(nGPS == sample_nNodes){
       nVHF <- 0
     }else if(nGPS > sample_nNodes){
-      print("error line 209")
+      print("error line 262")
     }
 
     ofd <- data.frame(id = row.names(am)) %>%
       dplyr::mutate(obs_freq = ifelse(as.numeric(row.names(.)) <= nGPS, hi_res, lo_res),
-             n_obs = ceiling(.data$obs_freq * sampling_duration)) # here
+             n_obs = ceiling(.data$obs_freq * sampling_duration))
     ed$fromObs <- ofd$n_obs[match(ed$from, ofd$id)]
     ed$toObs <- ofd$n_obs[match(ed$to, ofd$id)]
     ed$minObs <- pmin(ed$fromObs, ed$toObs)
     ed$sim_weight <- stats::rbinom(n = nrow(ed), size = ed$minObs, p = ed$weight) / ed$minObs
+    ed$weight <- ed$sim_weight # work around to rename sim_weight to weight
 
     g_obs <- igraph::graph_from_data_frame(ed[,c("from", "to", "weight")], directed = FALSE)
     g_obs <- igraph::delete_edges(g_obs, which(igraph::E(g_obs)$weight==0))
     am_obs <- igraph::get.adjacency(g_obs, type = "upper", attr = "weight") %>% as.matrix()
 
+    if(length(igraph::V(g_obs)) != sample_nNodes){stop("error before line 284")}
     if( length( igraph::E(g_obs) ) >= 2 & alg == "netcarto"){
 
       df <- rnetcarto::netcarto(am_obs)[[1]]
