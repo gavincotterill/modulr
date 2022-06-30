@@ -50,7 +50,7 @@ g_obs <- sample_graph(
   prop_hi_res = 1,
   regime = "grab-two",
   alg = "fast_greedy")
-am_obs <- igraph::get.adjacency(g_obs, type = "upper", attr = "sim_weight") \%>\%
+am_obs <- igraph::get.adjacency(g_obs, type = "upper", attr = "weight") \%>\%
   as.matrix()
 qrel_hat <- assortnet::assortment.discrete(am_obs,
 types = igraph::V(g_obs)$membership, weighted = TRUE)$r
