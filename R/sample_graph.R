@@ -37,7 +37,7 @@ sample_graph <- function(graph, sample_nNodes, sampling_duration, prop_hi_res = 
       "regime must take one of the following values: \"grab-two\", \"even\",\"random\"."
     )
   }
-  possible_algorithms <- c("netcarto", "fast_greedy", "label_prop", "leading_eigen", "louvain", "spinglass", "walktrap")
+  possible_algorithms <- c("netcarto", "fast_greedy", "label_prop", "leading_eigen", "louvain", "spinglass", "walktrap", "optimal", "leiden")
   if(!alg %in% possible_algorithms){
     stop(
       "alg must take one of the following values: \"netcarto\", \"fast_greedy\",\"label_prop\", \"leading_eigen\", \"louvain\", \"spinglass\", or \"walktrap\""
