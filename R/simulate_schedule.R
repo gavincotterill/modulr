@@ -18,6 +18,9 @@ simulate_schedule <- function(n_animals,
   if (!simulator %in% c("independent", "group-think", "non-independent")) {
     stop( "sampler must be either \"independent\", \"non-independent\" or \"group-think\".",call. = FALSE)
   }
+  if(time_to_return - max(travel_time) < 0.75){
+    warning("Travel times that are close to or exceed \'time_to_return\' may break the code.")
+  }
 
   if(simulator == "independent"){
     out <- simulate_independence(n_groups = n_groups,
