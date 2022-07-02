@@ -167,11 +167,11 @@ simulate_non_independence <- function(
     }
   }
   # try this:
-  t2$members <- stringr::str_remove(string = t2$members, pattern = "\\d{1,}_0")
-  t2$members <- stringr::str_remove(string = t2$members, pattern = "(?<!\\d)/")
-  t2$members <- stringr::str_remove(string = t2$members, pattern = "/(?!\\d)")
-  t2$members <- stringr::str_remove(string = t2$members, pattern = "(?<!\\d)-")
-  t2$members <- stringr::str_remove(string = t2$members, pattern = "-(?!\\d)")
+  t2$members <- stringr::str_remove_all(string = t2$members, pattern = "\\d{1,}_0")
+  t2$members <- stringr::str_remove(string = t2$members, pattern = "(?<!\\d{1,1})/")
+  t2$members <- stringr::str_remove(string = t2$members, pattern = "/(?!\\d{1,1})")
+  t2$members <- stringr::str_remove(string = t2$members, pattern = "(?<!\\d{1,1})-")
+  t2$members <- stringr::str_remove(string = t2$members, pattern = "-(?!\\d{1,1})")
   return(t2)
 }
 

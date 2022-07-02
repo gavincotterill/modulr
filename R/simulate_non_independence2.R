@@ -299,11 +299,11 @@ simulate_non_independence2 <- function(
   # t2$members <- stringr::str_replace(string = t2$members, pattern = "\\d{1,}_0/|/\\d{1,}_0|\\d{1,}_0-|\\d{1,}_0|\\d{1,}_0-\\d{1,}_0-", replacement = "") # same as str_remove
 
   # try this:
-  t2$members <- stringr::str_remove(string = t2$members, pattern = "\\d{1,}_0")
-  t2$members <- stringr::str_remove(string = t2$members, pattern = "(?<!\\d)/")
-  t2$members <- stringr::str_remove(string = t2$members, pattern = "/(?!\\d)")
-  t2$members <- stringr::str_remove(string = t2$members, pattern = "(?<!\\d)-")
-  t2$members <- stringr::str_remove(string = t2$members, pattern = "-(?!\\d)")
+  t2$members <- stringr::str_remove_all(string = t2$members, pattern = "\\d{1,}_0")
+  t2$members <- stringr::str_remove(string = t2$members, pattern = "(?<!\\d{1,1})/")
+  t2$members <- stringr::str_remove(string = t2$members, pattern = "/(?!\\d{1,1})")
+  t2$members <- stringr::str_remove(string = t2$members, pattern = "(?<!\\d{1,1})-")
+  t2$members <- stringr::str_remove(string = t2$members, pattern = "-(?!\\d{1,1})")
 
   return(t2)
 }
