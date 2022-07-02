@@ -166,6 +166,12 @@ simulate_non_independence <- function(
       t2 <- ff_forward3(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_return)
     }
   }
+  # try this:
+  t2$members <- stringr::str_remove(string = t2$members, pattern = "\\d{1,}_0")
+  t2$members <- stringr::str_remove(string = t2$members, pattern = "(?<!\\d)/")
+  t2$members <- stringr::str_remove(string = t2$members, pattern = "/(?!\\d)")
+  t2$members <- stringr::str_remove(string = t2$members, pattern = "(?<!\\d)-")
+  t2$members <- stringr::str_remove(string = t2$members, pattern = "-(?!\\d)")
   return(t2)
 }
 

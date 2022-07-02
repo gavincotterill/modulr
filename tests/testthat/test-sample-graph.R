@@ -1,6 +1,6 @@
 test_that("when there are more than two edges in sampled graph with fast_greedy, all memberships are assigned", {
-  library(igraph)
-  g_d <- simulate_graph(n_animals = 5,
+  # library(igraph)
+  g_d <- simulate_graph(n_animals = 10,
                         n_groups = 2,
                         time_to_leave = 5,
                         time_to_return = 2,
@@ -19,7 +19,7 @@ test_that("when there are more than two edges in sampled graph with fast_greedy,
                         regime = "random",
                         alg = "fast_greedy")
 
-  expect_equal(length(g_obs), 10)
+  expect_equal(length(g_obs), 4)
   expect_output(str(g_obs), "Class \'igraph\'  hidden list of 10")
   expect_silent(plot_sampled_graph(g_obs, g_d))
 })
