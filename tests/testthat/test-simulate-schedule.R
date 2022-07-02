@@ -12,3 +12,5 @@ test_that("simulate_schedule works", {
   expect_equal(length(s3), na)
 
 })
+
+# add tests with >=11 individuals per group
