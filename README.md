@@ -8,13 +8,11 @@
 **NOTE:** This package is under active development. A stable version
 will be available soon.
 
-`modulr` is an R package that, among other things, simulates `igraph`
-network graphs with controllable modularity. Under the hood, these are
-stochastic simulations of fission-fusion dynamics. The package further
-provides tools for simulating sampling processes and visualization. The
-main motivation of the package is to investigate network statistic
-estimation through simulation. Over time additional tools have been
-added including an individually-based SEIR model.
+`modulr` is an R package that simulates network graphs with controllable
+modularity and stochastic continuous-time descriptions of individuals’
+locations over the course of a simulation. The package includes tools
+for simulating sampling processes, power analysis, visualization, and
+individually-based disease models.
 
 Some of the functions in this package can use the ‘netcarto’
 simulated-annealing community detection algorithm implemented via
@@ -42,17 +40,16 @@ devtools::install_github("gavincotterill/modulr")
 
 ### Graph simulation
 
-There are currently three different simulators. Two (“independent” and
-“non-independent”) are stable, while the third (“group-think”) is still
-experimental. For more details, check out the “Simulator Comparison”
-vignette. To illustrate some other aspects of this package this readme
-will use the “independent” sampler where all individuals in the network
-move about independently.
+There are currently three different simulators. For more details, check
+out the “Simulator Comparison” vignette. To illustrate some aspects of
+this package this readme will use the “independent” sampler where all
+individuals in the network move about independently.
 
 ``` r
 #------ load packages -----
 sapply(c("tidyverse", "ggthemes", "igraph", "assortnet", "modulr"),
     require, character = T)
+#> Warning: package 'igraph' was built under R version 4.1.2
 #> tidyverse  ggthemes    igraph assortnet    modulr 
 #>      TRUE      TRUE      TRUE      TRUE      TRUE
 ```
@@ -126,21 +123,21 @@ Q
 ### Sampling
 
 The package also includes simulators for sampling procedures. This is
-particularly useful if we want to estimate the accuracy with which we
-can estimate network statistics. A frequent assumption is that
-individuals are sampled at random, but in practice, this isn’t the case
-in many wildlife systems – especially if there are distinct social
-groups. For instance, with bighorn sheep that are captured for
-monitoring using helicopter net-gunning, you’re more likely to end up
-with a handful of animals from a few groups. We go into more details on
-this in other vignettes, so here we’ll just proceed with the random
-sampling assumption to illustrate the basics using `sample_graph()`.
-We’ll use it to sample 10 animals (one third of the 30 in our
-population), they’ll be monitored for 100 days. Not all animals will be
-monitored with the same frequency: half will be monitored daily, and the
-other half will be monitored weekly. Last we’ll apply the “netcarto”
-community detection algorithm from `rnetcarto` to make our best guess at
-what the social groupings should be in this sampled graph.
+particularly useful if we want to know the accuracy with which we can
+estimate network statistics. A frequent assumption is that individuals
+are sampled at random, but in practice, this isn’t the case in many
+wildlife systems – especially if there are distinct social groups. For
+instance, with bighorn sheep that are captured for monitoring using
+helicopter net-gunning, you’re more likely to end up with a handful of
+animals from a few groups. We go into more details on this in other
+vignettes, so here we’ll just proceed with the random sampling
+assumption to illustrate the basics using `sample_graph()`. We’ll use it
+to sample 10 animals (one third of the 30 in our population) and they’ll
+be monitored for 100 days. Not all animals will be monitored with the
+same frequency: half will be monitored daily, and the other half will be
+monitored weekly. Last we’ll apply the “netcarto” community detection
+algorithm from `rnetcarto` to make our best guess at what the social
+groupings should be in this sampled graph.
 
 ``` r
 sn <- 10

@@ -1,0 +1,186 @@
+---
+title: "Graph-crossing time and individually-based SEIR"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Graph-crossing time and individually-based SEIR}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "./graph-crossing-",
+  tidy.opts = list(width.cutoff = 60),
+  tidy = TRUE
+)
+```
+
+If you haven't already done so, be sure to check out the other vignettes for an explanation of the simulators and how to generate continous-time descriptions of animal movements.
+
+```{r load packages, message = FALSE}
+sapply(c("modulr", "igraph"), require, character = TRUE)
+```
+
+The `graph_crossing()` function is really time consuming for large networks, so to keep things simple we'll only have 20 animals, 4 groups, and we'll monitor them for 30 days.
+
+```{r parameters}
+n_groups = 4
+n_animals = 20
+n_splits = NA
+time_to_leave = 5
+time_to_return = 2
+travel_time = c(0.01,0.25)
+sampling_duration = 30
+```
+
+We'll simulate networks with each of the three simulators.
+
+```{r sim-sched}
+# independent
+set.seed(1234)
+ind <- simulate_schedule(n_animals = n_animals,
+                         n_groups = n_groups,
+                         n_splits = n_splits,
+                         time_to_leave = time_to_leave,
+                         time_to_return = time_to_return,
+                         travel_time = travel_time,
+                         sampling_duration = sampling_duration,
+                         simulator = "independent")
+
+# non-independent
+non_ind <- simulate_schedule(n_animals = n_animals,
+                             n_groups = n_groups,
+                             n_splits = n_splits,
+                             time_to_leave = time_to_leave,
+                             time_to_return = time_to_return,
+                             travel_time = travel_time,
+                             sampling_duration = sampling_duration,
+                             simulator = "non-independent")
+
+# group-think
+gt <- simulate_schedule(n_animals = n_animals,
+                        n_groups = n_groups,
+                        n_splits = n_splits,
+                        time_to_leave = time_to_leave,
+                        time_to_return = time_to_return,
+                        travel_time = travel_time,
+                        sampling_duration = sampling_duration,
+                        simulator = "group-think")
+
+```
+
+We won't bother creating the graphs here, because we don't need them.
+
+What we're calling 'graph-crossing time' may be novel. It is the amount of time that it takes for all individuals in the network to have had direct or indirect contact (through any number of intermediaries) given a specific 'index case'. In disease modelling terms, it is how long it takes for every individual to become infected with a perfectly transmissible pathogen that has no exposure time, infinite infectious period, and is directly transmitted.
+
+In the future I hope to make this function faster. The graph-crossing time will also depend on the chosen index case. Especially with the non-independent and group-think simulators, these should be expected to vary. Thus the 'global graph-crossing time' would be an average of each individual time and currently requires high-performance computing and patience.
+
+We'll calculate one instance of 'graph-crossing' using the first individual in each network, being sure to set exposure time to 0, and letting the infectious period span the duration of the simulation.
+
+```{r graph-crossing}
+et = 0 # no exposure time
+it = sampling_duration # all individuals 'infectious' for full duration
+index_ind <- names(ind)[[1]] #  the first individual in the list will be the index case
+
+gc_ind <- graph_crossing(schedule = ind,
+                         exposure_time = et,
+                         infectious_time = it,
+                         index_case = index_ind)
+
+
+index_non_ind <- names(non_ind)[[1]]
+gc_non_ind <- graph_crossing(schedule = non_ind,
+                             exposure_time = et,
+                             infectious_time = it,
+                             index_case = index_non_ind)
+
+index_gt <- names(gt)[[1]]
+gc_gt <- graph_crossing(schedule = gt,
+                        exposure_time = et,
+                        infectious_time = it,
+                        index_case = index_gt)
+
+# the graph crossing time is:
+max(gc_ind$time_infected)
+max(gc_non_ind$time_infected)
+max(gc_gt$time_infected)
+```
+
+This example produced *extremely* different graph-crossing times and highlights the motivations underlying the 3 different simulators. The 'independent' simulator produces the greatest homogeneity in individual behavior and mixing. As a result, graph-crossing time was short -- only 4 days. In the 'non-independent' simulator, where individuals tend to 'flock together', graph-crossing time was 4 times longer. In 'group-think', where there is the greatest heterogeneity of individual behavior, graph-crossing time was over 5 times longer compared the independent simulator!
+
+Despite the name, `graph_crossing()` is in essence a recursive individually-based SEIR model for closed systems (no births, deaths, immigration or emigration) -- hence the parameter names `exposure` and `infectious`. With shorter infectious periods it will run faster and we can see if all individuals become infected, whether the epidemic fades out before that happens, and how long it takes.
+
+As an example, let's imagine that following direct contact with an infectious animal there is a 2-day exposure period prior to becoming infectious for 4 days. We repeat the calls with these new parameter values.
+
+```{r cold}
+et = 2 # exposure time
+it = 4 # infectious time
+
+seir_ind <- graph_crossing(schedule = ind,
+                           exposure_time = et,
+                           infectious_time = it,
+                           index_case = index_ind)
+
+seir_non_ind <- graph_crossing(schedule = non_ind,
+                               exposure_time = et,
+                               infectious_time = it,
+                               index_case = index_non_ind)
+
+seir_gt <- graph_crossing(schedule = gt,
+                          exposure_time = et,
+                          infectious_time = it,
+                          index_case = index_gt)
+
+# independent sampler
+nrow(seir_ind) # number of infecteds
+max(seir_ind$time_infected)
+
+# non-independent sampler
+nrow(seir_non_ind) # number of infecteds
+max(seir_non_ind$time_infected) # number of days it took
+
+# group-think
+nrow(seir_gt) # number of infecteds
+max(seir_gt$time_infected) # number of days it took
+```
+
+In this example, all individuals in the "independent" and "non-independent" simulations were infected, and it took 9 and ~11 days respectively. By contrast, in the 'group-think' simulation the epidemic faded out after 6 days and infecting 16 of the 20 animals.
+
+We can also plot the chain of transmissions in each of these three simulations by converting the objects we just made into graphs and then using `plot_transmissions()`.
+
+```{r plot-transmissions, fig.width=8, fig.height=3, fig.cap = ""}
+
+# this could be incorporated in the plot_transmissions code down the road:
+g_seir_ind <- igraph::graph_from_edgelist(seir_ind[,1:2] %>% as.matrix())
+g4 <- igraph::graph_from_edgelist(seir_ind[-1,1:2] %>% as.matrix())
+igraph::V(g4)$membership <- stringr::str_extract(igraph::V(g4)$name, "\\d{1,}(?=_)") %>% as.numeric()
+
+# for now its ok
+g_seir_non_ind <- igraph::graph_from_edgelist(seir_non_ind[,1:2] %>% as.matrix())
+g5 <- igraph::graph_from_edgelist(seir_non_ind[-1,1:2] %>% as.matrix())
+igraph::V(g5)$membership <- stringr::str_extract(igraph::V(g5)$name, "\\d{1,}(?=_)") %>% as.numeric()
+
+g_seir_gt <- igraph::graph_from_edgelist(seir_gt[,1:2] %>% as.matrix())
+g6 <- igraph::graph_from_edgelist(seir_gt[-1,1:2] %>% as.matrix())
+igraph::V(g6)$membership <- stringr::str_extract(igraph::V(g6)$name, "\\d{1,}(?=_)") %>% as.numeric()
+
+par(mfrow = c(1,3),
+    oma = c(0, 0, 1, 0),
+    mar = c(0, 0, 2, 0),
+    xpd = NA)
+plot_transmissions(g4, title = "independent",
+                   vertex.size = 90)
+plot_transmissions(g5, title = "non-independent",
+                   vertex.size = 90)
+plot_transmissions(g6, title = "group-think",
+                   vertex.size = 80)
+```
+
+I've turned off the node labels (individuals names) because they can clutter the plot, but I've retained the node color to reflect group membership so we can look for differences between the simulators in terms of how the disease progresses through social groups in the population. While the colors themselves are randomly assigned to groups, one thing we notice is that only 3 colors are present in the 'group-think' simulation: there was a 4th group that never became infected!
+
+Bear in mind, this was only a single iteration. To get the full picture we would ideally repeat this for each individual in the network -- or at least a statistically meaningful subset.
+
+Be sure to check out our other vignettes to explore all of the things we can do with `modulr`!
+

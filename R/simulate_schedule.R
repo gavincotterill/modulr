@@ -18,6 +18,9 @@ simulate_schedule <- function(n_animals,
   if (!simulator %in% c("independent", "group-think", "non-independent")) {
     stop( "sampler must be either \"independent\", \"non-independent\" or \"group-think\".",call. = FALSE)
   }
+  if(time_to_return - max(travel_time) < 0.75){
+    warning("Travel times that are close to or exceed \'time_to_return\' may break the code.")
+  }
 
   if(simulator == "independent"){
     out <- simulate_independence(n_groups = n_groups,
@@ -44,7 +47,8 @@ simulate_schedule <- function(n_animals,
     t5 <- purrr::map(t4, sort)
     ids <- t5[[1]]
     # convert to list of keyed data.tables
-    at_non_ind <- purrr::map(ids, ~t2[stringr::str_which(t2$members, .x),] %>%
+    # at_non_ind <- purrr::map(ids, ~t2[stringr::str_which(t2$members, .x),] %>% # add word boundaries
+    at_non_ind <- purrr::map(ids, ~t2[stringr::str_which(t2$members, paste0("\\b",.x,"\\b")),] %>%
                                dplyr::select(state, start, end, vector) %>%
                                na.omit() %>%
                                dplyr::mutate_at(2:3, ~as.numeric(.)) %>%
@@ -71,7 +75,8 @@ simulate_schedule <- function(n_animals,
     ids <- t5[[1]]
 
     # convert to list of keyed data.tables
-    at_non_ind <- purrr::map(ids, ~t2[stringr::str_which(t2$members, .x),] %>%
+    # at_non_ind <- purrr::map(ids, ~t2[stringr::str_which(t2$members, .x),] %>% # add word boundaries
+    at_non_ind <- purrr::map(ids, ~t2[stringr::str_which(t2$members, paste0("\\b",.x,"\\b")),] %>%
                                dplyr::select(state, start, end, vector) %>%
                                na.omit() %>%
                                dplyr::mutate_at(2:3, ~as.numeric(.)) %>%

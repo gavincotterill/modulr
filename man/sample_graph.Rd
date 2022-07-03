@@ -2,42 +2,41 @@
 % Please edit documentation in R/sample_graph.R
 \name{sample_graph}
 \alias{sample_graph}
-\title{Simulate a sampling regime and calculate network modularity.}
+\title{Simulate network sampling, monitoring and perform community detection based on the simple ratio index.}
 \usage{
 sample_graph(
   graph,
   sample_nNodes,
-  prop_hi_res = 1,
   sampling_duration,
-  hi_res = 12,
-  lo_res = 26/365,
+  prop_hi_res = 1,
+  hi_res = 1,
+  lo_res = 1/7,
   regime = "grab-two",
   alg = "fast_greedy"
 )
 }
 \arguments{
-\item{graph}{The true network to sample}
+\item{graph}{The true network to sample.}
 
-\item{sample_nNodes}{the number of individuals to sample}
+\item{sample_nNodes}{The number of individuals to sample.}
 
-\item{prop_hi_res}{The proportion of high resolution data to use}
+\item{sampling_duration}{The number of days to monitor sampled individuals.}
 
-\item{sampling_duration}{The number of days to monitor the nodes}
+\item{prop_hi_res}{The proportion of sampled nodes to monitor with high resolution.}
 
-\item{hi_res}{The observation frequency of the high resolution data, expressed as the number of observations per day.}
+\item{hi_res}{The observation frequency of the high resolution individuals, expressed as the number of observations per day.}
 
-\item{lo_res}{The observation frequency of the low resolution data, expressed as the number of observations per day.}
+\item{lo_res}{The observation frequency of the low resolution individuals, expressed as the number of observations per day.}
 
-\item{regime}{Whether to sample modules randomly or impose 'evenness'. options include "random", "even", "grab-two"}
+\item{regime}{The sampling regime to use: options include "random", "even", "grab-two".}
 
-\item{alg}{the clustering algorithm to use, one of: "fast_greedy","label_prop", "louvain", "leading_eigen", "optimal",
-"walktrap", or "netcarto"}
+\item{alg}{The community detection algorithm to use, one of: "netcarto", "fast_greedy", "label_prop", "leading_eigen", "louvain", "spinglass", "walktrap".}
 }
 \value{
-g_obs, the graph of the observed network
+An \code{igraph} graph of the sampled network where edge weights ('attr' = "weight") is the simple ratio index.
 }
 \description{
-Simulate a sampling regime and calculate network modularity.
+Simulate network sampling, monitoring and perform community detection based on the simple ratio index.
 }
 \examples{
 \donttest{
@@ -50,14 +49,6 @@ g_obs <- sample_graph(
   prop_hi_res = 1,
   regime = "grab-two",
   alg = "fast_greedy")
-am_obs <- igraph::get.adjacency(g_obs, type = "upper", attr = "weight") \%>\%
-  as.matrix()
-qrel_hat <- assortnet::assortment.discrete(am_obs,
-types = igraph::V(g_obs)$membership, weighted = TRUE)$r
-study_design[1,] \%>\%
-  dplyr::mutate(prop_hi_res = 1,
-                nNodes_sim = ncol(am_obs),
-                nModules_sim = length(unique(igraph::V(g_obs)$membership)),
-                qrel_sim = qrel_hat)
+
 }
 }
