@@ -25,11 +25,17 @@ In the independent simulator, changes in group membership arise from individual-
 The combination of switching times and group labels defines a continuous-time description of the individual's location (and who else was with them) over the course of the simulation. The simulation protocol assumes that the fission and fusion events of particular individuals are independent (e.g., larger groups do not preferentially split into subgroups; individuals join and leave groups one-at-a-time). Users must specify limits on the amount of time it takes for individuals to transition between groups. The duration of 'travelling time' for each transition is drawn from a uniform distribution using those limits. This flexibility also allows transitions to be nearly instantaneous and/or fixed at a precise value. Travelling time is factored into waiting times for the exponential draws. This means that users should specify travelling times that are short relative to $\lambda$ and $\xi$, otherwise individuals potentially spend more time in limbo than with groups. The simulation procedure is repeated independently for all individuals in the simulated population.
 
 ## "Non-independent"
-In this simulator, individuals move between patches with members of their home group. Waiting times are drawn as in the independent simulator, but these are used to dictate when groups make transitions between home and away patches. When it's time to leave home, the group splinters into subgroups using the "n_splits" parameter. If fixed to a single value, all groups split into that number of subgroups. If n_splits is undefined (NA), then the number of subgroups travelling to different states increases with the size of the group. Whenever a group splits into subgroups, individuals are randomly sampled so that there is no fixed "subgroup membership". Subgroups use the travelling procedure outlined above as well. When it's time to return home, all subgroups depart their respective 'away' patches and return home at the same time as all other members of their home group. This relaxes the assumption that all individuals are independent actors while ensuring that individuals adhere to the user-defined group switching rates.
+In this simulator, individuals move between patches with other members of their home group. Waiting times are drawn as in the independent simulator, but these are used to dictate when groups make transitions between home and away patches. When it's time to leave home, the group splinters into subgroups using the "n_splits" parameter. If fixed to a single value, all groups split into that number of subgroups. If n_splits is undefined (NA), then the number of subgroups travelling to different states increases with the size of the group. Whenever a group splits into subgroups, individuals are randomly sampled so that there is no fixed "subgroup membership". Subgroups use the travelling procedure already outlined. When it's time to return home, all subgroups depart their respective 'away' patches and return home at the same time as all other members of their home group. This relaxes the assumption that all individuals are independent actors while ensuring that individuals adhere to the user-defined group switching rates.
 
 ## "Group-think"
 
-This simulator is a bit experimental and at first glance appears chaotic. Like the previous simulator, it does not assume independent switching. Unlike the previous two simulators, there is virtually no patch fidelity. Lastly, the rules governing group switching incorporate a bit more animal cognition. The group switching process works in two stages. First, whole groups are simulated that switch between patches using the independent simulation procedure. Second, groups are populated with resident individuals at the first time interval. For the remainder of the simulation individuals make movement decisions based on what is happening around them in terms of group movements and in conjunction with the rates $1/\lambda$ and $1/\xi$. At any time in the simulation there are four possible event types: fission, fusion, simultaneous fission and fusion or no change among the groups at a given patch. In a fission event, at least one group departs from a patch containing at least one other group; fusion is when groups join each other at a patch; fission-fusion is when groups are both arriving and departing a patch at the exact same time. Currently the trigger for individual decision-making is 'fission' of either variety: the departure of any group from multiple co-located groups (i.e., event types fission or fission-fusion). It is important to note that individuals can be 'attached' to a non-resident group while co-located with their resident group and vice-versa. Individual choice is structured such that, when *any fission* happens, individuals decide whether to trail off with those that are departing or stay put. In practice it's a little more complicated: individuals that are attached to their resident/home group have a probability of switching to any of the other previously co-located groups equal to $(1/\lambda) / ((1/\lambda) + (1/\xi))$ and individuals that are not attached to their resident/home group have a probability of returning to their respective home groups equal to $(1/\xi) / ((1/\lambda) + (1/\xi))$. Individuals returning home 'magically' find their resident group regardless of where they are located and are subject to the same uniform draw for travelling time. These individual movements have no bearing on the event types categorizing group movements (eg., fission, fusion, etc.) We'll explain the behavior of this simulator in further detail below.
+This simulator is a bit experimental and at first glance appears chaotic. Like the previous simulator, it does not assume independent switching. Unlike the previous two simulators, there is virtually no fidelity of individuals to patches. Lastly, the rules governing individual movement incorporate a bit more animal cognition. The group switching process works in two stages. First, whole groups are simulated that switch between patches using the independent simulation procedure. This use of patches and groups generates a framework for movement patterns similar to the previous two simulators. Second, groups are populated with resident individuals at the first time interval. For the remainder of the simulation individuals make movement decisions based on what is happening around them in terms of group movements and in conjunction with the rates $1/\lambda$ and $1/\xi$.
+
+At any time in the simulation there are four possible event types: fission, fusion, simultaneous fission and fusion or no change among the groups at a given patch. In a fission event, at least one group departs from a patch containing at least one other group; fusion is when groups join each other at a patch; fission-fusion is when groups are both arriving and departing a patch at the exact same time. The trigger for individual decision-making is 'fission' of either variety: the departure of any group from multiple co-located groups (i.e., event types fission or fission-fusion).
+
+Individual choice is structured such that, when *any fission* happens, individuals decide whether to trail off with those that are departing or stay put. In practice it's a little more complicated. Individuals can be 'attached' to a non-resident group while co-located with their resident group and vice-versa. Individuals that are attached to their home group have a probability of switching to any of the other previously co-located groups equal to $(1/\lambda) / ((1/\lambda) + (1/\xi))$ and individuals that are not attached to their home group have a probability of returning to their respective home groups equal to $(1/\xi) / ((1/\lambda) + (1/\xi))$. Individuals returning home 'magically' find their home group regardless of where it is located and are subject to the same uniform draw for travelling time. These individual movements have no bearing on the event types categorizing group movements (eg., fission, fusion, etc.) All of this makes direct comparison with the other simulators a little harder to code because 'home patch' and 'home group' have an amorphous interpretation for this simulator. Comparisons are best made using edge weights (the proportion of time individuals spent with other individuals) in the context of the group membership that is baked into their names.
+
+We'll explain the behavior of this simulator in further detail below.
 
 Let's compare the simulators. We need to load some additional packages.
 ```{r load packages, message = FALSE}
@@ -48,7 +54,7 @@ travel_time = c(0.01,0.25)
 sampling_duration = 15
 ```
 
-We use the `simulate_schedule()` call to access the three simulators with one more parameter `simulator =` to pick which simulator to use. This will generate a list of data.frames (one per animal). Each named data.frame in the list is a continuous-time description of an individuals movements. This may not be the final data structure most users will want to employ, but it will give us what we need to make some useful comparisons between the simulators.
+We use the `simulate_schedule()` call to access the three simulators with one more parameter `simulator =` to pick which simulator to use. This will generate a list of data.frames (one per animal). Each named data.frame in the list is a continuous-time description of an individuals movements. This may not be the final data structure most users will want to work with, but it will give us what we need to make some useful comparisons between the simulators.
 
 ```{r sim-sched}
 # independent
@@ -65,6 +71,7 @@ ind <- simulate_schedule(n_animals = n_animals,
 ```
 
 Each data.frame has this structure, hence the name 'schedule':
+
 ```{r head-sim-sched}
 head(ind[[1]], 6)
 ```
@@ -134,7 +141,7 @@ ids_gt <- names(gt)
 
 ```
 
-For the group-think simulator, these values are going to be farther off. For one, individuals don't have the same fidelity to a patch as in the previous simulators, so if we judge the simulator's reliability on the basis of the proportion of time they spent at their 'quasi-home' patch, it will be pretty far off. In order to do this, we have to 'trick' `get_times()` by giving it a different simulator name:
+For the group-think simulator, these values are going to be farther off. For one, individuals don't have the same fidelity to a patch as in the previous simulators, so if we judge the simulator's reliability on the basis of the proportion of time they spent at their 'quasi-home' patch, it will way off. In order to do this, we have to 'trick' `get_times()` by giving it a different simulator name:
 
 ```{r group-think-get-times-1}
 out_gt <- get_times(schedule = gt[[1]],
@@ -153,7 +160,7 @@ paste("For the \'group-think\' simulator, the average proportion of time that in
       round(time_to_leave / (time_to_leave + time_to_return), 3))
 ```
 
-A better judge of it's performance is the amount of time individuals spent attached to the core of their home group, which floats around between patches. We'll just overwrite the previous objects, but this time we give `get_times()` the correct simulator name:
+A closer judge of it's performance -- albeit still imperfect -- is the amount of time individuals spent 'attached' to the core of their home group, which floats around between patches. We'll just overwrite the previous objects, but this time we give `get_times()` the correct simulator name:
 
 ```{r group-think-get-times-2}
 out_gt <- get_times(schedule = gt[[1]],
@@ -174,7 +181,7 @@ paste("For the \'group-think\' simulator, the average proportion of time that in
 
 In this example it's in the ballpark. With a longer sampling duration and more individuals it would be closer. We can reshape the data and plot the distributions of time home vs. away for all individuals in the three simulations.
 
-```{r ggplot-proportion-time, fig.width=7, fig.height=5}
+```{r ggplot-proportion-time, fig.width=8, fig.height=6, fig.cap = ""}
 out <- out_ind %>% dplyr::mutate(sim = "independent") %>%
   rbind(out_ni %>% dplyr::mutate(sim = "non-independent")) %>%
   rbind(out_gt %>% dplyr::mutate(sim = "group-think"))
@@ -217,9 +224,9 @@ g_gt <- graph_from_schedule(gt)
 class(g_ind)
 ```
 
-It's that simple. Now we can plot them with `plot_simulated_graph()`.
+Now we can plot them with `plot_simulated_graph()`.
 
-```{r plot-graphs, fig.width=7, fig.height=2}
+```{r plot-graphs, fig.width=8, fig.height=3, fig.cap = ""}
 par(mfrow = c(1,3),
     oma = c(0, 0, 1, 0),
     mar = c(0, 0, 2, 0),
@@ -234,7 +241,7 @@ Here, each circle (or node) represents an individual. The color of the node repr
 ### Edge weights
 Let's look at the distribution of edge weights from these graphs:
 
-```{r edge-weights, fig.width=7, fig.height=3}
+```{r edge-weights, fig.width=8, fig.height=4, fig.cap = ""}
 # compare edge weight distributions
 ew_ind <- igraph::E(g_ind)$weight
 ew_non_ind <- igraph::E(g_ni)$weight
@@ -261,7 +268,7 @@ mean(ew_non_ind)
 mean(ew_gt)
 ```
 
-Each edge weight represents the proportion of time that two individuals (dyads) spent together over the course of the simulation. With longer sampling duration and more individuals these will converge toward the 'indepedent' edge weight distribution, but over this short period 'non-independent' has more dyads that never split apart, as does 'group-think'.
+Each edge weight represents the proportion of time that two individuals (dyads) spent together over the course of the simulation. With longer sampling duration and more individuals these will converge, but over this short period 'non-independent' has more dyads that never split apart, as does 'group-think'.
 
 ### Modularity
 
@@ -281,10 +288,9 @@ mem_grp <- igraph::V(g_gt)$membership
 assortnet::assortment.discrete(adj_grp, types = mem_grp, weighted = T)$r
 ```
 
-We could have predicted that the non-independent simulator would produce a higher modularity value than the others based on everything we've said up to this point. In general, if we provide the same parameters to the three simulators and give them a long enough simulation duration relative to the group-switching rates, they should yield modularity values in the same ball-park.
+We could have predicted that the non-independent simulator would produce a higher modularity value than the others based on everything we've said up to this point. In general they should be within about 10% of each other.
 
-Rather than take my word for it, let's do a longer run with a larger network. We'll create a network of 150 animals distributed across 13 groups (and patches). That should give us some bigger differences in group sizes. We'll double the sampling time to 30 days and leave all else the same.
-
+Now let's do a longer run with a larger network. We'll create a network of 150 animals distributed across 13 groups (and patches). That should give us some bigger differences in group sizes. We'll double the sampling time to 30 days and leave all else the same.
 
 
 ```{r parameters2}
@@ -379,7 +385,7 @@ paste("For the \'group-think\' simulator, the average proportion of time that in
 
 These values are all pretty close.
 
-```{r ggplot-proportion-time2, fig.width=7, fig.height=5}
+```{r ggplot-proportion-time2, fig.width=8, fig.height=6, fig.cap = ""}
 out <- out_ind %>% dplyr::mutate(sim = "independent") %>%
   rbind(out_ni %>% dplyr::mutate(sim = "non-independent")) %>%
   rbind(out_gt %>% dplyr::mutate(sim = "group-think"))
@@ -409,10 +415,10 @@ ggplot(out2, aes(x = proportion, y = sim, color = state, point_color = state, fi
 
 ```
 
-Now 'indepedent' and 'non-independent' have converged to similar distributions. 'Group-think' still looks chaotic, albeit better. Because of what's happening behind this scenes this isn't a perfect comparison for this simulator, so let's withhold judgment until we look at the graphs.
+Now 'indepedent' and 'non-independent' have converged to similar distributions. 'Group-think' still looks chaotic, but better. Because of what's happening behind this scenes this isn't a perfect comparison for this simulator.
 
 
-```{r plot-graphs2, fig.width=7, fig.height=2}
+```{r plot-graphs2, fig.width=8, fig.height=3, fig.cap = ""}
 # compare graphs
 g_ind <- graph_from_schedule(ind)
 g_ni <- graph_from_schedule(non_ind)
@@ -427,11 +433,11 @@ plot_simulated_graph(g_ni, vertex.size = 35, title = "non-independent")
 plot_simulated_graph(g_gt, vertex.size = 35, title = "group-think")
 ```
 
-Now with 150 individuals, `the graph_from_schedule()` calls each took about 5 minutes. I'd like to speed a number of these functions up in the future, either with `rcpp` or discrete-time approximations. For those interested in producing larger graphs, the 'independent' sampler already has a discrete-time approximation called `simulate_graph()` where users specify the number of samples per day.
+Now with 150 individuals, `the graph_from_schedule()` calls each took about 5 minutes. I'd like to speed a number of these functions up in the future, either with `rcpp` or discrete-time approximations. For those interested in producing larger graphs, the 'independent' sampler already has a discrete-time approximation called `simulate_graph()` where users specify the number of `samples_per_day` and `sampler = "discrete"`.
 
 These generally look like the graphs we plotted earlier, just with a lot more individuals.
 
-```{r edge-weights2, fig.width=7, fig.height=3}
+```{r edge-weights2, fig.width=8, fig.height=4, fig.cap = ""}
 # compare edge weight distributions
 ew_ind <- igraph::E(g_ind)$weight
 ew_non_ind <- igraph::E(g_ni)$weight
@@ -474,6 +480,6 @@ mem_grp <- igraph::V(g_gt)$membership
 assortnet::assortment.discrete(adj_grp, types = mem_grp, weighted = T)$r
 ```
 
-The modularity scores haven't changed much from before. Independent increased from 0.38 to 0.44, the non-independent score is basically identical, and group-think has decreased very slightly -- although you might not guess it by looking at the graphs. Hopefully this describes the different simulators in a useful way. While 'independent' ensures consistent switching behavior across individuals, 'non-independent' ensures that individuals will adhere to their `friends` more closely. By comparison, 'group-think' generates heterogeneous behavior that falls somewhere in the middle: some individuals adhere closely to `friends` while others don't.
+The modularity scores haven't changed much from before. Independent increased from 0.38 to 0.44, the non-independent score is basically identical, and group-think has decreased very slightly -- although you might not guess it by looking at the graphs.
 
-For another way of comparing the simulators, check out the 'graph crossing' vignette where we put these continuous-time schedules to work in an individually-based disease context.
+While 'independent' ensures consistent switching behavior across individuals, 'non-independent' ensures that individuals will adhere to their `friends` more closely. By comparison, 'group-think' generates heterogeneous behavior that falls somewhere in the middle: some individuals adhere closely to `friends` while others don't. To see why this is useful -- and for another way of comparing the simulators -- check out the 'graph-crossing' vignette where we put these continuous-time schedules to work in an individually-based disease context.
