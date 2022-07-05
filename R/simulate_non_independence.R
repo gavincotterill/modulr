@@ -58,7 +58,6 @@ simulate_non_independence <- function(
     dplyr::arrange(state, start, end)
 
   # initiate groups
-  # test$members <- mapply(function(start, vector) ifelse(start==0, initiate_group(vector, animals_per_group), NA), test$start, test$vector)
   grp_lengths_vector <- rand_vect(n_groups, n_animals, sd = 1)
   p <- test %>% dplyr::filter(start == 0) %>% dplyr::arrange(start, end, state)
   p$members <- purrr::map2(p$vector, grp_lengths_vector, ~initiate_group(.x, .y))
@@ -80,13 +79,15 @@ simulate_non_independence <- function(
   #--------------------------------------
   # set.seed(123)
   for(i in 1:nrow(t2)){
-    # if(i == 120){break}
+    # if(i == 4224){break}
     if(t2$action[i] %in% c(NA)){
       next
     }else if(t2$action[i] == "same"){
       # take care of current line
       if(is.na(t2$members[i])){
-        t2$members[i] <- t2$members[index_back_same(t2, "vector", t2$vector[i], i)]
+        t2$members[i] <- t2$members[index_back_same(t2, "vector", t2$vector[i], i)][[1]] %>%
+          stringr::str_remove_all(., "(?<!\\d{1,1})-|-(?!\\d{1,1})")
+
       }else{
         (existing_grps <- stringr::str_split(t2$holding[i], "-")[[1]])
         (existing_mems <- stringr::str_split(t2$members[i], "/")[[1]])
@@ -108,7 +109,8 @@ simulate_non_independence <- function(
             (out_ids[k] <- paste(incoming_ids[k], ids_to_paste, sep = "-"))
           }
         }
-        t2$members[i] <- paste(out_ids, collapse = "/")
+        t2$members[i] <- paste(out_ids, collapse = "/") %>% ## does this need [[1]]?
+           stringr::str_remove_all(., "(?<!\\d{1,1})-|-(?!\\d{1,1})")
       }
       # look forward
       if(t2$start[i] == max(t2$start)){next}
@@ -128,7 +130,8 @@ simulate_non_independence <- function(
         names(mbrs_list)[j] <- curr_vec[[j]]
       }
       if(is.na(t2$members[i])){
-        t2$members[i] <- paste(unlist(mbrs_list), collapse = "/") # assign current
+        t2$members[i] <- paste(unlist(mbrs_list), collapse = "/") %>% # assign current
+          stringr::str_remove_all(., "(?<!\\d{1,1})-|-(?!\\d{1,1})")
       }else{
         (existing_grps <- stringr::str_split(t2$holding[i], "-")[[1]])
         (existing_mems <- stringr::str_split(t2$members[i], "/")[[1]])
@@ -150,7 +153,8 @@ simulate_non_independence <- function(
             (out_ids[k] <- paste(incoming_ids[k], ids_to_paste, sep = "-"))
           }
         }
-        t2$members[i] <- paste(out_ids, collapse = "/")
+        t2$members[i] <- paste(out_ids, collapse = "/") %>%
+          stringr::str_remove_all(string = ., "(?<!\\d{1,1})-|-(?!\\d{1,1})")
       }
       # look forward
       if(t2$start[i] == max(t2$start)){next}
@@ -166,16 +170,7 @@ simulate_non_independence <- function(
       t2 <- ff_forward3(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_return)
     }
   }
-  # # try this: *NOTE moved this to sim_schedule code to be able to use get_times more accurately
-  # t2$members <- stringr::str_remove_all(string = t2$members, pattern = "\\d{1,}_0")
-  # t2$members <- stringr::str_remove(string = t2$members, pattern = "(?<!\\d{1,1})/")
-  # t2$members <- stringr::str_remove(string = t2$members, pattern = "/(?!\\d{1,1})")
-  # t2$members <- stringr::str_remove(string = t2$members, pattern = "(?<!\\d{1,1})-")
-  # t2$members <- stringr::str_remove(string = t2$members, pattern = "-(?!\\d{1,1})")
 
-  # I don't have dummies here like in SNI2, and I need the empty "/" splits to calculate get_times attached, but I can drop hyphens
-  t2$members <- stringr::str_remove_all(string = t2$members, pattern = "(?<!\\d{1,1})-")
-  t2$members <- stringr::str_remove_all(string = t2$members, pattern = "-(?!\\d{1,1})")
 
   return(t2)
 }

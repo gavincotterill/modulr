@@ -10,6 +10,7 @@
 #' @keywords internal
 #'
 ff_forward3 <- function(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_return){
+  # if(i == 4224){browser()}
 
   fwd_inds <- list()
   next_actions <- list()
@@ -51,7 +52,6 @@ ff_forward3 <- function(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_retur
     # the probability of going home is whatever we said it was
     # the probability of staying or switching is (1-prob of going home)/2
     if(length(not_at_home) >= 1){
-      # (f <- purrr::map(lengths(not_at_home), function(x) rmultinom(n = 1, size = x, prob = c( gh_prob, (1-gh_prob)/2, (1-gh_prob)/2 )))) # error?
       (f1 <- purrr::map(lengths(not_at_home), ~rmultinom(n = 1, size = .x, prob = c( gh_prob, (1-gh_prob)/2, (1-gh_prob)/2 )))) # the numbers to grab from each list
       (go_home_samp <- purrr::flatten(purrr::map(f1, 1)))
       (switch_samp <- purrr::flatten(purrr::map(f1, 3)))
@@ -95,10 +95,6 @@ ff_forward3 <- function(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_retur
         does_switch <- tryCatch({
           purrr::map2(not_at_home2, switch_samp, ~ sample(.x, size=.y))
         }, error = function(e){
-          # print(paste0("when i = ", i, ", updating not_at_home is trying to sample ", switch_samp, "
-          #              from not_at_home:", not_at_home2,
-          #              ". does_go_home = ", does_go_home,
-          #              ". from not_at_home: ", not_at_home))
           stop(assign("t2", t2, .GlobalEnv),
                assign("does_go_home", does_go_home, .GlobalEnv),
                assign("not_at_home", not_at_home, .GlobalEnv),
@@ -112,10 +108,6 @@ ff_forward3 <- function(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_retur
         (does_switch <- does_switch[lengths(does_switch) > 0 & does_switch != ''])
 
       } # end if length(does_go_home) > 0
-      # (does_switch <- purrr::map2(not_at_home, switch_samp, ~ sample(., size=.y))) # error?
-      ## maybe it's a scoping problem... should they be inside the if statement above? Do they also need to be here?
-      # (does_switch <- purrr::map2(not_at_home, switch_samp, ~ sample(.x, size=.y)))
-      # (does_switch <- does_switch[lengths(does_switch) > 0 & does_switch != ''])
     }
 
     # using custom functions to move animals around
@@ -136,8 +128,9 @@ ff_forward3 <- function(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_retur
       }
     }
     # mbrs_list2 <- mbrs_list2[lengths(mbrs_list2) > 0]
-    # (purrr::map2(mbrs_list2, "", ~ stringr::str_subset(., .y) ) %>% lengths()) # I don't know why this works for removing empty "", but it does
-    # lengths(mbrs_list2)
+    # (purrr::map2(mbrs_list2, "", ~ stringr::str_subset(., .y) ) %>% lengths())
+
+    # not sure if needed:
     (mbrs_list2 <- purrr::map2(mbrs_list2, "", ~ stringr::str_subset(., .y) ))
     mbrs_list2 <- purrr::map(mbrs_list2, ~ paste(., collapse = "-"))
     mbrs_list <- mbrs_list2
@@ -158,6 +151,8 @@ ff_forward3 <- function(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_retur
     for(k in 1:length(mbrs_list)){
       un_mbrs_list <- unlist(mbrs_list[k])[[1]]
       fwd_index <- index_forward(t2, "vector", value = names(mbrs_list)[k], i)
+      # if(i == 4224){browser()}
+
       # if(!isTRUE(fwd_index)){next}
       already_there <- t2$holding[fwd_index]
       if(is.na(already_there)){
