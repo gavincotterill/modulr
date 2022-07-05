@@ -159,50 +159,12 @@ simulate_non_independence2 <- function(
       }else if(n_holding_groups > length(curr_vec)){
         stop(paste0("somehow we ended up with too many groups in holding at row ", i))
       }
-
-      # if(switch %in% c(FALSE, NA)){
-      #   t2$members[i] <- t2$holding[i]
-      # }else{
-      #   # resolve groups
-      #   intermediate <- stringr::str_split(t2$holding[i], "/")[[1]] #%>% sort()
-      #   if(length(curr_vec) == 1){
-      #     t2$members[i] <- intermediate %>% paste(collapse = "-") %>% stringr::str_split(.,"-") %>% unlist() %>% sort() %>% paste(collapse = "-")
-      #   }else{
-      #     int2 <- intermediate %>% paste(collapse = "-") %>% stringr::str_split(.,"-") %>% unlist() %>% sort()
-      #     int3 <- lapply( as.list(paste0(curr_vec, "_")), grep, as.list(int2), value = TRUE) %>% # changed sapply to lapply
-      #       lapply(., paste, collapse = "-")
-      #     # if there's an 'empty split', make a dummy group_0 animal and delete the dummy animal when they go home, delete all dummy animals at the very end before returning t2
-      #     t2$members[i] <- int3 %>%
-      #       purrr::map2(., curr_vec, ~ifelse(.x == "", paste0(.y, "_0"), .x)) %>%
-      #       unlist() %>%
-      #       paste(collapse = "/")
-      #   }
-      # }
     }
 
     # I shouldn't need this gusb anymore:
     # mbrs_list <- as.list(stringr::str_split(t2$members[i], "/")[[1]] %>%  gsub(paste0(t2$state[i],"_0-"),"", .) %>% sort())
-    mbrs_list <- as.list(stringr::str_split(t2$members[i], "/")[[1]]) %>% #%>%  gsub(paste0(t2$state[i],"_0-"),"", .) %>% sort())
+    mbrs_list <- as.list(stringr::str_split(t2$members[i], "/")[[1]]) %>%
       `names<-`(curr_vec)
-    # I shouldn't need this chunk either:
-    # # another fix to accomodate issue where subgroups randomly end up together rather than split after travel to away state:
-    # if(length(mbrs_list) < length(curr_vec)){
-    #
-    #   int6 <- purrr::map2(mbrs_list, curr_vec, ~stringr::str_detect(.x, paste0(.y, "_"), negate = TRUE))
-    #
-    #   missing_group <- curr_vec[which(int6 == TRUE)] %>% paste0("_0")
-    #   new_members <- paste(t2$members[i], missing_group, sep = "/")
-    #   mbrs_list <- stringr::str_split(new_members, "/")[[1]] %>%
-    #     gsub(paste0(t2$state[i],"_0-"),"", .) %>%
-    #     sort() %>%
-    #     as.list() %>%
-    #     `names<-`(curr_vec)
-    #
-    # }else if(length(mbrs_list) == length(curr_vec)){
-    #   names(mbrs_list) <- curr_vec
-    # }
-    # # overwriting here which should be ok, just inefficient
-    # t2$members[i] <- mbrs_list %>% paste(collapse = "/")
 
     #' make a mbrs_list that has length n vectors and populate it with members from holding
     curr_time <- t2$idx[i]
