@@ -65,6 +65,8 @@ simulate_schedule <- function(n_animals,
                                     travel_time = travel_time,
                                     sampling_duration = sampling_duration)
 
+
+
     t3 <- t2 %>%
       dplyr::group_by(start) %>%
       dplyr::summarise(mems = paste(members, collapse = "-")) %>%
@@ -77,7 +79,8 @@ simulate_schedule <- function(n_animals,
     # convert to list of keyed data.tables
     # at_non_ind <- purrr::map(ids, ~t2[stringr::str_which(t2$members, .x),] %>% # add word boundaries
     at_non_ind <- purrr::map(ids, ~t2[stringr::str_which(t2$members, paste0("\\b",.x,"\\b")),] %>%
-                               dplyr::select(state, start, end, vector) %>%
+                               # dplyr::select(state, start, end, vector) %>% # keep members
+                               dplyr::select(state, start, end, vector, members) %>%
                                na.omit() %>%
                                dplyr::mutate_at(2:3, ~as.numeric(.)) %>%
                                data.table::setDT() %>%
