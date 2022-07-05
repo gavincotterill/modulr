@@ -8,7 +8,7 @@ simulate_non_independence <- function(
   n_animals = 16,
   time_to_leave = 5,
   time_to_return = 2,
-  travel_time = c(0.01,2),
+  travel_time = c(0.01,0.02),
   sampling_duration = 7
 ){
   group_list <- list()
@@ -166,12 +166,17 @@ simulate_non_independence <- function(
       t2 <- ff_forward3(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_return)
     }
   }
-  # try this:
-  t2$members <- stringr::str_remove_all(string = t2$members, pattern = "\\d{1,}_0")
-  t2$members <- stringr::str_remove(string = t2$members, pattern = "(?<!\\d{1,1})/")
-  t2$members <- stringr::str_remove(string = t2$members, pattern = "/(?!\\d{1,1})")
-  t2$members <- stringr::str_remove(string = t2$members, pattern = "(?<!\\d{1,1})-")
-  t2$members <- stringr::str_remove(string = t2$members, pattern = "-(?!\\d{1,1})")
+  # # try this: *NOTE moved this to sim_schedule code to be able to use get_times more accurately
+  # t2$members <- stringr::str_remove_all(string = t2$members, pattern = "\\d{1,}_0")
+  # t2$members <- stringr::str_remove(string = t2$members, pattern = "(?<!\\d{1,1})/")
+  # t2$members <- stringr::str_remove(string = t2$members, pattern = "/(?!\\d{1,1})")
+  # t2$members <- stringr::str_remove(string = t2$members, pattern = "(?<!\\d{1,1})-")
+  # t2$members <- stringr::str_remove(string = t2$members, pattern = "-(?!\\d{1,1})")
+
+  # I don't have dummies here like in SNI2, and I need the empty "/" splits to calculate get_times attached, but I can drop hyphens
+  t2$members <- stringr::str_remove_all(string = t2$members, pattern = "(?<!\\d{1,1})-")
+  t2$members <- stringr::str_remove_all(string = t2$members, pattern = "-(?!\\d{1,1})")
+
   return(t2)
 }
 
