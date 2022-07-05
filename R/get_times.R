@@ -1,8 +1,9 @@
 #' get times
 #' @param schedule a dataframe schedule of the type output by simulate_schedule
 #' @param id the character string name of an individual node
+#' @param option additional option for group-think, "co-located" or "attached"
 #' @export
-get_times <- function(schedule, id, simulator){
+get_times <- function(schedule, id, simulator, option = NA){
   if(simulator %in% c("independent", "non-independent")){
     grp <- stringr::str_extract(id, "\\d{1,}(?=_)")
     max_time <- max(schedule$end)
@@ -13,20 +14,33 @@ get_times <- function(schedule, id, simulator){
                       grp = grp,
                       time_at_home = sum(p3$time) / max_time,
                       time_not_at_home = sum(p4$time) / max_time)
-    return(out)
   }else if(simulator %in% c("group-think")){
-    grp <- stringr::str_extract(id, "\\d{1,}(?=_)")
-    max_time <- max(schedule$end)
-    p <- schedule %>% dplyr::mutate(time = end - start)
-    STR <- purrr::map(stringr::str_split(p$vector, "-"), stringr::str_detect, grp)
-    idx <- sapply(STR, function(x) any(x %in% TRUE))
-    p3 <- p[idx == TRUE,]
-    p4 <- p[idx == FALSE,]
-    out <- data.frame(id = id,
-                      grp = grp,
-                      time_at_home = sum(p3$time) / max_time,
-                      time_not_at_home = sum(p4$time) / max_time)
-    return(out)
+    if(option == "co-located"){
+      grp <- stringr::str_extract(id, "\\d{1,}(?=_)")
+      max_time <- max(schedule$end)
+      p <- schedule %>% dplyr::mutate(time = end - start)
+      STR <- purrr::map(stringr::str_split(p$vector, "-"), stringr::str_detect, paste0("\\b",grp,"\\b"))
+      idx <- sapply(STR, function(x) any(x %in% TRUE))
+      p3 <- p[idx == TRUE,]
+      p4 <- p[idx == FALSE,]
+      out <- data.frame(id = id,
+                        grp = grp,
+                        time_at_home = sum(p3$time) / max_time,
+                        time_not_at_home = sum(p4$time) / max_time)
+    }else if(option %in% c(NA, "attached")){
+      grp <- stringr::str_extract(id, "\\d{1,}(?=_)")
+      max_time <- max(schedule$end)
+      p <- schedule %>% dplyr::mutate(time = end - start)
+      STR <- purrr::map(stringr::str_split(p$vector, "-"), stringr::str_detect, grp)
+      MBR <- purrr::map(stringr::str_split(p$members, "/"), stringr::str_detect, paste0("\\b",id, "\\b"))
+      idx <- purrr::map2(STR, MBR, ~all(.x == .y))
+      p3 <- p[idx == TRUE,]
+      p4 <- p[idx == FALSE,]
+      out <- data.frame(id = id,
+                        grp = grp,
+                        time_at_home = sum(p3$time) / max_time,
+                        time_not_at_home = sum(p4$time) / max_time)
+    }
   }
-
+  return(out)
 }
