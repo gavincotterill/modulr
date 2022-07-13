@@ -99,14 +99,16 @@ Next I'll use the `get_times()` function to calculate the amount of time each in
 ```{r sim-sched2}
 ids_ind <- names(ind)
 
-out_ind <- get_times(schedule = ind[[1]],
-                  id = ids_ind[[1]],
-                  simulator = "independent")
-for(i in 2:length(ids_ind)){
-  out_ind[i, ] <- get_times(ind[[i]],
-                         ids_ind[[i]],
-                         simulator = "independent")
-}
+#out_ind <- get_times(schedule = ind[[1]],
+#                  id = ids_ind[[1]],
+#                  simulator = "independent")
+#for(i in 2:length(ids_ind)){
+#  out_ind[i, ] <- get_times(ind[[i]],
+#                         ids_ind[[i]],
+#                         simulator = "independent")
+#}
+
+out_ind <- purrr::map2(ind, names(ind), ~get_times(schedule = .x, id = .y, simulator = "independent")) %>% dplyr::bind_rows()
 
 paste("For the \'independent\' simulator, the average proportion of time that individuals spent at their home patch was ",
       mean(out_ind$time_at_home) %>% round(., 3),

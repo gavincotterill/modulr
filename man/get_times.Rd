@@ -4,12 +4,14 @@
 \alias{get_times}
 \title{get times}
 \usage{
-get_times(schedule, id, simulator)
+get_times(schedule, id, simulator, option = NA)
 }
 \arguments{
 \item{schedule}{a dataframe schedule of the type output by simulate_schedule}
 
 \item{id}{the character string name of an individual node}
+
+\item{option}{additional option for group-think, "co-located" or "attached"}
 }
 \description{
 get times

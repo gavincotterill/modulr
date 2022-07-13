@@ -9,7 +9,7 @@ simulate_non_independence(
   n_animals = 16,
   time_to_leave = 5,
   time_to_return = 2,
-  travel_time = c(0.01, 2),
+  travel_time = c(0.01, 0.02),
   sampling_duration = 7
 )
 }
