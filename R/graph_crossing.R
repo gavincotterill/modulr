@@ -71,6 +71,12 @@ graph_crossing <- function(schedule, exposure_time, infectious_time, index_case)
 
         time_step <<- time_step + 1
 
+        ## adding timestep check
+        if(time_step == 100){
+          print(paste0("possible run-away recursion at timestep ", time_step, ", halting process"))
+          return(transmissions)
+        }
+
         print(paste0("There are ", length(schedule), " animals in memo the beginning of time_step ", time_step))
 
         for(m in 1:length(schedule)){
