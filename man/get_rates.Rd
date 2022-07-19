@@ -9,6 +9,8 @@ get_rates(sched, sim)
 }
 \arguments{
 \item{sched}{a schedule object for a network from simulate_schedule()}
+
+\item{sim}{the simulator used to generate the schedule}
 }
 \description{
 get average time to leave home and time to return home rates for every
