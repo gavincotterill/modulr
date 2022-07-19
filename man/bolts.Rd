@@ -2,7 +2,7 @@
 % Please edit documentation in R/bolts.R
 \name{bolts}
 \alias{bolts}
-\title{Internal function to graph_crossing() to find new contacts}
+\title{Internal Function to graph_crossing()}
 \usage{
 bolts(animal, infectious)
 }
@@ -12,6 +12,6 @@ bolts(animal, infectious)
 \item{infectious}{a data.table with infectious individuals from previous time step}
 }
 \description{
-Internal function to graph_crossing() to find new contacts
+Identifies instances where an individual was co-located with an infectious animal
 }
 \keyword{internal}

@@ -1,4 +1,6 @@
-#' Internal function to simulate_non_independence2() that removes excess empty strings and dummy animals
+#' Internal to simulate_non_independence2()
+#'
+#' Removes excess empty strings and dummy animals
 #'
 #' @param cell the holding value string from a single cell
 #' @keywords internal

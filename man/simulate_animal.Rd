@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulate_animal.R
 \name{simulate_animal}
 \alias{simulate_animal}
-\title{The backbone of the network simulator, called from within simulate_graph}
+\title{Simulate an Individual Animal}
 \usage{
 simulate_animal(
   n_groups,
@@ -16,24 +16,24 @@ simulate_animal(
 \arguments{
 \item{n_groups}{The number of modules in the network.}
 
-\item{time_to_leave}{The average amount of time spent within the home
-group prior to leaving (days per sampling period).}
+\item{time_to_leave}{The average days spent within the home
+group prior to leaving.}
 
-\item{time_to_return}{The average amount of time spent abroad before
+\item{time_to_return}{The average days spent abroad before
 returning to home group.}
 
 \item{travel_time}{Vector of the range of values that travel to the next group can take,
-drawn from a uniform distribution. Default == c(0,1)}
+drawn from a uniform distribution.}
 
-\item{sampling_duration}{Default == 365.}
+\item{sampling_duration}{The number of days to simulate.}
 
-\item{samples_per_day}{Default == 1.}
+\item{samples_per_day}{Only used in discrete time approximations in simulate_graph.}
 }
 \value{
 A vector of sampling locations for a single animal.
 }
 \description{
-The backbone of the network simulator, called from within simulate_graph
+Simulates independent movement behavior for a single animal.
 }
 \examples{
 \donttest{

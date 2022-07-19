@@ -1,6 +1,7 @@
-#' Plot graph from continuous-time movement descriptions
+#' Plot Graph from Continuous-Time Movement Descriptions
 #'
-#' Plot a graph from modulr graphing functions
+#' Plot a graph from modulr graphing functions. Optional seed can be set to
+#' facilitate side-by-side comparison with plot_sampled_graph.
 #'
 #' @param g an igraph object output from simulate_graph() or graph_from_schedule()
 #' @param vertex.size node size in plot
@@ -18,6 +19,7 @@
 #'                     n_groups = 4,
 #'                     time_to_leave = 5,
 #'                     time_to_return = 2,
+#'                     travel_time = c(0.01, 0.2),
 #'                     samples_per_day = 1,
 #'                     sampling_duration = 7)
 #' plot_simulated_graph(g)

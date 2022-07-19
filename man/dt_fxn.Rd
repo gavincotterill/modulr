@@ -2,7 +2,7 @@
 % Please edit documentation in R/dt_fxn.R
 \name{dt_fxn}
 \alias{dt_fxn}
-\title{Extract data from list on individual basis and make keyed data.table}
+\title{Internal to Continuous-Time Movement Simulators}
 \usage{
 dt_fxn(animal)
 }
@@ -10,6 +10,7 @@ dt_fxn(animal)
 \item{animal}{an element of animal_list from simulate_graph}
 }
 \description{
-Extract data from list on individual basis and make keyed data.table
+Takes individual time/movement descriptions and formats as a data.table
+with discrete intervals
 }
 \keyword{internal}

@@ -1,8 +1,11 @@
-#' Create undirected, weighted 'igraph' graph from a continuous-time description of animal movements.
+#' Convert Continuous-Time Movement Descriptions to Network Graph
+#'
+#' Takes a list of continuous-time movement descriptions for each individual in
+#' a network and returns an undirected, weighted 'igraph' graph where edge weights
+#' are the proportion of time a dyad spent co-located at a patch.
 #'
 #' @param schedule object from simulate_schedule()
-#' @return an undirected, weighted 'igraph' graph where weights are the proportion
-#' of time dyads spent together.
+#' @return an undirected, weighted 'igraph' graph
 #' @export
 #' @examples
 #' \donttest{

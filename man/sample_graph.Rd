@@ -2,7 +2,7 @@
 % Please edit documentation in R/sample_graph.R
 \name{sample_graph}
 \alias{sample_graph}
-\title{Simulate network sampling, monitoring and perform community detection based on the simple ratio index.}
+\title{Simulate Sampling on Network Graph}
 \usage{
 sample_graph(
   graph,
@@ -30,24 +30,32 @@ sample_graph(
 
 \item{regime}{The sampling regime to use: options include "random", "even", "grab-two".}
 
-\item{alg}{The community detection algorithm to use, one of: "netcarto", "fast_greedy", "label_prop", "leading_eigen", "louvain", "spinglass", "walktrap".}
+\item{alg}{The community detection algorithm to use, one of: "netcarto", "fast_greedy", "label_prop", "leiden", "louvain", "walktrap".}
 }
 \value{
 An \code{igraph} graph of the sampled network where edge weights ('attr' = "weight") is the simple ratio index.
 }
 \description{
-Simulate network sampling, monitoring and perform community detection based on the simple ratio index.
+Simulates network sampling, monitoring and performs community detection based on the simple ratio index.
 }
 \examples{
 \donttest{
 library(igraph)
-data("real_networks")
-data("study_design")
+g <- simulate_graph(n_animals = 25,
+                    n_groups = 4,
+                    time_to_leave = 5,
+                    time_to_return = 2,
+                    travel_time = c(0.001,0.2),
+                    sampling_duration = 7,
+                    sampler = "discrete",
+                    samples_per_day = 1
+                    )
 g_obs <- sample_graph(
-  graph = real_networks[[1]],
-  sample_nNodes = ceiling(0.5 * length(igraph::V(real_networks[[1]]))),
+  graph = g,
+  sample_nNodes = 10,
   prop_hi_res = 1,
-  regime = "grab-two",
+  hi_res = 2,
+  regime = "random",
   alg = "fast_greedy")
 
 }

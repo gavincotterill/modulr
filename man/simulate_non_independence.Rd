@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulate_non_independence.R
 \name{simulate_non_independence}
 \alias{simulate_non_independence}
-\title{simulate non-independent group-switching}
+\title{Internal to simulate_schedule}
 \usage{
 simulate_non_independence(
   n_groups = 4,
@@ -25,6 +25,6 @@ simulate_non_independence(
 \item{sampling_duration}{the number of days to simulate.}
 }
 \description{
-simulate non-independent group-switching
+sim = "group-think"
 }
 \keyword{internal}

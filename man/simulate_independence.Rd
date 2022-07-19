@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulate_independence.R
 \name{simulate_independence}
 \alias{simulate_independence}
-\title{simulate group switching to get animals_transformed df}
+\title{Internal to simulate_schedule}
 \usage{
 simulate_independence(
   n_animals,
@@ -25,6 +25,6 @@ simulate_independence(
 \item{sampling_duration}{the number of days to simulate.}
 }
 \description{
-simulate group switching to get animals_transformed df
+sim = "independent"
 }
 \keyword{internal}

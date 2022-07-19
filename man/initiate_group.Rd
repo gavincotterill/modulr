@@ -2,7 +2,7 @@
 % Please edit documentation in R/initiate_group.R
 \name{initiate_group}
 \alias{initiate_group}
-\title{Extract data from list on individual basis and make keyed data.table}
+\title{Internal to simulate_non_independence and simulate_non_independence2}
 \usage{
 initiate_group(x, n)
 }
@@ -12,6 +12,6 @@ initiate_group(x, n)
 \item{n}{the number of individuals in the group to generate}
 }
 \description{
-Extract data from list on individual basis and make keyed data.table
+Creates string vector for all individuals in a group
 }
 \keyword{internal}

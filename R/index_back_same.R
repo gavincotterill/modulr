@@ -1,4 +1,7 @@
+#' Internal to simulate_non_independence
+#'
 #' Pulls the row number of the last occurrence of the identical group/vector configuration
+#'
 #' @param df the t2 dataframe
 #' @param column_name the column to reference, usually 'vector'
 #' @param value usually the group number

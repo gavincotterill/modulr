@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulate_non_independence2.R
 \name{simulate_non_independence2}
 \alias{simulate_non_independence2}
-\title{simulate non-independent group-switching experimental}
+\title{Internal to simulate_schedule}
 \usage{
 simulate_non_independence2(
   n_groups = 4,
@@ -46,6 +46,6 @@ need a condition handler for the last idx}
 \item{sampling_duration}{the number of days to simulate.}
 }
 \description{
-simulate non-independent group-switching experimental
+sim = "non-independent"
 }
 \keyword{internal}

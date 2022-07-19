@@ -1,4 +1,7 @@
-#' Simulate groups experimental for use in sim_non_ind2
+#' Internal to simulate_non_independence2
+#'
+#' Simulates group movements within which individual movement decisions are later generated.
+#'
 #' @param n_splits the number of splinter groups that leave home, one or more
 #' @inheritParams simulate_graph
 #' @keywords internal

@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulate_schedule.R
 \name{simulate_schedule}
 \alias{simulate_schedule}
-\title{A group simulator function}
+\title{Simulate a Network of Continuous-Time Movement Descriptions}
 \usage{
 simulate_schedule(
   n_animals,
@@ -27,5 +27,5 @@ simulate_schedule(
 \item{sampling_duration}{the number of days to simulate.}
 }
 \description{
-A group simulator function
+Generates a continuous-time-movement description for each individual in a simulated network according to the rules set forth by the chosen simulator. Returns a list of data.frames.
 }

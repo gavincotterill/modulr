@@ -1,5 +1,8 @@
-#' Calculates the proportion of time an individual spends at home vs away
-#' @param schedule a dataframe schedule of the type output by simulate_schedule
+#' Calculate the Proportion of Time at Home vs. Away
+#'
+#' Takes an individual's continuous-time movement description and calculates the proportion of time they spent with their home group vs any other group in their network.
+#'
+#' @param schedule a data.frame schedule of the type output by simulate_schedule
 #' @param id the character string name of an individual node
 #' @param option additional option for group-think, "co-located" or "attached"
 #' @export

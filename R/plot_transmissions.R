@@ -1,24 +1,41 @@
-#' plot_transmissions()
+#' Plot Transmission Events
 #'
-#' @param g, an igraph object output from simulate_graph()
-#' @param vertex.size, node size in plot
-#' @param mark.expand, padding of polygon denoting modules around nodes
-#' @param vertex.label, label for graph vertices
-#' @param vertex.label.cex, size for vertex labels
-#' @param title, plot title
+#' 'plot_transmissions' takes a data.frame created with graph_crossing, converts it to an igraph graph object, and plots transmission events.
+#'
+#' @param gc_out an edgelist data.frame created with graph_crossing()
+#' @param vertex.size node size in plot
+#' @param mark.expand padding of polygon denoting modules around nodes
+#' @param vertex.label label for graph vertices
+#' @param vertex.label.cex size for vertex labels
+#' @param title plot title
 #'
 #' @return
 #' a plot of the igraph object
 #'
 #' @export
 #' @importFrom rlang .data
+#' @examples
+#' \donttest{
+#' obj <- simulate_schedule(n_animals = 10, n_groups = 2, time_to_leave = 5,
+#'                          time_to_return = 2, travel_time = c(0.001, 0.2), sampling_duration = 30,
+#'                          simulator = "independent")
+#'
+#' out <- graph_crossing(obj, 2, 5, names(obj)[[1]])
+#' plot_transmissions(out)
+#' }
 
-plot_transmissions <- function(g,
+plot_transmissions <- function(gc_out,
                               vertex.size = 40,
                               vertex.label =  NA,
                               edge.arrow.size = 0.5,
                               vertex.label.cex = 1,
                               title = ""){
+
+  g <- igraph::graph_from_edgelist(gc_out[-1, 1:2] %>%
+                                     as.matrix())
+
+  igraph::V(g)$membership <- extract_group(igraph::V(g)$name) %>% as.numeric()
+
   grp <- data.frame(name = igraph::V(g)$name,
                     mem = igraph::V(g)$membership)
 
@@ -44,7 +61,6 @@ plot_transmissions <- function(g,
     unique() %>%
     unlist()
 
-  # set.seed(123)
   lo_whole <- igraph::layout.fruchterman.reingold(g) %>%
     data.frame()
   lo_whole$name <- igraph::V(g)$name

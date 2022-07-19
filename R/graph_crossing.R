@@ -1,7 +1,10 @@
+#' Calculate Graph Crossing Time
+#'
 #' Recursive function to calculate graph crossing time and do individual-based SEIR modeling
+#'
 #' @param schedule a schedule object from simulate_schedule()
 #' @param exposure_time for graph-crossing times, 0, otherwise the number of days prior to becoming infectious
-#' @param infectious_time for graph-crossing times, a large value of the simulation duration, otherwise the number of day infectious
+#' @param infectious_time for graph-crossing times, a large value of the simulation duration, otherwise the number of days infectious
 #' @param index_case an animal id from the schedule_object to be the first infected
 #' @export
 #' @examples

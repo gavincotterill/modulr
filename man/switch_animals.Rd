@@ -2,7 +2,7 @@
 % Please edit documentation in R/switch_animals.R
 \name{switch_animals}
 \alias{switch_animals}
-\title{Sends animals leaving home to another group at current time step}
+\title{Internal to simulate_non_independence}
 \usage{
 switch_animals(inlist, elem_leave)
 }

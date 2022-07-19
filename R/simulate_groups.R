@@ -1,4 +1,7 @@
-#' Simulate groups
+#' Internal to simulate_non_independence
+#'
+#' Simulates group movements within which individual movement decisions are later generated.
+#'
 #' @param animals_home an integer value representing an individuals home or preferred patch
 #' @param n_groups the number of social groups and/or distinct patches in the population
 #' @param time_to_leave the average number of days spent at home prior to leaving

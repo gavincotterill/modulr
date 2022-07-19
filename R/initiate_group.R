@@ -1,4 +1,7 @@
-#' Extract data from list on individual basis and make keyed data.table
+#' Internal to simulate_non_independence and simulate_non_independence2
+#'
+#' Creates string vector for all individuals in a group
+#'
 #' @param x the group number
 #' @param n the number of individuals in the group to generate
 #' @keywords internal

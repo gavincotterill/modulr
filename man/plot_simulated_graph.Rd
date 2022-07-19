@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_simulated_graph.R
 \name{plot_simulated_graph}
 \alias{plot_simulated_graph}
-\title{Plot graph from continuous-time movement descriptions}
+\title{Plot Graph from Continuous-Time Movement Descriptions}
 \usage{
 plot_simulated_graph(
   g,
@@ -33,7 +33,8 @@ plot_simulated_graph(
 a plot of the igraph object
 }
 \description{
-Plot a graph from modulr graphing functions
+Plot a graph from modulr graphing functions. Optional seed can be set to
+facilitate side-by-side comparison with plot_sampled_graph.
 }
 \examples{
 \donttest{
@@ -41,6 +42,7 @@ g <- simulate_graph(n_animals = 25,
                     n_groups = 4,
                     time_to_leave = 5,
                     time_to_return = 2,
+                    travel_time = c(0.01, 0.2),
                     samples_per_day = 1,
                     sampling_duration = 7)
 plot_simulated_graph(g)

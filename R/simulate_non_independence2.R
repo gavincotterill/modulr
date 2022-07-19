@@ -1,4 +1,6 @@
-#' simulate non-independent group-switching experimental
+#' Internal to simulate_schedule
+#'
+#' sim = "non-independent"
 #'
 #' @keywords internal
 #' @inheritParams simulate_groups

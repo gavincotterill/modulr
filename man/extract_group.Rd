@@ -2,7 +2,7 @@
 % Please edit documentation in R/extract_group.R
 \name{extract_group}
 \alias{extract_group}
-\title{wrapper on stringr::str_extract with regex for group tag}
+\title{Extract Group ID}
 \usage{
 extract_group(x)
 }
@@ -10,6 +10,6 @@ extract_group(x)
 \item{x}{a string}
 }
 \description{
-wrapper on stringr::str_extract with regex for group tag
+Wrapper around stringr::str_extract with regex for group tag
 }
 \keyword{internal}

@@ -1,6 +1,9 @@
-#' relocate animals going home to a new mbrs_list slot
+#' Internal to simulate_non_independence
+#'
+#' Relocate animals going home to a new mbrs_list slot
+#'
 #' @param inlist a list like mbrs_list
-#' @param elem_relocate a list with same length  as mbrs_list of animals to send
+#' @param elem_relocate a list with same length as mbrs_list of animals to send
 #' to home groups at next time slot
 #' @keywords internal
 relocate_animals <- function(inlist, elem_relocate){

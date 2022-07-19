@@ -2,10 +2,10 @@
 % Please edit documentation in R/plot_transmissions.R
 \name{plot_transmissions}
 \alias{plot_transmissions}
-\title{plot_transmissions()}
+\title{Plot Transmission Events}
 \usage{
 plot_transmissions(
-  g,
+  gc_out,
   vertex.size = 40,
   vertex.label = NA,
   edge.arrow.size = 0.5,
@@ -14,21 +14,31 @@ plot_transmissions(
 )
 }
 \arguments{
-\item{g, }{an igraph object output from simulate_graph()}
+\item{gc_out}{an edgelist data.frame created with graph_crossing()}
 
-\item{vertex.size, }{node size in plot}
+\item{vertex.size}{node size in plot}
 
-\item{vertex.label, }{label for graph vertices}
+\item{vertex.label}{label for graph vertices}
 
-\item{vertex.label.cex, }{size for vertex labels}
+\item{vertex.label.cex}{size for vertex labels}
 
-\item{title, }{plot title}
+\item{title}{plot title}
 
-\item{mark.expand, }{padding of polygon denoting modules around nodes}
+\item{mark.expand}{padding of polygon denoting modules around nodes}
 }
 \value{
 a plot of the igraph object
 }
 \description{
-plot_transmissions()
+'plot_transmissions' takes a data.frame created with graph_crossing, converts it to an igraph graph object, and plots transmission events.
+}
+\examples{
+\donttest{
+obj <- simulate_schedule(n_animals = 10, n_groups = 2, time_to_leave = 5,
+                         time_to_return = 2, travel_time = c(0.001, 0.2), sampling_duration = 30,
+                         simulator = "independent")
+
+out <- graph_crossing(obj, 2, 5, names(obj)[[1]])
+plot_transmissions(out)
+}
 }

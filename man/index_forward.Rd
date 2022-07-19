@@ -2,7 +2,7 @@
 % Please edit documentation in R/index_forward.R
 \name{index_forward}
 \alias{index_forward}
-\title{Index forward}
+\title{Internal to simulate_non_independence}
 \usage{
 index_forward(df, column_name, value, i)
 }
@@ -16,6 +16,6 @@ index_forward(df, column_name, value, i)
 \item{i}{the row index}
 }
 \description{
-Index forward
+Returns row indices for where group can be at the next time interval
 }
 \keyword{internal}

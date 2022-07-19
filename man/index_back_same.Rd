@@ -2,7 +2,7 @@
 % Please edit documentation in R/index_back_same.R
 \name{index_back_same}
 \alias{index_back_same}
-\title{Pulls the row number of the last occurrence of the identical group/vector configuration}
+\title{Internal to simulate_non_independence}
 \usage{
 index_back_same(df, column_name, value, i)
 }

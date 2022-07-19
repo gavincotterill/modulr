@@ -2,7 +2,7 @@
 % Please edit documentation in R/characterRank.R
 \name{characterRank}
 \alias{characterRank}
-\title{Take a vector of characters that are numbers and return a vector of what their numeric order should be with tie-breaking}
+\title{Internal to simulate_non_independence and simulate_non_independence2}
 \usage{
 characterRank(x)
 }

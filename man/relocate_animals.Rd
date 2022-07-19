@@ -2,17 +2,17 @@
 % Please edit documentation in R/relocate_animals.R
 \name{relocate_animals}
 \alias{relocate_animals}
-\title{relocate animals going home to a new mbrs_list slot}
+\title{Internal to simulate_non_independence}
 \usage{
 relocate_animals(inlist, elem_relocate)
 }
 \arguments{
 \item{inlist}{a list like mbrs_list}
 
-\item{elem_relocate}{a list with same length  as mbrs_list of animals to send
+\item{elem_relocate}{a list with same length as mbrs_list of animals to send
 to home groups at next time slot}
 }
 \description{
-relocate animals going home to a new mbrs_list slot
+Relocate animals going home to a new mbrs_list slot
 }
 \keyword{internal}

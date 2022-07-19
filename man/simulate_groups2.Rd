@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulate_groups2.R
 \name{simulate_groups2}
 \alias{simulate_groups2}
-\title{Simulate groups experimental for use in sim_non_ind2}
+\title{Internal to simulate_non_independence2}
 \usage{
 simulate_groups2(
   animals_home,
@@ -19,18 +19,18 @@ simulate_groups2(
 
 \item{n_splits}{the number of splinter groups that leave home, one or more}
 
-\item{time_to_leave}{The average amount of time spent within the home
-group prior to leaving (days per sampling period).}
+\item{time_to_leave}{The average days spent within the home
+group prior to leaving.}
 
-\item{time_to_return}{The average amount of time spent abroad before
+\item{time_to_return}{The average days spent abroad before
 returning to home group.}
 
 \item{travel_time}{Vector of the range of values that travel to the next group can take,
-drawn from a uniform distribution. Default == c(0,1)}
+drawn from a uniform distribution.}
 
-\item{sampling_duration}{Default == 365.}
+\item{sampling_duration}{The number of days to simulate.}
 }
 \description{
-Simulate groups experimental for use in sim_non_ind2
+Simulates group movements within which individual movement decisions are later generated.
 }
 \keyword{internal}

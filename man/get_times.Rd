@@ -2,17 +2,17 @@
 % Please edit documentation in R/get_times.R
 \name{get_times}
 \alias{get_times}
-\title{Calculates the proportion of time an individual spends at home vs away}
+\title{Calculate the Proportion of Time at Home vs. Away}
 \usage{
 get_times(schedule, id, simulator, option = NA)
 }
 \arguments{
-\item{schedule}{a dataframe schedule of the type output by simulate_schedule}
+\item{schedule}{a data.frame schedule of the type output by simulate_schedule}
 
 \item{id}{the character string name of an individual node}
 
 \item{option}{additional option for group-think, "co-located" or "attached"}
 }
 \description{
-Calculates the proportion of time an individual spends at home vs away
+Takes an individual's continuous-time movement description and calculates the proportion of time they spent with their home group vs any other group in their network.
 }

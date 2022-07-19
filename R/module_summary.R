@@ -1,5 +1,6 @@
-#' Calculate nodes per module and modules per network statistics on a list of
-#' graphs with defined membership
+#' Summarize Module Count Across Networks
+#'
+#' Calculates nodes-per-module and modules-per-network on a list of graphs with defined memberships
 #'
 #' @param network_list a list of 'igraph' graph objects with community memberships.
 #'

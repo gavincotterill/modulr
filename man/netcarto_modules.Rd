@@ -2,8 +2,7 @@
 % Please edit documentation in R/netcarto_modules.R
 \name{netcarto_modules}
 \alias{netcarto_modules}
-\title{Convenience function to extract a membership vector using the netcarto community
-detection algorithm.}
+\title{Return Netcarto Membership Vector}
 \usage{
 netcarto_modules(x)
 }

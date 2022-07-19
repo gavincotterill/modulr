@@ -2,7 +2,7 @@
 % Please edit documentation in R/q_rel.R
 \name{q_rel}
 \alias{q_rel}
-\title{Calculate the assortativity coefficient on a weighted, undirected network graph}
+\title{Calculate the Newman's Q}
 \usage{
 q_rel(graph_object)
 }
@@ -10,5 +10,17 @@ q_rel(graph_object)
 \item{graph_object}{an \code{igraph} graph object with 'membership' attribute}
 }
 \description{
-Calculate the assortativity coefficient on a weighted, undirected network graph
+Wrapper around assortnet function that takes a weighted, undirected network graph and returns the assortativity coefficient.
+}
+\examples{
+\donttest{
+g <- simulate_graph(n_animals = 25,
+                    n_groups = 4,
+                    time_to_leave = 5,
+                    time_to_return = 2,
+                    travel_time = c(0.01, 0.2),
+                    samples_per_day = 1,
+                    sampling_duration = 7)
+q_rel(g)
+}
 }

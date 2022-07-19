@@ -2,11 +2,11 @@
 % Please edit documentation in R/rand_vect.R
 \name{rand_vect}
 \alias{rand_vect}
-\title{rand_vect}
+\title{Internal to simulate_non_independence}
 \usage{
 rand_vect(N, M, sd = 1, pos.only = TRUE)
 }
 \description{
-rand_vect
+Generates multinomial draws for group-switching
 }
 \keyword{internal}

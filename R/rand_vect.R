@@ -1,4 +1,6 @@
-#' rand_vect
+#' Internal to simulate_non_independence
+#'
+#' Generates multinomial draws for group-switching
 #'
 #' @keywords internal
 rand_vect <- function(N, M, sd = 1, pos.only = TRUE) {

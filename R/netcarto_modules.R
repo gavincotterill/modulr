@@ -1,3 +1,5 @@
+#' Return Netcarto Membership Vector
+#'
 #' Convenience function to extract a membership vector using the netcarto community
 #' detection algorithm.
 #'

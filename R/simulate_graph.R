@@ -1,4 +1,9 @@
-#' Simulate weighted, undirected network graph with independent switching assumptions and simple ratio index.
+#' Simulate Independent Switching Graph
+#'
+#' Useful for those interested primarily in generating modular network graphs.
+#' Equivalent to using simulate_schedule with the independent simulator and then
+#' graph_from_schedule, but also includes a discrete-time approximation that is
+#' faster for large networks.
 #'
 #' @param n_animals The number of nodes to include in the network.
 #' @param sampler Takes one of c("discrete", "continuous"). Whether group

@@ -1,4 +1,4 @@
-#' Calculate averaged lambda and xi rates for all individuals in a network
+#' Calculate Averaged lambda and xi Rates for Individuals in a Network
 #'
 #' Wrapper to apply single_id_rate to all individuals in a network and calculate
 #' the mean number of days individuals took to leave their respective home states

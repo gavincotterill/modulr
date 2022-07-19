@@ -1,4 +1,8 @@
-#' Extract data from list on individual basis and make keyed data.table
+#' Internal to Continuous-Time Movement Simulators
+#'
+#' Takes individual time/movement descriptions and formats as a data.table
+#' with discrete intervals
+#'
 #' @param animal an element of animal_list from simulate_graph
 #' @keywords internal
 dt_fxn <- function(animal){

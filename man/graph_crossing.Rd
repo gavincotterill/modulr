@@ -2,7 +2,7 @@
 % Please edit documentation in R/graph_crossing.R
 \name{graph_crossing}
 \alias{graph_crossing}
-\title{Recursive function to calculate graph crossing time and do individual-based SEIR modeling}
+\title{Calculate Graph Crossing Time}
 \usage{
 graph_crossing(schedule, exposure_time, infectious_time, index_case)
 }
@@ -11,7 +11,7 @@ graph_crossing(schedule, exposure_time, infectious_time, index_case)
 
 \item{exposure_time}{for graph-crossing times, 0, otherwise the number of days prior to becoming infectious}
 
-\item{infectious_time}{for graph-crossing times, a large value of the simulation duration, otherwise the number of day infectious}
+\item{infectious_time}{for graph-crossing times, a large value of the simulation duration, otherwise the number of days infectious}
 
 \item{index_case}{an animal id from the schedule_object to be the first infected}
 }

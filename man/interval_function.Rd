@@ -2,7 +2,7 @@
 % Please edit documentation in R/interval_function.R
 \name{interval_function}
 \alias{interval_function}
-\title{Extract data from list on individual basis and make keyed data.table}
+\title{Internal to simulate_non_independence}
 \usage{
 interval_function(groups, intervals)
 }
@@ -12,6 +12,6 @@ interval_function(groups, intervals)
 \item{intervals}{the intervals dataframe}
 }
 \description{
-Extract data from list on individual basis and make keyed data.table
+Used to make matching time intervals across all individuals in a network
 }
 \keyword{internal}

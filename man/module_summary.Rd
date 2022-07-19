@@ -2,8 +2,7 @@
 % Please edit documentation in R/module_summary.R
 \name{module_summary}
 \alias{module_summary}
-\title{Calculate nodes per module and modules per network statistics on a list of
-graphs with defined membership}
+\title{Summarize Module Count Across Networks}
 \arguments{
 \item{network_list}{a list of 'igraph' graph objects with community memberships.}
 }
@@ -12,8 +11,7 @@ a data.frame where each row corresponds the the nth element of
 the network_list.
 }
 \description{
-Calculate nodes per module and modules per network statistics on a list of
-graphs with defined membership
+Calculates nodes-per-module and modules-per-network on a list of graphs with defined memberships
 }
 \examples{
 \donttest{

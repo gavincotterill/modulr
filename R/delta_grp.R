@@ -1,4 +1,7 @@
-#' Delta grp function called internally from 'simulate_non_independence' to categorize fission and fusion events
+#' Internal to 'simulate_non_independence'
+#'
+#' Categorizes group-switching event as 'fission', 'fusion', 'fission-fusion' or 'same'.
+#'
 #' @inheritParams index_back
 #' @keywords internal
 delta_grp <- function(df, column_name, value, i){

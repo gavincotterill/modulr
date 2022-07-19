@@ -1,4 +1,7 @@
-#' plot_sampled_graph()
+#' Plot Graph of Sampled Network
+#'
+#' Takes a graph from sample_graph and plots it to match plot_simulated_graph.
+#' If optional seed is set to match across the two functions, node position is preserved.
 #'
 #' @param g_obs an igraph object output from sample_graph()
 #' @inheritParams plot_simulated_graph

@@ -2,7 +2,7 @@
 % Please edit documentation in R/new_dt_fxn.R
 \name{new_dt_fxn}
 \alias{new_dt_fxn}
-\title{Internal to sglt_bind to handle sub-group splitting}
+\title{Internal to sglt_bind}
 \usage{
 new_dt_fxn(obj_in_sgl)
 }
@@ -10,6 +10,6 @@ new_dt_fxn(obj_in_sgl)
 \item{obj_in_sgl}{a dataframe from sub_group_list}
 }
 \description{
-Internal to sglt_bind to handle sub-group splitting
+Helper to handle sub-group splitting
 }
 \keyword{internal}

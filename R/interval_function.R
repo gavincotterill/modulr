@@ -1,4 +1,7 @@
-#' Extract data from list on individual basis and make keyed data.table
+#' Internal to simulate_non_independence
+#'
+#' Used to make matching time intervals across all individuals in a network
+#'
 #' @param groups a pairwise set of groups
 #' @param intervals the intervals dataframe
 #' @keywords internal

@@ -2,7 +2,7 @@
 % Please edit documentation in R/index_back.R
 \name{index_back}
 \alias{index_back}
-\title{Pulls the row number of the last occurrence of a group from any combination of vector values}
+\title{Internal to simulate_non_independence}
 \usage{
 index_back(df, column_name, value, i)
 }

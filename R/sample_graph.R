@@ -1,4 +1,6 @@
-#' Simulate network sampling, monitoring and perform community detection based on the simple ratio index.
+#' Simulate Sampling on Network Graph
+#'
+#' Simulates network sampling, monitoring and performs community detection based on the simple ratio index.
 #'
 #' @param graph The true network to sample.
 #' @param sample_nNodes The number of individuals to sample.
@@ -7,7 +9,7 @@
 #' @param hi_res The observation frequency of the high resolution individuals, expressed as the number of observations per day.
 #' @param lo_res The observation frequency of the low resolution individuals, expressed as the number of observations per day.
 #' @param regime The sampling regime to use: options include "random", "even", "grab-two".
-#' @param alg The community detection algorithm to use, one of: "netcarto", "fast_greedy", "label_prop", "leading_eigen", "louvain", "spinglass", "walktrap".
+#' @param alg The community detection algorithm to use, one of: "netcarto", "fast_greedy", "label_prop", "leiden", "louvain", "walktrap".
 #'
 #' @return An `igraph` graph of the sampled network where edge weights ('attr' = "weight") is the simple ratio index.
 #' @export
@@ -15,13 +17,21 @@
 #' @examples
 #' \donttest{
 #' library(igraph)
-#' data("real_networks")
-#' data("study_design")
+#' g <- simulate_graph(n_animals = 25,
+#'                     n_groups = 4,
+#'                     time_to_leave = 5,
+#'                     time_to_return = 2,
+#'                     travel_time = c(0.001,0.2),
+#'                     sampling_duration = 7,
+#'                     sampler = "discrete",
+#'                     samples_per_day = 1
+#'                     )
 #' g_obs <- sample_graph(
-#'   graph = real_networks[[1]],
-#'   sample_nNodes = ceiling(0.5 * length(igraph::V(real_networks[[1]]))),
+#'   graph = g,
+#'   sample_nNodes = 10,
 #'   prop_hi_res = 1,
-#'   regime = "grab-two",
+#'   hi_res = 2,
+#'   regime = "random",
 #'   alg = "fast_greedy")
 #'
 #'}
@@ -29,8 +39,8 @@ sample_graph <- function(graph, sample_nNodes, sampling_duration, prop_hi_res = 
   if (!requireNamespace(c("igraph", "dplyr"), quietly = TRUE)) {stop("Packages \"igraph\" and \"dplyr\" must be installed to use this function.",call. = FALSE)}
   if(!regime %in% c("grab-two", "random", "even")){ stop("regime must take one of the following values: \"grab-two\", \"even\",\"random\".")}
 
-  possible_algorithms <- c("netcarto", "fast_greedy", "label_prop", "leading_eigen", "louvain", "spinglass", "walktrap", "optimal", "leiden")
-  if(!alg %in% possible_algorithms){stop("alg must take one of the following values: \"netcarto\", \"fast_greedy\",\"label_prop\", \"leading_eigen\", \"louvain\", \"spinglass\", or \"walktrap\"")}
+  possible_algorithms <- c("netcarto", "fast_greedy", "label_prop", "louvain", "walktrap", "leiden")
+  if(!alg %in% possible_algorithms){stop("alg must take one of the following values: \"netcarto\", \"fast_greedy\",\"label_prop\", \"leiden\", \"louvain\"  or \"walktrap\"")}
   if(alg %in% c("netcarto") & !requireNamespace(c("rnetcarto"), quietly = TRUE)){stop( "Package \"rnetcarto\" must be installed to use the netcarto community detection algorithm.")}
   if(sample_nNodes <= 2){stop("sample_nNodes must be greater than 2 in order to make a graph")}
   if(class(graph) != "igraph"){ stop("graph needs to be an igraph object.", call. = FALSE) }

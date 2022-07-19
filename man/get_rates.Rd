@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_rates.R
 \name{get_rates}
 \alias{get_rates}
-\title{Calculate averaged lambda and xi rates for all individuals in a network}
+\title{Calculate Averaged lambda and xi Rates for Individuals in a Network}
 \usage{
 get_rates(sched, sim)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulate_graph.R
 \name{simulate_graph}
 \alias{simulate_graph}
-\title{Simulate weighted, undirected network graph with independent switching assumptions and simple ratio index.}
+\title{Simulate Independent Switching Graph}
 \usage{
 simulate_graph(
   n_animals,
@@ -20,28 +20,31 @@ simulate_graph(
 
 \item{n_groups}{The number of modules in the network.}
 
-\item{time_to_leave}{The average amount of time spent within the home
-group prior to leaving (days per sampling period).}
+\item{time_to_leave}{The average days spent within the home
+group prior to leaving.}
 
-\item{time_to_return}{The average amount of time spent abroad before
+\item{time_to_return}{The average days spent abroad before
 returning to home group.}
 
 \item{travel_time}{Vector of the range of values that travel to the next group can take,
-drawn from a uniform distribution. Default == c(0,1)}
+drawn from a uniform distribution.}
 
-\item{sampling_duration}{Default == 365.}
+\item{sampling_duration}{The number of days to simulate.}
 
 \item{sampler}{Takes one of c("discrete", "continuous"). Whether group
 composition should be monitored instantaneously (truth), or sampled in
 discrete time.}
 
-\item{samples_per_day}{Default == 1.}
+\item{samples_per_day}{Only used in discrete time approximations in simulate_graph.}
 }
 \value{
 sim_igraph, an igraph graph object.
 }
 \description{
-Simulate weighted, undirected network graph with independent switching assumptions and simple ratio index.
+Useful for those interested primarily in generating modular network graphs.
+Equivalent to using simulate_schedule with the independent simulator and then
+graph_from_schedule, but also includes a discrete-time approximation that is
+faster for large networks.
 }
 \examples{
 g <- simulate_graph(n_animals = 25,

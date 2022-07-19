@@ -1,14 +1,16 @@
-#' The backbone of the network simulator, called from within simulate_graph
+#' Simulate an Individual Animal
+#'
+#' Simulates independent movement behavior for a single animal.
 #'
 #' @param n_groups The number of modules in the network.
-#' @param time_to_leave The average amount of time spent within the home
-#'   group prior to leaving (days per sampling period).
-#' @param time_to_return The average amount of time spent abroad before
+#' @param time_to_leave The average days spent within the home
+#'   group prior to leaving.
+#' @param time_to_return The average days spent abroad before
 #'   returning to home group.
 #' @param travel_time Vector of the range of values that travel to the next group can take,
-#'  drawn from a uniform distribution. Default == c(0,1)
-#' @param sampling_duration Default == 365.
-#' @param samples_per_day Default == 1.
+#'  drawn from a uniform distribution.
+#' @param sampling_duration The number of days to simulate.
+#' @param samples_per_day Only used in discrete time approximations in simulate_graph.
 #'
 #' @return A vector of sampling locations for a single animal.
 #' @export

@@ -1,4 +1,7 @@
+#' Internal to simulate_non_independence
+#'
 #' Sends animals leaving home to another group at current time step
+#'
 #' @param inlist a list like mbrs_list
 #' @param elem_leave a list with same length  as mbrs_list of animals to send away
 #' fromt heir home group

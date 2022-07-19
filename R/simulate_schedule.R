@@ -1,4 +1,7 @@
-#' A group simulator function
+#' Simulate a Network of Continuous-Time Movement Descriptions
+#'
+#' Generates a continuous-time-movement description for each individual in a simulated network according to the rules set forth by the chosen simulator. Returns a list of data.frames.
+#'
 #' @inheritParams simulate_groups
 #' @export
 simulate_schedule <- function(n_animals,
@@ -9,18 +12,10 @@ simulate_schedule <- function(n_animals,
                               travel_time,
                               sampling_duration,
                               simulator = "independent"){
-  if (!requireNamespace(c("igraph"), quietly = TRUE)) {
-    stop("Package \"igraph\"  must be installed to use this function.",call. = FALSE )
-  }
-  if (n_groups == 1) {
-    stop("single module networks are currently not supported -- n_groups must be >= 2",call. = FALSE)
-  }
-  if (!simulator %in% c("independent", "group-think", "non-independent")) {
-    stop( "sampler must be either \"independent\", \"non-independent\" or \"group-think\".",call. = FALSE)
-  }
-  if(time_to_return - max(travel_time) < 0.75){
-    warning("Travel times that are close to or exceed \'time_to_return\' may break the code.")
-  }
+  if (!requireNamespace(c("igraph"), quietly = TRUE)) {stop("Package \"igraph\"  must be installed to use this function.",call. = FALSE )}
+  if (n_groups == 1) {stop("single module networks are currently not supported -- n_groups must be >= 2",call. = FALSE)}
+  if (!simulator %in% c("independent", "group-think", "non-independent")) {stop( "sampler must be either \"independent\", \"non-independent\" or \"group-think\".",call. = FALSE)}
+  if(time_to_return - max(travel_time) < 0.75){warning("Travel times that are close to or exceed \'time_to_return\' may break the code.")}
 
   if(simulator == "independent"){
     out <- simulate_independence(n_groups = n_groups,
@@ -46,8 +41,7 @@ simulate_schedule <- function(n_animals,
     t4 <- lapply(t3$mems, unlist)
     t5 <- purrr::map(t4, sort)
     ids <- t5[[1]]
-    # convert to list of keyed data.tables
-    # at_non_ind <- purrr::map(ids, ~t2[stringr::str_which(t2$members, .x),] %>% # add word boundaries
+
     at_non_ind <- purrr::map(ids, ~t2[stringr::str_which(t2$members, paste0("\\b",.x,"\\b")),] %>%
                                dplyr::select(state, start, end, vector) %>%
                                na.omit() %>%
@@ -76,8 +70,6 @@ simulate_schedule <- function(n_animals,
     t5 <- purrr::map(t4, sort)
     ids <- t5[[1]]
 
-    # convert to list of keyed data.tables
-    # at_non_ind <- purrr::map(ids, ~t2[stringr::str_which(t2$members, .x),] %>% # add word boundaries
     at_non_ind <- purrr::map(ids, ~t2[stringr::str_which(t2$members, paste0("\\b",.x,"\\b")),] %>%
                                # dplyr::select(state, start, end, vector) %>% # keep members
                                dplyr::select(state, start, end, vector, members) %>%

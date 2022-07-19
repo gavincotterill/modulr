@@ -1,4 +1,6 @@
-#' Internal to simulate_non_independence2 to handle sub group list transformations
+#' Internal to simulate_non_independence2
+#'
+#' Handles sub group list transformations
 #'
 #' @keywords internal
 sglt_bind <- function(a, b){

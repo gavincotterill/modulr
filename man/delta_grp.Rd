@@ -2,7 +2,7 @@
 % Please edit documentation in R/delta_grp.R
 \name{delta_grp}
 \alias{delta_grp}
-\title{Delta grp function called internally from 'simulate_non_independence' to categorize fission and fusion events}
+\title{Internal to 'simulate_non_independence'}
 \usage{
 delta_grp(df, column_name, value, i)
 }
@@ -16,6 +16,6 @@ delta_grp(df, column_name, value, i)
 \item{i}{the row index}
 }
 \description{
-Delta grp function called internally from 'simulate_non_independence' to categorize fission and fusion events
+Categorizes group-switching event as 'fission', 'fusion', 'fission-fusion' or 'same'.
 }
 \keyword{internal}

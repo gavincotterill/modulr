@@ -1,5 +1,6 @@
-#' @title ff_fwd3
-#' @description looks forward at fission-fusion events in group-think simulations and incoporates a multinomial draw on the probability of individual switching options
+#' Fission-Fusion Forward Simulator
+#'
+#' Looks forward at fission-fusion events in group-think simulations and incorporates a multinomial draw on the probability of individual switching options
 #'
 #' @param t2 the data.frame of group and individual switching schedules over matched intervals
 #' @param curr_vec the group tags present in vector at i

@@ -2,7 +2,7 @@
 % Please edit documentation in R/clean_vector.R
 \name{clean_vector}
 \alias{clean_vector}
-\title{Internal function to simulate_non_independence2() that puts vector string in numeric order}
+\title{Internal to simulate_non_independence2()}
 \usage{
 clean_vector(cell)
 }
@@ -10,6 +10,6 @@ clean_vector(cell)
 \item{cell}{a t2$vector cell}
 }
 \description{
-Internal function to simulate_non_independence2() that puts vector string in numeric order
+Puts vector string in numeric order
 }
 \keyword{internal}

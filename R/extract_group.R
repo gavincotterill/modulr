@@ -1,4 +1,7 @@
-#' wrapper on stringr::str_extract with regex for group tag
+#' Extract Group ID
+#'
+#' Wrapper around stringr::str_extract with regex for group tag
+#'
 #' @param x a string
 #' @keywords internal
 extract_group <- function(x){

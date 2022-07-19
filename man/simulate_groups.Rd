@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulate_groups.R
 \name{simulate_groups}
 \alias{simulate_groups}
-\title{Simulate groups}
+\title{Internal to simulate_non_independence}
 \usage{
 simulate_groups(
   animals_home,
@@ -27,6 +27,6 @@ simulate_groups(
 \item{sampling_duration}{the number of days to simulate.}
 }
 \description{
-Simulate groups
+Simulates group movements within which individual movement decisions are later generated.
 }
 \keyword{internal}

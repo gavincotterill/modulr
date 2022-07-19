@@ -1,4 +1,7 @@
-#' simulate group switching to get animals_transformed df
+#' Internal to simulate_schedule
+#'
+#' sim = "independent"
+#'
 #' @inheritParams simulate_groups
 #' @keywords internal
 simulate_independence <- function(n_animals,

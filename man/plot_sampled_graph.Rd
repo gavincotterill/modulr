@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_sampled_graph.R
 \name{plot_sampled_graph}
 \alias{plot_sampled_graph}
-\title{plot_sampled_graph()}
+\title{Plot Graph of Sampled Network}
 \usage{
 plot_sampled_graph(
   g_obs,
@@ -36,7 +36,8 @@ plot_sampled_graph(
 a plot of the sampled graph
 }
 \description{
-plot_sampled_graph()
+Takes a graph from sample_graph and plots it to match plot_simulated_graph.
+If optional seed is set to match across the two functions, node position is preserved.
 }
 \examples{
 \donttest{

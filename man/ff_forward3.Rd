@@ -2,7 +2,7 @@
 % Please edit documentation in R/ff_forward3.R
 \name{ff_forward3}
 \alias{ff_forward3}
-\title{ff_fwd3}
+\title{Fission-Fusion Forward Simulator}
 \usage{
 ff_forward3(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_return)
 }
@@ -15,13 +15,13 @@ ff_forward3(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_return)
 
 \item{i}{the loop index for t2}
 
-\item{time_to_leave}{The average amount of time spent within the home
-group prior to leaving (days per sampling period).}
+\item{time_to_leave}{The average days spent within the home
+group prior to leaving.}
 
-\item{time_to_return}{The average amount of time spent abroad before
+\item{time_to_return}{The average days spent abroad before
 returning to home group.}
 }
 \description{
-looks forward at fission-fusion events in group-think simulations and incoporates a multinomial draw on the probability of individual switching options
+Looks forward at fission-fusion events in group-think simulations and incorporates a multinomial draw on the probability of individual switching options
 }
 \keyword{internal}

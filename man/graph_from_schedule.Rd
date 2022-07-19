@@ -2,7 +2,7 @@
 % Please edit documentation in R/graph_from_schedule.R
 \name{graph_from_schedule}
 \alias{graph_from_schedule}
-\title{Create undirected, weighted 'igraph' graph from a continuous-time description of animal movements.}
+\title{Convert Continuous-Time Movement Descriptions to Network Graph}
 \usage{
 graph_from_schedule(schedule)
 }
@@ -10,11 +10,12 @@ graph_from_schedule(schedule)
 \item{schedule}{object from simulate_schedule()}
 }
 \value{
-an undirected, weighted 'igraph' graph where weights are the proportion
-of time dyads spent together.
+an undirected, weighted 'igraph' graph
 }
 \description{
-Create undirected, weighted 'igraph' graph from a continuous-time description of animal movements.
+Takes a list of continuous-time movement descriptions for each individual in
+a network and returns an undirected, weighted 'igraph' graph where edge weights
+are the proportion of time a dyad spent co-located at a patch.
 }
 \examples{
 \donttest{
