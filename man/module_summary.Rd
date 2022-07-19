@@ -5,11 +5,10 @@
 \title{Calculate nodes per module and modules per network statistics on a list of
 graphs with defined membership}
 \arguments{
-\item{network_list}{a list of \code{igraph} graph objects. Each vertex must have a
-defined \verb{$membership}.}
+\item{network_list}{a list of 'igraph' graph objects with community memberships.}
 }
 \value{
-a \code{data.frame()} where each row corresponds the the nth element of
+a data.frame where each row corresponds the the nth element of
 the network_list.
 }
 \description{

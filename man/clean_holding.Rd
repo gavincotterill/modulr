@@ -2,7 +2,7 @@
 % Please edit documentation in R/clean_holding.R
 \name{clean_holding}
 \alias{clean_holding}
-\title{Clean up the holding value strings}
+\title{Internal function to simulate_non_independence2() that removes excess empty strings and dummy animals}
 \usage{
 clean_holding(cell)
 }
@@ -10,6 +10,6 @@ clean_holding(cell)
 \item{cell}{the holding value string from a single cell}
 }
 \description{
-Clean up the holding value strings
+Internal function to simulate_non_independence2() that removes excess empty strings and dummy animals
 }
 \keyword{internal}

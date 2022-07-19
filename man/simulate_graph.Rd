@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulate_graph.R
 \name{simulate_graph}
 \alias{simulate_graph}
-\title{Simulate the true simple ratio index values for each dyad in a network. FLAGGED FOR REMOVAL}
+\title{Simulate weighted, undirected network graph with independent switching assumptions and simple ratio index.}
 \usage{
 simulate_graph(
   n_animals,
@@ -33,7 +33,7 @@ drawn from a uniform distribution. Default == c(0,1)}
 
 \item{sampler}{Takes one of c("discrete", "continuous"). Whether group
 composition should be monitored instantaneously (truth), or sampled in
-discrete time. Continuous monitoring is much slower.}
+discrete time.}
 
 \item{samples_per_day}{Default == 1.}
 }
@@ -41,16 +41,14 @@ discrete time. Continuous monitoring is much slower.}
 sim_igraph, an igraph graph object.
 }
 \description{
-Simulate the true simple ratio index values for each dyad in a network. FLAGGED FOR REMOVAL
+Simulate weighted, undirected network graph with independent switching assumptions and simple ratio index.
 }
 \examples{
-set.seed(123)
-
 g <- simulate_graph(n_animals = 25,
                     n_groups = 4,
                     time_to_leave = 5,
                     time_to_return = 2,
-                    travel_time = c(0,1),
+                    travel_time = c(0.001,0.2),
                     sampling_duration = 7,
                     sampler = "discrete",
                     samples_per_day = 1

@@ -7,7 +7,7 @@
 ff_forward3(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_return)
 }
 \arguments{
-\item{t2}{the dataframe of group and individual switching schedules over matched intervals}
+\item{t2}{the data.frame of group and individual switching schedules over matched intervals}
 
 \item{curr_vec}{the group tags present in vector at i}
 
@@ -22,6 +22,6 @@ group prior to leaving (days per sampling period).}
 returning to home group.}
 }
 \description{
-like ff2, but trying to incorporate a multinomial draw for animals 'not-at-home'
+looks forward at fission-fusion events in group-think simulations and incoporates a multinomial draw on the probability of individual switching options
 }
 \keyword{internal}

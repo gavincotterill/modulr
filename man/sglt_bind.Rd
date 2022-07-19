@@ -2,11 +2,11 @@
 % Please edit documentation in R/sglt_bind.R
 \name{sglt_bind}
 \alias{sglt_bind}
-\title{sglt_bind sub group list transformation and binding}
+\title{Internal to simulate_non_independence2 to handle sub group list transformations}
 \usage{
 sglt_bind(a, b)
 }
 \description{
-sglt_bind sub group list transformation and binding
+Internal to simulate_non_independence2 to handle sub group list transformations
 }
 \keyword{internal}

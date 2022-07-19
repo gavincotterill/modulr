@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_times.R
 \name{get_times}
 \alias{get_times}
-\title{get times}
+\title{Calculates the proportion of time an individual spends at home vs away}
 \usage{
 get_times(schedule, id, simulator, option = NA)
 }
@@ -14,5 +14,5 @@ get_times(schedule, id, simulator, option = NA)
 \item{option}{additional option for group-think, "co-located" or "attached"}
 }
 \description{
-get times
+Calculates the proportion of time an individual spends at home vs away
 }

@@ -42,7 +42,7 @@ simulate_groups2 <- function(animals_home,
       # travel time imposed on all
       cumulative_time <- cumulative_time + waiting_time_now
 
-      current_state_now <- as.list(sample(animals_other_groups, size = n_splits, replace = T))
+      current_state_now <- as.list(sample_vec(animals_other_groups, size = n_splits, replace = T))
 
 
       travel_row <- c(current_state_last,

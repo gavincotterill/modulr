@@ -12,3 +12,4 @@ extract_group(x)
 \description{
 wrapper on stringr::str_extract with regex for group tag
 }
+\keyword{internal}

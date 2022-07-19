@@ -48,7 +48,7 @@ simulate_groups <- function(animals_home,
     cumulative_time <- cumulative_time + waiting_time_now
 
     current_state_now <- ifelse(current_state_last == animals_home,
-                                sample(animals_other_groups, size = 1),
+                                sample_vec(animals_other_groups, size = 1),
                                 animals_home)
 
     travel_row <- c(current_state_last,

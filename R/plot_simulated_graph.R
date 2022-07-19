@@ -1,15 +1,15 @@
-#' plot_simulated_graph()
+#' Plot graph from continuous-time movement descriptions
 #'
-#' @param g, an igraph object output from simulate_graph()
-#' @param vertex.size, node size in plot
-#' @param mark.expand, padding of polygon denoting modules around nodes
-#' @param vertex.label, label for graph vertices
-#' @param vertex.label.cex, size for vertex labels
-#' @param title, plot title
-#' @param seed, optional integer value to set.seed() within function and preserve node layout when plotting sampled and simulated graphs
+#' Plot a graph from modulr graphing functions
 #'
+#' @param g an igraph object output from simulate_graph() or graph_from_schedule()
+#' @param vertex.size node size in plot
+#' @param mark.expand padding of polygon denoting modules around nodes
+#' @param vertex.label label for graph vertices
+#' @param vertex.label.cex size for vertex labels
+#' @param title plot title
+#' @param seed optional integer value to set.seed() within function and preserve node layout when plotting sampled and simulated graphs
 #' @return a plot of the igraph object
-#'
 #' @export
 #' @importFrom rlang .data
 #' @examples

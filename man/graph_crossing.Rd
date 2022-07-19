@@ -2,19 +2,24 @@
 % Please edit documentation in R/graph_crossing.R
 \name{graph_crossing}
 \alias{graph_crossing}
-\title{Recursive function to calculate graph crossing time and do agent-based SEIR modeling}
+\title{Recursive function to calculate graph crossing time and do individual-based SEIR modeling}
 \usage{
 graph_crossing(schedule, exposure_time, infectious_time, index_case)
 }
 \arguments{
-\item{schedule}{first element(?) output of the animals_transformed function}
+\item{schedule}{a schedule object from simulate_schedule()}
 
-\item{exposure_time}{E}
+\item{exposure_time}{for graph-crossing times, 0, otherwise the number of days prior to becoming infectious}
 
-\item{infectious_time}{I}
+\item{infectious_time}{for graph-crossing times, a large value of the simulation duration, otherwise the number of day infectious}
 
-\item{index_case}{the animal to start the transmission chain-- an integer in quotes}
+\item{index_case}{an animal id from the schedule_object to be the first infected}
 }
 \description{
-Recursive function to calculate graph crossing time and do agent-based SEIR modeling
+Recursive function to calculate graph crossing time and do individual-based SEIR modeling
+}
+\examples{
+\donttest{
+out <- graph_crossing(schedule = obj, exposure_time = 2, infectious_time = 5, index_case = names(obj)[[1]])
+}
 }

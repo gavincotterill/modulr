@@ -35,3 +35,12 @@ A vector of sampling locations for a single animal.
 \description{
 The backbone of the network simulator, called from within simulate_graph
 }
+\examples{
+\donttest{
+animal_one <- simulate_animal(n_groups = 4,
+ time_to_leave = 5,
+ time_to_return = 2,
+ travel_time = c(0.001, 0.002),
+ sampling_duration = 30)
+}
+}

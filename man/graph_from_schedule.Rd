@@ -2,18 +2,22 @@
 % Please edit documentation in R/graph_from_schedule.R
 \name{graph_from_schedule}
 \alias{graph_from_schedule}
-\title{Simulate the true simple ratio index values for each dyad in a network
-using output from animals_transformed().}
+\title{Create undirected, weighted 'igraph' graph from a continuous-time description of animal movements.}
 \usage{
 graph_from_schedule(schedule)
 }
 \arguments{
-\item{schedule}{output from the animals_transformed function}
+\item{schedule}{object from simulate_schedule()}
 }
 \value{
-sim_igraph, an igraph graph object.
+an undirected, weighted 'igraph' graph where weights are the proportion
+of time dyads spent together.
 }
 \description{
-Simulate the true simple ratio index values for each dyad in a network
-using output from animals_transformed().
+Create undirected, weighted 'igraph' graph from a continuous-time description of animal movements.
+}
+\examples{
+\donttest{
+g <- graph_from_schedule(schedule = obj)
+}
 }

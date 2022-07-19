@@ -1,8 +1,21 @@
-#' get the lambda and xi rates for a single individual
+#' Get the lambda and xi rates for a single individual
+#'
+#' Takes an individual's continuous-time movement description and calculates
+#' the average number of days until it leaves its home state and the average
+#' number of days until it returns to its home state.
+#'
 #' @param sub_sched the individual's continuous time description
 #' @param sub_id the individual's id string
 #' @param sim the simulator used to generate the schedule
-#' @keywords internal
+#' @export
+#' @examples
+#' \donttest{
+#' obj <- simulate_schedule(n_animals = 10, n_groups = 2, time_to_leave = 5,
+#'                          time_to_return = 2, travel_time = c(0.001, 0.2), sampling_duration = 30,
+#'                          simulator = "independent")
+#'
+#' single_id_rate(sub_sched = obj[[1]], sub_id = names(obj)[[1]], "independent")
+#' }
 single_id_rate <- function(sub_sched, sub_id, sim){
   home <- modulr:::extract_group(sub_id) %>% as.numeric()
 

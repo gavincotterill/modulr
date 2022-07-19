@@ -2,8 +2,7 @@
 % Please edit documentation in R/get_rates.R
 \name{get_rates}
 \alias{get_rates}
-\title{get average time to leave home and time to return home rates for every
-individual in a network}
+\title{Calculate averaged lambda and xi rates for all individuals in a network}
 \usage{
 get_rates(sched, sim)
 }
@@ -13,7 +12,14 @@ get_rates(sched, sim)
 \item{sim}{the simulator used to generate the schedule}
 }
 \description{
-get average time to leave home and time to return home rates for every
-individual in a network
+Wrapper to apply single_id_rate to all individuals in a network and calculate
+the mean number of days individuals took to leave their respective home states
+and the mean number of days individuals took to return to their respective
+home states.
 }
-\keyword{internal}
+\examples{
+\donttest{
+
+
+}
+}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_simulated_graph.R
 \name{plot_simulated_graph}
 \alias{plot_simulated_graph}
-\title{plot_simulated_graph()}
+\title{Plot graph from continuous-time movement descriptions}
 \usage{
 plot_simulated_graph(
   g,
@@ -15,29 +15,28 @@ plot_simulated_graph(
 )
 }
 \arguments{
-\item{g, }{an igraph object output from simulate_graph()}
+\item{g}{an igraph object output from simulate_graph() or graph_from_schedule()}
 
-\item{vertex.size, }{node size in plot}
+\item{vertex.size}{node size in plot}
 
-\item{mark.expand, }{padding of polygon denoting modules around nodes}
+\item{mark.expand}{padding of polygon denoting modules around nodes}
 
-\item{vertex.label, }{label for graph vertices}
+\item{vertex.label}{label for graph vertices}
 
-\item{vertex.label.cex, }{size for vertex labels}
+\item{vertex.label.cex}{size for vertex labels}
 
-\item{title, }{plot title}
+\item{title}{plot title}
 
-\item{seed, }{optional integer value to set.seed() within function and preserve node layout when plotting sampled and simulated graphs}
+\item{seed}{optional integer value to set.seed() within function and preserve node layout when plotting sampled and simulated graphs}
 }
 \value{
 a plot of the igraph object
 }
 \description{
-plot_simulated_graph()
+Plot a graph from modulr graphing functions
 }
 \examples{
 \donttest{
-set.seed(123)
 g <- simulate_graph(n_animals = 25,
                     n_groups = 4,
                     time_to_leave = 5,

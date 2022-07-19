@@ -2,12 +2,13 @@
 % Please edit documentation in R/netcarto_modules.R
 \name{netcarto_modules}
 \alias{netcarto_modules}
-\title{Return vector of group membership}
+\title{Convenience function to extract a membership vector using the netcarto community
+detection algorithm.}
 \usage{
 netcarto_modules(x)
 }
 \arguments{
-\item{x}{a named square adjacency matrix or named \code{igraph} graph. Intended for
+\item{x}{a named square adjacency matrix or named 'igraph' graph. Intended for
 weighted, undirected graphs.}
 
 \item{alg}{the community detection algorithm to use, either from igraph:
@@ -20,12 +21,15 @@ a named vector of module memberships matching the named adjacency
 matrix or igraph graph object (igraph::V(graph)$name)
 }
 \description{
-Return vector of group membership
+Convenience function to extract a membership vector using the netcarto community
+detection algorithm.
 }
 \examples{
+\donttest{
 adjmat <- matrix(sample(seq(0, 1, .01), 16), nrow = 4)
 diag(adjmat) <- 0
 adjmat[lower.tri(adjmat)] <- 0
 rownames(adjmat) <- colnames(adjmat) <- paste0("Animal_", 1:4)
 netcarto_modules(adjmat)
+}
 }
