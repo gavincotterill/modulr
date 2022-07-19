@@ -44,7 +44,7 @@ plot_transmissions <- function(g,
     unique() %>%
     unlist()
 
-  set.seed(123)
+  # set.seed(123)
   lo_whole <- igraph::layout.fruchterman.reingold(g) %>%
     data.frame()
   lo_whole$name <- igraph::V(g)$name
