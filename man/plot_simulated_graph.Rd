@@ -10,7 +10,8 @@ plot_simulated_graph(
   mark.expand = 25,
   vertex.label = NA,
   vertex.label.cex = 1.5,
-  title = ""
+  title = "",
+  seed = NULL
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ plot_simulated_graph(
 \item{vertex.label.cex, }{size for vertex labels}
 
 \item{title, }{plot title}
+
+\item{seed, }{optional integer value to set.seed() within function and preserve node layout when plotting sampled and simulated graphs}
 }
 \value{
 a plot of the igraph object
