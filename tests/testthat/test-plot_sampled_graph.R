@@ -18,6 +18,7 @@ test_that("plotting sampled graph works", {
                         regime = "grab-two",
                         alg = "netcarto")
 
+  expect_silent({plot_sampled_graph(g_obs = g_obs, g = g_d, seed = 123)})
   expect_silent({plot_sampled_graph(g_obs = g_obs, g = g_d)})
 
 })

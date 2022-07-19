@@ -10,5 +10,6 @@ test_that("plotting simulated graph works", {
                         samples_per_day = 1)
 
   expect_silent({plot_simulated_graph(g_d)})
+  expect_silent({plot_simulated_graph(g_d, seed = 123)})
 
 })
