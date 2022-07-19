@@ -6,6 +6,7 @@
 #' @param vertex.label, label for graph vertices
 #' @param vertex.label.cex, size for vertex labels
 #' @param title, plot title
+#' @param seed, optional integer value to set.seed() within function and preserve node layout when plotting sampled and simulated graphs
 #'
 #' @return
 #' a plot of the igraph object
@@ -26,7 +27,8 @@
 plot_simulated_graph <- function(g, vertex.size = 40, mark.expand = 25,
                                  vertex.label = NA,
                                  # edge.arrow.size = NA,
-                                 vertex.label.cex = 1.5, title = ""
+                                 vertex.label.cex = 1.5, title = "",
+                                 seed = NULL
                                  ){
   # igraph::V(g)$name <- stringr::str_extract(igraph::V(g)$name, "\\d{1,}")
 
@@ -55,7 +57,9 @@ plot_simulated_graph <- function(g, vertex.size = 40, mark.expand = 25,
     unique() %>%
     unlist()
 
-  set.seed(123)
+  if(!is.null(seed)){
+    set.seed(seed)
+  }
   lo_whole <- igraph::layout.fruchterman.reingold(g) %>%
     data.frame()
   lo_whole$name <- igraph::V(g)$name

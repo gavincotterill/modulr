@@ -29,7 +29,8 @@
 plot_sampled_graph <- function(g_obs, g, vertex.size = 40, mark.expand = 25,
                                vertex.label = NA,
                                vertex.label.cex = 1.5,
-                               title = ""){
+                               title = "",
+                               seed = NULL){
 
   grp <- data.frame(name = igraph::V(g)$name,
                     mem = as.numeric(igraph::V(g)$membership))
@@ -59,7 +60,9 @@ plot_sampled_graph <- function(g_obs, g, vertex.size = 40, mark.expand = 25,
     unique() %>%
     unlist()
 
-  set.seed(123)
+  if(!is.null(seed)){
+    set.seed(seed)
+  }
   lo_whole <- igraph::layout.fruchterman.reingold(g) %>%
     data.frame()
   lo_whole$name <- igraph::V(g)$name
