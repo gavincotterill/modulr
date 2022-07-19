@@ -119,7 +119,7 @@ test_that("sample_graph even works with multiple conditions", {
                      hi_res = 12,
                      lo_res = 1/7,
                      sampling_duration = 7,
-                     regime = "grab-two",
+                     regime = "even",
                      alg = "netcarto")
   expect_equal(length(igraph::V(g2)), 4)
 
@@ -130,7 +130,7 @@ test_that("sample_graph even works with multiple conditions", {
                      hi_res = 12,
                      lo_res = 1/7,
                      sampling_duration = 7,
-                     regime = "grab-two",
+                     regime = "even",
                      alg = "netcarto")
   expect_equal(length(igraph::V(g3)), 5)
 
@@ -140,7 +140,7 @@ test_that("sample_graph even works with multiple conditions", {
                      hi_res = 12,
                      lo_res = 1/7,
                      sampling_duration = 7,
-                     regime = "grab-two",
+                     regime = "even",
                      alg = "netcarto")
   expect_equal(length(igraph::V(g4)), 6)
 
@@ -150,7 +150,7 @@ test_that("sample_graph even works with multiple conditions", {
                      hi_res = 12,
                      lo_res = 1/7,
                      sampling_duration = 7,
-                     regime = "grab-two",
+                     regime = "even",
                      alg = "netcarto")
   expect_equal(length(igraph::V(g5)), 9)
 

@@ -34,4 +34,12 @@ test_that("get_times works", {
 
   expect_equal(length(s2), nrow(out2))
 
+  out3 <- get_times(schedule = s2[[1]], id = ids2[[1]], simulator = "group-think", option = "attached")
+
+  for (i in 2:length(ids2)) {
+    out3[i, ] <- get_times(s2[[i]], ids2[[i]], simulator = "group-think", option = "attached")
+  }
+
+  expect_equal(length(s2), nrow(out3))
+
 })
