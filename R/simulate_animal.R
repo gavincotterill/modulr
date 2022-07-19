@@ -12,6 +12,14 @@
 #'
 #' @return A vector of sampling locations for a single animal.
 #' @export
+#' @examples
+#' \donttest{
+#' animal_one <- simulate_animal(n_groups = 4,
+#'  time_to_leave = 5,
+#'  time_to_return = 2,
+#'  travel_time = c(0.001, 0.002),
+#'  sampling_duration = 30)
+#'}
 simulate_animal <- function(n_groups,
                             time_to_leave,
                             time_to_return,
@@ -22,14 +30,8 @@ simulate_animal <- function(n_groups,
 
   if (!requireNamespace(c("stats"), quietly = TRUE)) {stop("Package \"stats\" must be installed to use this function.",call. = FALSE)}
   # generate home group for each animal at random
-  # NOTE: this assumes that all animals are equally likely to choose all groups,
-  #       which _should_ lead to groups that are approximately uniform in size.
   animals_home <- sample(1:n_groups, size = 1)
   animals_other_groups <- which(c(1:n_groups) != animals_home)
-
-  # convert expected times to departure rates
-  # delta <- 1/time_to_leave
-  # xi <- 1/time_to_return
 
   # store inputs in named list (returned at end of function)
   inputs <- list(time_to_leave = time_to_leave,

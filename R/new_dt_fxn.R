@@ -1,4 +1,4 @@
-#' Handle sub-group splitting
+#' Internal to sglt_bind to handle sub-group splitting
 #' @param obj_in_sgl a dataframe from sub_group_list
 #' @keywords internal
 new_dt_fxn <- function(obj_in_sgl){

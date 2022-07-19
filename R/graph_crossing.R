@@ -1,10 +1,13 @@
-#' Recursive function to calculate graph crossing time and do agent-based SEIR modeling
-#' @param schedule first element(?) output of the animals_transformed function
-#' @param exposure_time E
-#' @param infectious_time I
-#' @param index_case the animal to start the transmission chain-- an integer in quotes
+#' Recursive function to calculate graph crossing time and do individual-based SEIR modeling
+#' @param schedule a schedule object from simulate_schedule()
+#' @param exposure_time for graph-crossing times, 0, otherwise the number of days prior to becoming infectious
+#' @param infectious_time for graph-crossing times, a large value of the simulation duration, otherwise the number of day infectious
+#' @param index_case an animal id from the schedule_object to be the first infected
 #' @export
-
+#' @examples
+#' \donttest{
+#' out <- graph_crossing(schedule = obj, exposure_time = 2, infectious_time = 5, index_case = names(obj)[[1]])
+#'}
 graph_crossing <- function(schedule, exposure_time, infectious_time, index_case){
 
   N <- length(schedule)

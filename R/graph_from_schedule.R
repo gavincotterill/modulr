@@ -1,18 +1,17 @@
-#' Simulate the true simple ratio index values for each dyad in a network
-#' using output from animals_transformed().
+#' Create undirected, weighted 'igraph' graph from a continuous-time description of animal movements.
 #'
-#' @param schedule output from the animals_transformed function
-#'
-#' @return sim_igraph, an igraph graph object.
+#' @param schedule object from simulate_schedule()
+#' @return an undirected, weighted 'igraph' graph where weights are the proportion
+#' of time dyads spent together.
 #' @export
+#' @examples
+#' \donttest{
+#' g <- graph_from_schedule(schedule = obj)
+#'}
 graph_from_schedule <- function(schedule) {
-
-# graph_from_at <- function(animals_transformed, animal_list) {
 
   ids <- names(schedule)
   grp_mem <- stringr::str_extract(ids, "\\d{1,}(?=_)")
-  # mem_df <- data.frame(ids = ids,
-  #                      membership = unlist(lapply(animal_list, function(x) x[['animals_home']])))
   mem_df <- data.frame(ids = ids,
                        membership = grp_mem)
 
@@ -21,7 +20,6 @@ graph_from_schedule <- function(schedule) {
   names(dyads) <- c("Var1", "Var2")
   dyads$ew <- NA
 
-  # n_animals <- length(animal_list)
   n_animals <- length(schedule)
 
   adj_mat <- matrix(NA, nrow = n_animals, ncol = n_animals)
@@ -51,9 +49,6 @@ graph_from_schedule <- function(schedule) {
       dplyr::mutate(time = .data$end_min - .data$start_max)
 
     numer <- sum(time_overlap$time)
-    # denom <- intervals[nrow(intervals), "end_min"]$end_min #
-    # denom <- intervals[nrow(intervals), "end_min"]["end_min"] # throwing an error after travel time incorporated
-    # denom <- max(intervals$end_min)
     denom <- intervals[[nrow(intervals), "end_min"]]
 
     if(is.na(numer)){

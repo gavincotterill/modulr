@@ -8,14 +8,12 @@
 #' @param title, plot title
 #' @param seed, optional integer value to set.seed() within function and preserve node layout when plotting sampled and simulated graphs
 #'
-#' @return
-#' a plot of the igraph object
+#' @return a plot of the igraph object
 #'
 #' @export
 #' @importFrom rlang .data
 #' @examples
 #' \donttest{
-#' set.seed(123)
 #' g <- simulate_graph(n_animals = 25,
 #'                     n_groups = 4,
 #'                     time_to_leave = 5,
@@ -26,11 +24,9 @@
 #'}
 plot_simulated_graph <- function(g, vertex.size = 40, mark.expand = 25,
                                  vertex.label = NA,
-                                 # edge.arrow.size = NA,
                                  vertex.label.cex = 1.5, title = "",
                                  seed = NULL
                                  ){
-  # igraph::V(g)$name <- stringr::str_extract(igraph::V(g)$name, "\\d{1,}")
 
   grp <- data.frame(name = igraph::V(g)$name,
                     mem = as.numeric(igraph::V(g)$membership))
@@ -88,6 +84,5 @@ plot_simulated_graph <- function(g, vertex.size = 40, mark.expand = 25,
                        mark.border = mbs_whole,
                        vertex.size = vertex.size,
                        mark.expand = mark.expand,
-                       # edge.arrow.size = edge.arrow.size,
                        main = title)
 }

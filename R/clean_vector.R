@@ -1,4 +1,4 @@
-#' put vector string in numeric order
+#' Internal function to simulate_non_independence2() that puts vector string in numeric order
 #' @param cell a t2$vector cell
 #' @keywords internal
 clean_vector <- function(cell){

@@ -1,8 +1,8 @@
-#' get average time to leave home and time to return home rates for every
+#' Get average time to leave home and time to return home rates for every
 #' individual in a network
 #' @param sched a schedule object for a network from simulate_schedule()
 #' @param sim the simulator used to generate the schedule
-#' @keywords internal
+#' @export
 get_rates <- function(sched, sim){
 
   sub_sched <- sched

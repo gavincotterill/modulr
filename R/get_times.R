@@ -1,4 +1,4 @@
-#' get times
+#' Calculates the proportion of time an individual spends at home vs away
 #' @param schedule a dataframe schedule of the type output by simulate_schedule
 #' @param id the character string name of an individual node
 #' @param option additional option for group-think, "co-located" or "attached"

@@ -1,4 +1,4 @@
-#' internal function to graph crossing
+#' Internal function to graph_crossing() to find new contacts
 #' @param animal unique individual
 #' @param infectious a data.table with infectious individuals from previous time step
 #' @keywords internal

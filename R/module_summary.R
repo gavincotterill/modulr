@@ -1,10 +1,9 @@
 #' Calculate nodes per module and modules per network statistics on a list of
 #' graphs with defined membership
 #'
-#' @param network_list a list of `igraph` graph objects. Each vertex must have a
-#'   defined `$membership`.
+#' @param network_list a list of 'igraph' graph objects with community memberships.
 #'
-#' @return a `data.frame()` where each row corresponds the the nth element of
+#' @return a data.frame where each row corresponds the the nth element of
 #'   the network_list.
 #' @export
 #' @importFrom rlang .data
@@ -35,12 +34,7 @@ utils::globalVariables(".")
 
 module_summary <- function(network_list){
 
-  if (!requireNamespace(c("igraph", "dplyr", "purrr", "stats"), quietly = TRUE)) {
-    stop(
-      "Packages \"igraph\", \"dplyr\", \"purrr\", and \"stats\" must be installed to use this function.",
-      call. = FALSE
-    )
-  }
+  if (!requireNamespace(c("igraph", "dplyr", "purrr", "stats"), quietly = TRUE)) {stop("Packages \"igraph\", \"dplyr\", \"purrr\", and \"stats\" must be installed to use this function.",call. = FALSE)}
   sum_list <- lapply(network_list, function(x) {
     y1 <- igraph::V(x)$membership %>%
       dplyr::as_tibble() %>%

@@ -1,7 +1,7 @@
 #' @title ff_fwd3
-#' @description like ff2, but trying to incorporate a multinomial draw for animals 'not-at-home'
+#' @description looks forward at fission-fusion events in group-think simulations and incoporates a multinomial draw on the probability of individual switching options
 #'
-#' @param t2 the dataframe of group and individual switching schedules over matched intervals
+#' @param t2 the data.frame of group and individual switching schedules over matched intervals
 #' @param curr_vec the group tags present in vector at i
 #' @param mbrs_list the list of groups and animals within groups at i
 #' @param i the loop index for t2

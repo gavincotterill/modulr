@@ -1,6 +1,7 @@
-#' Return vector of group membership
+#' Convenience function to extract a membership vector using the netcarto community
+#' detection algorithm.
 #'
-#' @param x a named square adjacency matrix or named `igraph` graph. Intended for
+#' @param x a named square adjacency matrix or named 'igraph' graph. Intended for
 #'   weighted, undirected graphs.
 #' @param alg the community detection algorithm to use, either from igraph:
 #' "fast_greedy", "leading_eigen", "leiden", "louvain", or "walktrap"
@@ -12,11 +13,13 @@
 #' @export
 #' @importFrom rlang .data
 #' @examples
+#' \donttest{
 #' adjmat <- matrix(sample(seq(0, 1, .01), 16), nrow = 4)
 #' diag(adjmat) <- 0
 #' adjmat[lower.tri(adjmat)] <- 0
 #' rownames(adjmat) <- colnames(adjmat) <- paste0("Animal_", 1:4)
 #' netcarto_modules(adjmat)
+#' }
 netcarto_modules <- function(x) {
     if (!requireNamespace(c("igraph","rnetcarto"), quietly = TRUE)) {stop("Packages \"igraph\" and \"rnetcarto\" must be installed to use this function.",call. = FALSE) }
 

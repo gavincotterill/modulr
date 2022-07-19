@@ -7,7 +7,6 @@
 #' @importFrom rlang .data
 #' @examples
 #' \donttest{
-#' set.seed(123)
 #' library(igraph)
 #' g <- modulr::simulate_graph(n_animals = 25,
 #'                     n_groups = 4,
@@ -15,15 +14,14 @@
 #'                     time_to_return = 2,
 #'                     samples_per_day = 1,
 #'                     sampling_duration = 7)
-#' igraph::V(g)$name <- stringr::str_extract(igraph::V(g)$name, "\\d{1,}")
+#'
 #' g_obs <- sample_graph(
 #'   graph = g,
 #'   sample_nNodes = 13,
 #'   prop_hi_res = 1,
 #'   regime = "grab-two",
 #'   alg = "fast_greedy")
-#' par(mfrow = c(1,2))
-#' plot_simulated_graph(g)
+#'
 #' plot_sampled_graph(g_obs, g)
 #' }
 plot_sampled_graph <- function(g_obs, g, vertex.size = 40, mark.expand = 25,
