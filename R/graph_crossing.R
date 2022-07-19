@@ -45,7 +45,7 @@ graph_crossing <- function(schedule, exposure_time, infectious_time, index_case)
 
       time_step <- time_step + 1
 
-      print(paste0("There are ", length(schedule), " animals in memo at the beginning of time_step ", time_step)) # 50 start 1
+      message(paste0("There are ", length(schedule), " animals in memo at the beginning of time_step ", time_step)) # 50 start 1
 
       new_list <- lapply(schedule, bolts, infectious)
       new_exposures <- new_list[unlist(lapply(new_list, function(x) nrow(x) > 0 ))]
@@ -73,11 +73,11 @@ graph_crossing <- function(schedule, exposure_time, infectious_time, index_case)
 
         ## adding timestep check
         if(time_step == 100){
-          print(paste0("possible run-away recursion at timestep ", time_step, ", halting process"))
+          message(paste0("possible run-away recursion at timestep ", time_step, ", halting process"))
           return(transmissions)
         }
 
-        print(paste0("There are ", length(schedule), " animals in memo the beginning of time_step ", time_step))
+        message(paste0("There are ", length(schedule), " animals in memo the beginning of time_step ", time_step))
 
         for(m in 1:length(schedule)){
           # m = 1
@@ -106,7 +106,7 @@ graph_crossing <- function(schedule, exposure_time, infectious_time, index_case)
             new_exposures <- new_list[unlist(lapply(new_list, function(x) nrow(x) > 0 ))]
 
             if(length(new_exposures) == 0){
-              print(paste0("ran out of new exposures at timestep ", time_step))
+              message(paste0("ran out of new exposures at timestep ", time_step))
               return(transmissions)
               }
 
