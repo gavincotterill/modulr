@@ -36,4 +36,3 @@ Suggests:
     covr
 Config/testthat/edition: 3
 VignetteBuilder: knitr
-Additional_repositories: https://gavincotterill.github.io/drat/
