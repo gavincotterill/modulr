@@ -1,6 +1,11 @@
 #' Return vector of group membership
 #'
-#' @inheritParams modulr_plot
+#' @param x a named square adjacency matrix or named `igraph` graph. Intended for
+#'   weighted, undirected graphs.
+#' @param alg the community detection algorithm to use, either from igraph:
+#' "fast_greedy", "leading_eigen", "leiden", "louvain", or "walktrap"
+#' or from rnetcarto: "netcarto"
+#' default is "walktrap"
 #'
 #' @return a named vector of module memberships matching the named adjacency
 #'   matrix or igraph graph object (igraph::V(graph)$name)
@@ -13,12 +18,7 @@
 #' rownames(adjmat) <- colnames(adjmat) <- paste0("Animal_", 1:4)
 #' netcarto_modules(adjmat)
 netcarto_modules <- function(x) {
-    if (!requireNamespace(c("igraph","rnetcarto"), quietly = TRUE)) {
-      stop(
-        "Packages \"igraph\" and \"rnetcarto\" must be installed to use this function.",
-        call. = FALSE
-      )
-    }
+    if (!requireNamespace(c("igraph","rnetcarto"), quietly = TRUE)) {stop("Packages \"igraph\" and \"rnetcarto\" must be installed to use this function.",call. = FALSE) }
 
     if(is.matrix(x)){
 
@@ -30,9 +30,7 @@ netcarto_modules <- function(x) {
       g_obs <- x
       g_obs <- igraph::delete_edges(g_obs, which(igraph::E(g_obs)$weight==0))
       am_obs <- as.matrix(igraph::get.adjacency(g_obs, type = "upper", attr = "weight"))
-    } else {
-      stop("Object must either be a square adjacency matrix of class matrix or an igraph object.")
-    }
+    } else {stop("Object must either be a square adjacency matrix of class matrix or an igraph object.") }
 
     if( length( igraph::E(g_obs) ) >= 2 ){
 
@@ -59,9 +57,7 @@ netcarto_modules <- function(x) {
       }
       igraph::V(g_obs)$membership <- colorOrder
 
-    }else if(length(igraph::E(g_obs)) == 0){
-      stop("There are no non-zero edges in this graph.")
-    }
+    }else if(length(igraph::E(g_obs)) == 0){ stop("There are no non-zero edges in this graph.")}
 
   y <- stats::setNames(igraph::V(g_obs)$membership, c(igraph::V(g_obs)$name))
 

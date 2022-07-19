@@ -26,33 +26,13 @@
 #'
 #'}
 sample_graph <- function(graph, sample_nNodes, sampling_duration, prop_hi_res = 1, hi_res = 1, lo_res = 1/7, regime = "grab-two", alg = "fast_greedy"){
-  if (!requireNamespace(c("igraph", "dplyr"), quietly = TRUE)) {
-    stop(
-      "Packages \"igraph\" and \"dplyr\" must be installed to use this function.",
-      call. = FALSE
-    )
-  }
-  if(!regime %in% c("grab-two", "random", "even")){
-    stop(
-      "regime must take one of the following values: \"grab-two\", \"even\",\"random\"."
-    )
-  }
+  if (!requireNamespace(c("igraph", "dplyr"), quietly = TRUE)) {stop("Packages \"igraph\" and \"dplyr\" must be installed to use this function.",call. = FALSE)}
+  if(!regime %in% c("grab-two", "random", "even")){ stop("regime must take one of the following values: \"grab-two\", \"even\",\"random\".")}
+
   possible_algorithms <- c("netcarto", "fast_greedy", "label_prop", "leading_eigen", "louvain", "spinglass", "walktrap", "optimal", "leiden")
-  if(!alg %in% possible_algorithms){
-    stop(
-      "alg must take one of the following values: \"netcarto\", \"fast_greedy\",\"label_prop\", \"leading_eigen\", \"louvain\", \"spinglass\", or \"walktrap\""
-    )
-  }
-  if(alg %in% c("netcarto") & !requireNamespace(c("rnetcarto"), quietly = TRUE)){
-    stop(
-      "Package \"rnetcarto\" must be installed to use the netcarto community detection algorithm."
-    )
-  }
-  if(sample_nNodes <= 2){
-    stop(
-      "sample_nNodes must be greater than 2 in order to make a graph"
-    )
-  }
+  if(!alg %in% possible_algorithms){stop("alg must take one of the following values: \"netcarto\", \"fast_greedy\",\"label_prop\", \"leading_eigen\", \"louvain\", \"spinglass\", or \"walktrap\"")}
+  if(alg %in% c("netcarto") & !requireNamespace(c("rnetcarto"), quietly = TRUE)){stop( "Package \"rnetcarto\" must be installed to use the netcarto community detection algorithm.")}
+  if(sample_nNodes <= 2){stop("sample_nNodes must be greater than 2 in order to make a graph")}
   if(class(graph) != "igraph"){ stop("graph needs to be an igraph object.", call. = FALSE) }
 
   adjmat = igraph::as_adjacency_matrix(graph, attr = "weight", type = "both", sparse = FALSE)

@@ -31,15 +31,9 @@ simulate_graph <- function(n_animals,
                            sampler = "discrete",
                            samples_per_day = 1) {
 
-  if (!requireNamespace(c("igraph"), quietly = TRUE)) {
-    stop("Package \"igraph\"  must be installed to use this function.",call. = FALSE)
-  }
-  if (n_groups == 1) {
-    stop( "single module networks are currently not supported -- n_groups must be >= 2", call. = FALSE)
-  }
-  if (!sampler %in% c("discrete", "continuous")) {
-    stop("sampler must be either \"discrete\" or \"continuous\".",call. = FALSE)
-  }
+  if (!requireNamespace(c("igraph"), quietly = TRUE)) { stop("Package \"igraph\"  must be installed to use this function.",call. = FALSE)}
+  if (n_groups == 1) {stop( "single module networks are currently not supported -- n_groups must be >= 2", call. = FALSE)}
+  if (!sampler %in% c("discrete", "continuous")) {stop("sampler must be either \"discrete\" or \"continuous\".",call. = FALSE) }
   animal_list <- animal_sample_df <- vector("list", length = n_animals)  # build storage objects
 
   if( length(time_to_leave) == length(time_to_return) & length(time_to_return) == 1 ) {
@@ -71,10 +65,7 @@ simulate_graph <- function(n_animals,
 
     }
   } else if( length(time_to_leave) != length(time_to_return) | !length(time_to_leave) %in% c(1, n_animals) | !length(time_to_return) %in% c(1, n_animals)){
-    stop(
-      "\'time_to_leave\' and \'time_to_return\' need to have the same length. That length needs to either be one or equal to \'n_animals\'.",
-      call. = FALSE
-    )
+    stop( "\'time_to_leave\' and \'time_to_return\' need to have the same length. That length needs to either be one or equal to \'n_animals\'.",call. = FALSE)
   }
 
   if(sampler == "discrete"){

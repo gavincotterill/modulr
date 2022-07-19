@@ -20,9 +20,7 @@ simulate_animal <- function(n_groups,
                             samples_per_day = 1
 ){
 
-  if (!requireNamespace(c("stats"), quietly = TRUE)) {
-    stop("Package \"stats\" must be installed to use this function.",call. = FALSE)
-  }
+  if (!requireNamespace(c("stats"), quietly = TRUE)) {stop("Package \"stats\" must be installed to use this function.",call. = FALSE)}
   # generate home group for each animal at random
   # NOTE: this assumes that all animals are equally likely to choose all groups,
   #       which _should_ lead to groups that are approximately uniform in size.
