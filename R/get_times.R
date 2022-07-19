@@ -15,6 +15,9 @@ get_times <- function(schedule, id, simulator, option = NA){
                       time_at_home = sum(p3$time) / max_time,
                       time_not_at_home = sum(p4$time) / max_time)
   }else if(simulator %in% c("group-think")){
+    if (!option %in% c("co-located", "attached")) {
+      stop("For the group-think simulator option must equal \'co-located\' or \'attached\'",call. = FALSE)
+    }
     if(option == "co-located"){
       grp <- stringr::str_extract(id, "\\d{1,}(?=_)")
       max_time <- max(schedule$end)
@@ -27,7 +30,7 @@ get_times <- function(schedule, id, simulator, option = NA){
                         grp = grp,
                         time_at_home = sum(p3$time) / max_time,
                         time_not_at_home = sum(p4$time) / max_time)
-    }else if(option %in% c(NA, "attached")){
+    }else if(option == "attached"){
       grp <- stringr::str_extract(id, "\\d{1,}(?=_)")
       max_time <- max(schedule$end)
       p <- schedule %>% dplyr::mutate(time = end - start)
