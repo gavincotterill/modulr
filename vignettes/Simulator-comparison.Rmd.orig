@@ -302,20 +302,12 @@ Each edge weight represents the proportion of time that two individuals (dyads) 
 
 ### Modularity
 
-Another way to compare these graphs is in their modularity -- the namesake of this package. We'll convert these graphs to matrices and use the `assortnet` package to calculate this statistic (Newman's Q).
+Another way to compare these graphs is in their modularity -- the namesake of this package. We'll use a convenience function that wraps around `assortnet::assortment.discrete` to calculate this statistic (Newman's Q).
 
 ```{r modularity}
-adj_ind <- as.matrix(igraph::get.adjacency(g_ind, type = "upper", attr = "weight"))
-mem_ind <- igraph::V(g_ind)$membership
-assortnet::assortment.discrete(adj_ind, types = mem_ind, weighted = T)$r
-
-adj_ni <- as.matrix(igraph::get.adjacency(g_ni, type = "upper", attr = "weight"))
-mem_ni<- igraph::V(g_ni)$membership
-assortnet::assortment.discrete(adj_ni, types = mem_ni, weighted = T)$r
-
-adj_grp <- as.matrix(igraph::get.adjacency(g_gt, type = "upper", attr = "weight"))
-mem_grp <- igraph::V(g_gt)$membership
-assortnet::assortment.discrete(adj_grp, types = mem_grp, weighted = T)$r
+q_rel(g_ind)
+q_rel(g_ni)
+q_rel(g_gt)
 ```
 
 We could have predicted that the non-independent simulator would produce a higher modularity value than the others based on everything we've said up to this point. Notice that the independent and group-think values are pretty close to one another.
@@ -504,17 +496,9 @@ mean(ew_gt)
 The edge weight distributions look less similar to each other than in the previous example.
 
 ```{r modularity2}
-adj_ind <- as.matrix(igraph::get.adjacency(g_ind, type = "upper", attr = "weight"))
-mem_ind <- igraph::V(g_ind)$membership
-assortnet::assortment.discrete(adj_ind, types = mem_ind, weighted = T)$r
-
-adj_ni <- as.matrix(igraph::get.adjacency(g_ni, type = "upper", attr = "weight"))
-mem_ni<- igraph::V(g_ni)$membership
-assortnet::assortment.discrete(adj_ni, types = mem_ni, weighted = T)$r
-
-adj_grp <- as.matrix(igraph::get.adjacency(g_gt, type = "upper", attr = "weight"))
-mem_grp <- igraph::V(g_gt)$membership
-assortnet::assortment.discrete(adj_grp, types = mem_grp, weighted = T)$r
+q_rel(g_ind)
+q_rel(g_ni)
+q_rel(g_gt)
 ```
 
 The modularity scores have all decreased some and non-independent has the highest value again.

@@ -148,33 +148,19 @@ max(seir_gt$time_infected) # number of days it took
 
 In this example, all individuals in the "independent" and "non-independent" simulations were infected, and it took 9 and ~11 days respectively. By contrast, in the 'group-think' simulation the epidemic faded out after 6 days and infecting 16 of the 20 animals.
 
-We can also plot the chain of transmissions in each of these three simulations by converting the objects we just made into graphs and then using `plot_transmissions()`.
+We can also plot the chain of transmissions in each of these three simulations using `plot_transmissions()`.
 
 ```{r plot-transmissions, fig.width=8, fig.height=3, fig.cap = ""}
-
-# this could be incorporated in the plot_transmissions code down the road:
-g_seir_ind <- igraph::graph_from_edgelist(seir_ind[,1:2] %>% as.matrix())
-g4 <- igraph::graph_from_edgelist(seir_ind[-1,1:2] %>% as.matrix())
-igraph::V(g4)$membership <- stringr::str_extract(igraph::V(g4)$name, "\\d{1,}(?=_)") %>% as.numeric()
-
-# for now its ok
-g_seir_non_ind <- igraph::graph_from_edgelist(seir_non_ind[,1:2] %>% as.matrix())
-g5 <- igraph::graph_from_edgelist(seir_non_ind[-1,1:2] %>% as.matrix())
-igraph::V(g5)$membership <- stringr::str_extract(igraph::V(g5)$name, "\\d{1,}(?=_)") %>% as.numeric()
-
-g_seir_gt <- igraph::graph_from_edgelist(seir_gt[,1:2] %>% as.matrix())
-g6 <- igraph::graph_from_edgelist(seir_gt[-1,1:2] %>% as.matrix())
-igraph::V(g6)$membership <- stringr::str_extract(igraph::V(g6)$name, "\\d{1,}(?=_)") %>% as.numeric()
 
 par(mfrow = c(1,3),
     oma = c(0, 0, 1, 0),
     mar = c(0, 0, 2, 0),
     xpd = NA)
-plot_transmissions(g4, title = "independent",
+plot_transmissions(seir_ind, title = "independent",
                    vertex.size = 90)
-plot_transmissions(g5, title = "non-independent",
+plot_transmissions(seir_non_ind, title = "non-independent",
                    vertex.size = 90)
-plot_transmissions(g6, title = "group-think",
+plot_transmissions(seir_gt, title = "group-think",
                    vertex.size = 80)
 ```
 

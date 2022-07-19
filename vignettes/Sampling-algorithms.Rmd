@@ -114,11 +114,7 @@ In this example, the random sampler (left) selected individuals for monitoring f
 ```{r modularity}
 graph_list <- list("truth" = g, "random" = g_random, "even" = g_even, "grab-two" = g_grab)
 
-lapply(graph_list, function(grph){
-  adj <- as.matrix(igraph::get.adjacency(grph, type = "upper", attr = "weight"))
-  mem <- igraph::V(grph)$membership
-  assortnet::assortment.discrete(adj, types = mem, weighted = T)$r
-}) %>% `names<-`(names(graph_list)) 
+lapply(graph_list, q_rel) %>% `names<-`(names(graph_list)) 
 
 ```
 
@@ -161,11 +157,7 @@ plot_sampled_graph(g_obs = g_grab, g = g, title = "Grab-two")
 
 graph_list <- list("truth" = g, "random" = g_random, "even" = g_even, "grab-two" = g_grab)
 
-lapply(graph_list, function(grph){
-  adj <- as.matrix(igraph::get.adjacency(grph, type = "upper", attr = "weight"))
-  mem <- igraph::V(grph)$membership
-  assortnet::assortment.discrete(adj, types = mem, weighted = T)$r
-}) %>% `names<-`(names(graph_list)) 
+lapply(graph_list, q_rel) %>% `names<-`(names(graph_list)) 
 
 ```
 In this example random sampling has given us the best modularity estimate, 'even' was again the worst. And again, these figures help illustrate the different ways in which the samplers select individuals from among the social groups for monitoring.
