@@ -15,6 +15,7 @@ knitr::opts_chunk$set(
   tidy.opts = list(width.cutoff = 60),
   tidy = TRUE
 )
+old.par <- par(no.readonly = TRUE) # store user's original settings
 ```
 
 There are currently three simulators in the package called "independent", "non-independent" and "group-think". They are all spatially-explicit.
@@ -22,36 +23,36 @@ There are currently three simulators in the package called "independent", "non-i
 ## "Independent"
 In the independent simulator, changes in group membership arise from individual-level fission and fusion events that occur stochastically in accordance with fixed background rates. Each animal is initially assigned residency in a home group (which we can also think of as a patch) according to a draw from a discrete uniform distribution. We define an expected time to fission events, $\lambda$, that controls the stochastic waiting time to departure from the home group and an expected time to fusion events, $\xi$, that controls the stochastic waiting time until the animal returns to its home group. At the beginning of the simulation, we draw a waiting time until fission from an exponential distribution with rate parameter $1/\lambda$. At that time the individual is assigned to a new group drawn at random from a set containing all of its non-resident groups. Then another waiting time is drawn, this time from an exponential distribution governed by the fusion event rate $1⁄\xi$, at which time the animal returns to its resident home group. This procedure is repeated for the sampling duration. As a result individuals always transition between "home" and "away" -- in other words, they never travel directly from one non-resident patch to another non-resident patch.
 
-The combination of switching times and group labels defines a continuous-time description of the individual's location (and who else was with them) over the course of the simulation. The simulation protocol assumes that the fission and fusion events of particular individuals are independent (e.g., larger groups do not preferentially split into subgroups; individuals join and leave groups one-at-a-time). Users must specify limits on the amount of time it takes for individuals to transition between groups. The duration of 'travelling time' for each transition is drawn from a uniform distribution using those limits. This flexibility also allows transitions to be nearly instantaneous and/or fixed at a precise value. Travelling time is factored into waiting times for the exponential draws. This means that users should specify travelling times that are short relative to $\lambda$ and $\xi$, otherwise individuals potentially spend more time in limbo than with groups. The simulation procedure is repeated independently for all individuals in the simulated population.
+The combination of switching times and group labels defines a continuous-time description of the individual's location (and who else was with them) over the course of the simulation. The simulation protocol assumes that the fission and fusion events of particular individuals are independent (e.g., larger groups do not preferentially split into subgroups; individuals join and leave groups one-at-a-time). Users must specify limits on the amount of time it takes for individuals to transition between groups. The duration of 'travelling time' for each transition is drawn from a uniform distribution using those limits. This flexibility allows transitions to be nearly instantaneous, fixed at a precise value or randomly generated. Travelling time is factored into waiting times for the exponential draws. This means that users should generally specify travelling times that are short relative to $\lambda$ and $\xi$, otherwise individuals spend more time travelling than with groups. The simulation procedure is repeated independently for all individuals in the simulated population.
 
-Here's a simple gif to help illustrate this.
+Here's a simple gif to help illustrate this:
 
 ![](./independent.gif)
 
 Here the rectangles represent patches. For simplicity's sake there's a single group comprised of 4 individuals. They move independently back and forth between their home patch (upper left) and the other patches.
 
 ## "Non-independent"
-In this simulator, individuals move between patches with other members of their home group. Waiting times are drawn as in the independent simulator, but these are used to dictate when groups make transitions between home and away patches. When it's time to leave home, the group splinters into subgroups using the "n_splits" parameter. If fixed to a single value, all groups split into that number of subgroups. If n_splits is undefined (NA), then the number of subgroups travelling to different states increases with the size of the group. Whenever a group splits into subgroups, individuals are randomly sampled so that there is no fixed "subgroup membership", nor are the number of individuals in subgroups fixed. Subgroups use the travelling procedure already outlined. When it's time to return home, all subgroups depart their respective 'away' patches and return home at the same time as all other members of their home group. Like the 'independent' simulator, all individuals always transition between 'home' and 'away' patches, however this simulator relaxes the assumption that all individuals are independent actors while ensuring that individuals adhere to the user-defined group switching rates.
+In this simulator, individuals move between patches with other members of their home group. Waiting times are drawn as in the independent simulator, but these are used to dictate when groups make transitions between home and away patches. When it's time to leave home, the group splinters into subgroups using the `n_splits` parameter. If fixed to a single value, all groups split into that number of subgroups. If `n_splits` is undefined (NA), then the number of subgroups travelling to different states increases with the size of the group. Whenever a group splits into subgroups, individuals are randomly sampled so that there is no fixed "subgroup membership", nor are the number of individuals in subgroups fixed. Subgroups use the travelling procedure already outlined. When it's time to return home, all subgroups depart their respective 'away' patches and return home at the same time as all other members of their home group. Like the 'independent' simulator, all individuals always transition between 'home' and 'away' patches, however this simulator relaxes the assumption that all individuals are independent actors while ensuring that individuals adhere to the user-defined group switching rates. A drawback to this approach is that there are fewer random draws contributing to the transitions that occur. In the independent simulator, the number of random draws is a function of the number of individuals in the network. In this simulator it is a function of the number of groups. Therefore, with relatively few groups and short simulation times, random error -- the difference between actual movement rates and the user-specified rates -- is higher. As the number of groups increases, error decreases.
 
-Another simple example:
+To illustrate:
 
 ![](./non-independent.gif)
 
-Again, this is a single group comprised of 4 individuals. Individuals move back and forth between the home patch (upper left) and other patches. They make these transitions with other members of their group, but not always the same ones. They all depart and return simultaneously. In this example the group always split into two subgroups.
+For simplicity this shows a single group comprised of 4 individuals. Individuals move back and forth between the home patch (upper left) and other patches. They make these transitions with other members of their group (but not always the same ones). They all depart and return simultaneously. In this example the group always split into two subgroups, but that doesn't have to be the case.
 
 ## "Group-think"
 
-Like the previous simulator, it does not assume independent switching. Unlike the previous two simulators, there is virtually no fidelity of individuals to patches. Lastly, the rules governing individual movement allow individuals to switch directly between non-resident patches -- they aren't strictly required to toggle back and forth between 'home' and 'away' patches/groups. An alternate name for this simulator could be 'follow the leader'. The group switching process works in two stages. First, whole groups are simulated that switch between patches using the independent simulation procedure. Second, groups are populated with resident individuals at the first time interval. For the remainder of the simulation individuals make movement decisions based on the group transitions they witness in conjunction with the rates $1/\lambda$ and $1/\xi$.
+Like the previous simulator, it does not assume independent switching. Unlike the previous two simulators, there is weaker fidelity of individuals to patches. Lastly, the rules governing individual movement allow individuals to switch directly between non-resident patches -- they aren't strictly required to toggle back and forth between 'home' and 'away' patches/groups. An alternate name for this simulator could be 'follow the leader'. The group switching process works in two stages. First, whole groups are simulated that switch between patches using the independent simulation procedure. Second, groups are populated with resident individuals at the first time interval. For the remainder of the simulation individuals make movement decisions based on the group transitions they witness in conjunction with the rates $1/\lambda$ and $1/\xi$.
 
 At any time in the simulation there are four possible event types: fission, fusion, simultaneous fission and fusion or no change in co-located groups (or a single group by itself). In a fission event, at least one group departs from a patch containing at least one other group; fusion is when groups join each other at a patch; fission-fusion is when groups are both arriving and departing a patch at the exact same time. The trigger for individual decision-making is 'fission' of either variety: the departure of any group from multiple co-located groups (i.e., event types fission or fission-fusion).
 
-Individual choice is structured such that, when *any fission* happens, individuals decide whether to trail off with those that are departing or stay put. In practice it's a little more complicated. Individuals can be 'attached' to a non-resident group while co-located with their resident group and vice-versa. Individuals that are attached to their home group have a probability of switching to any of the other previously co-located groups equal to $(1/\lambda) / ((1/\lambda) + (1/\xi))$ and individuals that are not attached to their home group have a probability of returning to their respective home groups equal to $(1/\xi) / ((1/\lambda) + (1/\xi))$. Individuals returning home 'magically' find their home group regardless of where it is located and are subject to the same uniform draw for travelling time. These individual movements have no bearing on the event types categorizing group movements (eg., fission, fusion, etc.) This allows individuals to transition directly between non-resident patches.
+Individual choice is structured such that, when *any fission* happens, individuals decide whether to trail off with those that are departing or stay put. In practice it's a little more complicated. Individuals can be 'attached' to a non-resident group while co-located with their resident group and vice-versa. Individuals that are attached to their home group have a probability of switching to any of the other previously co-located groups equal to $(1/\lambda) / ((1/\lambda) + (1/\xi))$ and individuals that are not attached to their home group have a probability of returning to their respective home groups equal to $(1/\xi) / ((1/\lambda) + (1/\xi))$. Individuals returning home find their home group regardless of where it is located and are subject to the same uniform draw for travelling time. These individual movements have no bearing on the event types categorizing group movements (eg., fission, fusion, etc.) This allows individuals to transition directly between non-resident patches.
 
-This is the most complicated of the three simulators, but hopefully this gif will help make things a little more clear.
+To illustrate:
 
 ![](./group-think.gif)
 
-Now we really need to show multiple groups. Four groups all start out in a 'home' patch. The core of the group (represented by the different colored shapes) toggle back and forth between a home patch and 'away' patches whenever they move, but within that individuals can undergo additional group-switching which allows individuals to visit multiple away patches consecutively. Individuals that have strayed from their home group are able to return to their home group (wherever it's located) when they experience a fission event -- represented by dashed arrows.
+For this to make sense we need to show multiple groups, but this is still a simplified representation. Four groups all start out in a 'home' patch. The core of the group (represented by the different colored shapes) toggle back and forth between a home patch and 'away' patches whenever they move, but within that individuals can undergo additional group-switching which allows individuals to visit multiple away patches consecutively. Individuals that have strayed from their home group are able to return to their home group (wherever it's located) when they experience a fission event -- represented by dashed arrows.
 
 Now let's compare the simulators quantitatively and the networks they produce. We need to load some additional packages.
 
@@ -59,7 +60,7 @@ Now let's compare the simulators quantitatively and the networks they produce. W
 sapply(c("modulr", "ggplot2", "ggthemes", "ggridges", "igraph"), require, character = TRUE)
 ```
 
-We start by specifying values. For this exercise our population will consist of 50 animals distributed across 5 groups (there are also 5 patches). We'll leave `n_splits` undefined, so that larger groups will split into more subgroups (this is only used in the 'non-independent' simulator). On average, individuals will spend 4 days with their home group before departing and be away from their home group for 2 days before returning. We'll simulate the process for 15 days. Currently all of the 'time' components are specified in days. There are 1440 minutes per day. $0.01 * 1440 = 14.4$ minutes. So we're dictating that travel times be drawn from a uniform distribution between about 15 minutes and 6 hours.
+We start by specifying values. For this exercise our population will consist of 50 animals distributed across 5 groups (there are also 5 patches). We'll leave `n_splits` undefined, so that larger groups will split into more subgroups (this is only used in the 'non-independent' simulator). On average, individuals will spend 4 days with their home group before departing and be away from their home group for 2 days before returning. We'll simulate the process for 30 days. Currently all of the 'time' components are specified in days. There are 1440 minutes per day. $0.01 * 1440 = 14.4$ minutes. So we're dictating that travel times be drawn from a uniform distribution between about 15 minutes and 6 hours.
 
 ```{r parameters}
 n_groups = 5
@@ -68,10 +69,12 @@ n_splits = NA
 time_to_leave = 4
 time_to_return = 2
 travel_time = c(0.01,0.25)
-sampling_duration = 15
+sampling_duration = 30
 ```
 
-We use the `simulate_schedule()` call to access the three simulators with one more parameter `simulator =` to pick which simulator to use. This will generate a list of data.frames (one per animal). Each named data.frame in the list is a continuous-time description of an individuals movements. This may not be the final data structure most users will want to work with -- we'll get to graphs in a second -- but it will give us what we need to make some useful comparisons.
+We use the `simulate_schedule()` call to access the three simulators with one more parameter `simulator =` to pick which simulator to use. This will generate a list of data.tables (one per animal). Each named data.table in the list is a continuous-time description of an individuals movements. This may not be the final data structure most users will want to work with -- we'll get to graphs in a second -- but it will give us what we need to make some useful comparisons.
+
+You'll also notice that we have to set the seed regularly to get stable results for the vignette, but this wouldn't have to be part of the normal workflow.
 
 ```{r sim-sched}
 # independent
@@ -87,36 +90,28 @@ ind <- simulate_schedule(n_animals = n_animals,
 
 ```
 
-Each data.frame has this structure, hence the name 'schedule':
+Each data.table has this structure:
 
 ```{r head-sim-sched}
 head(ind[[1]], 6)
 ```
 
 ### Proportion of time spent 'home' vs. 'away'
-Next I'll use the `get_times()` function to calculate the amount of time each individual spent at home vs. away.
+Next I'll use the `get_times()` function to calculate the amount of time each individual spent at home vs. with any other group/patch.
+
+In case `purrr` functions are unfamiliar, you can see examples of these functions in a more 'base R' style. `get_times()` needs the individual's schedule, the individual's name, and the simulator used to generate the data. We'll get the proportions for each individual in the simulation and average those values:
 
 ```{r sim-sched2}
-ids_ind <- names(ind)
-
-#out_ind <- get_times(schedule = ind[[1]],
-#                  id = ids_ind[[1]],
-#                  simulator = "independent")
-#for(i in 2:length(ids_ind)){
-#  out_ind[i, ] <- get_times(ind[[i]],
-#                         ids_ind[[i]],
-#                         simulator = "independent")
-#}
 
 out_ind <- purrr::map2(ind, names(ind), ~get_times(schedule = .x, id = .y, simulator = "independent")) %>% dplyr::bind_rows()
 
-paste("For the \'independent\' simulator, the average proportion of time that individuals spent at their home patch was ",
-      mean(out_ind$time_at_home) %>% round(., 3),
-      ", versus the desired value of ",
+msg <- paste0("For the \'independent\' simulator, the average proportion\nof time that individuals spent at their home patch was ",
+      mean(out_ind$time_at_home) %>% round(., 3),",\nversus the desired value of ",
       round(time_to_leave / (time_to_leave + time_to_return), 3))
+writeLines(msg)
 ```
 
-We expect these values to be pretty close, but there will be stochastic noise and longer sampling durations will be less noisy in this regard. We repeat this procedure for the other two simulators. Note that the 'non-independent' and 'group-think' simulators are much slower when there are a hundred or more animals.
+We expect these values to be pretty close, but there will be stochastic noise and longer sampling durations will be less noisy in this regard. We repeat this procedure for the other two simulators. Note that the 'non-independent' and 'group-think' simulators are slower, especially when there are a hundred or more animals and longer simulation durations.
 
 ```{r sim-sched3}
 
@@ -130,22 +125,13 @@ non_ind <- simulate_schedule(n_animals = n_animals,
                              travel_time = travel_time,
                              sampling_duration = sampling_duration,
                              simulator = "non-independent")
-ids_ni <- names(non_ind)
 
-out_ni <- get_times(schedule = non_ind[[1]],
-                     id = ids_ni[[1]],
-                     simulator = "non-independent")
+out_ni <- purrr::map2(non_ind, names(non_ind), ~get_times(schedule = .x, id = .y, simulator = "non-independent")) %>% dplyr::bind_rows()
 
-for(i in 2:length(ids_ni)){
-  out_ni[i, ] <- get_times(non_ind[[i]],
-                            ids_ni[[i]],
-                            simulator = "non-independent")
-}
-
-paste("For the \'non-independent\' simulator, the average proportion of time that individuals spent at their home patch was ",
-      mean(out_ni$time_at_home) %>% round(., 3),
-      ", versus the desired value of ",
+msg <- paste0("For the \'non-independent\' simulator, the average proportion\nof time that individuals spent at their home patch was ",
+      mean(out_ni$time_at_home) %>% round(., 3),",\nversus the desired value of ",
       round(time_to_leave / (time_to_leave + time_to_return), 3))
+writeLines(msg)
 
 # group-think
 gt <- simulate_schedule(n_animals = n_animals,
@@ -156,47 +142,33 @@ gt <- simulate_schedule(n_animals = n_animals,
                         travel_time = travel_time,
                         sampling_duration = sampling_duration,
                         simulator = "group-think")
-ids_gt <- names(gt)
-
 ```
 
-Now, in the previous two simulators that have patch fidelity, the proportion of time spent 'home' vs 'away' refers to time at the home patch. In the group-think simulator this is no longer the case. We can demonstrate the lack of patch fidelity by tricking the `get-times()` function into calculating that value for us.
+Now, in the previous two simulators that have strong patch fidelity, the proportion of time spent 'home' vs 'away' refers to time at the home patch. In the group-think simulator this is no longer the case. We can demonstrate the weak patch fidelity by tricking the `get-times()` function into calculating that value for us -- we give it the 'wrong' simulator.
 
 ```{r group-think-get-times-1}
-out_gt <- get_times(schedule = gt[[1]],
-                    id = ids_gt[[1]],
-                    simulator = "independent") # giving it the wrong simulator on purpose
 
-for(i in 2:length(ids_gt)){
-  out_gt[i, ] <- get_times(gt[[i]],
-                           ids_gt[[i]],
-                           simulator = "independent") # giving it the wrong simulator on purpose
-}
+# giving it the wrong simulator on purpose
+out_gt <- purrr::map2(gt, names(gt), ~get_times(schedule = .x, id = .y, simulator = "independent")) %>% dplyr::bind_rows()
 
-paste("For the \'group-think\' simulator, the average proportion of time that individuals spent at their quasi-home patch was ",
-      mean(out_gt$time_at_home) %>% round(., 3),
-      ", versus the desired value of ",
+msg <- paste0("For the \'group-think\' simulator, the average proportion\nof time that individuals spent at their quasi-home patch was ",
+      mean(out_gt$time_at_home) %>% round(., 3),",\nversus the desired value of ",
       round(time_to_leave / (time_to_leave + time_to_return), 3))
+writeLines(msg)
 ```
 
 Alternatively, we could look at how much time individuals spent co-located with their group using `get_times(simulator = "group-think", option = "co-located")`. If you do this a bunch of times with different values, you will notice that individuals spend "too much time" with their home group relative to time apart from the their home group, but as the number of groups increases, the values converge towards the target. That's because individuals can be co-located but not 'attached' to their home group in the sense of who they are moving around with. So to test whether or not this simulator adheres to our group-switching rates, we need to use `get_times(simulator = "group-think", option = "attached")`.
-We'll just overwrite the previous 'group-think' object.
+
+We'll just overwrite the previous 'group-think' object:
 
 ```{r group-think-get-times-2}
-out_gt <- get_times(schedule = gt[[1]],
-                    id = ids_gt[[1]],
-                    simulator = "group-think", option = "attached")
 
-for(i in 2:length(ids_gt)){
-  out_gt[i, ] <- get_times(gt[[i]],
-                           ids_gt[[i]],
-                           simulator = "group-think", option = "attached")
-}
+out_gt <- purrr::map2(gt, names(gt), ~get_times(schedule = .x, id = .y, simulator = "group-think", option = "attached")) %>% dplyr::bind_rows()
 
-paste("For the \'group-think\' simulator, the average proportion of time that individuals spent attached to their home group was ",
-      mean(out_gt$time_at_home) %>% round(., 3),
-      ", versus the desired value of ",
+msg <- paste0("For the \'group-think\' simulator, the average proportion\nof time that individuals spent attached to their home group was ",
+      mean(out_gt$time_at_home) %>% round(., 3),",\nversus the desired value of ",
       round(time_to_leave / (time_to_leave + time_to_return), 3))
+writeLines(msg)
 ```
 
 This time it's much closer. Again, with longer sampling durations relative to switching rates we can reduce the amount of noise in these results.
@@ -217,7 +189,7 @@ out <- out_ind %>% dplyr::mutate(sim = "independent",
 out2 <- out %>%
   tidyr::gather(state, proportion, 3:4)
 
-# reorder
+# reorder factors for plotting
 out2$sim <- factor(out2$sim, levels = c("group-think", "non-independent", "independent"))
 
 ggplot(out2, aes(x = proportion, y = sim, color = state, point_color = state, fill = state)) +
@@ -241,9 +213,56 @@ ggplot(out2, aes(x = proportion, y = sim, color = state, point_color = state, fi
 
 ```
 
-The two black dashed vertical lines are our 'targets' based on the group-switching rates we provided and the red vertical lines are the mean values averaged over all individuals in each simulation. These look fine, but non-independent and group-think are noisy and non-monotonic. 15 days is only enough time for individuals to have left and returned 'home' two or three times, so this isn't too surprising. Also note that the rug plots (short lines along the x-axis) are showing individual results. Whereas in the independent and group-think simulator there are more distinct lines, in the non-independent simulator there are fewer unique values by virtue of individuals switching with other members of their group.
+The two black dashed vertical lines are our 'targets' based on the group-switching rates we provided and the red vertical lines are the mean values averaged over all individuals in each simulation. These look fine, but group-think is a little more noisy. 30 days should be enough time for individuals to have left and returned 'home' 4 or 6 times on average, so this isn't too surprising. Also note that the rug plots (short lines along the x-axis) are showing individual results. Whereas in the independent and group-think simulator there are more distinct lines, in the non-independent simulator there are fewer unique values by virtue of individuals switching with other members of their group.
 
-We don't always want to work on a list of data.frames, so let's employ the `graph_from_schedule()` call to create `igraph` graph objects. At these values each of these calls took about 30 seconds with 50 individuals.
+A more direct comparison is to calculate the average lambda and xi waiting times that individuals in each network experienced using `get_rates()`, where lambda is the average number of days before leaving the home state and xi is the average number of days before returning to the home state.
+
+```{r get-rates-1, fig.width=10, fig.height=6, fig.cap = ""}
+rates_ind <- get_rates(sched = ind, sim = "independent") %>%
+  dplyr::mutate(sim = "independent",
+                net_mean_lambda = mean(mean_ttlg),
+                net_mean_xi = mean(mean_ttrg))
+
+rates_non <- get_rates(sched = non_ind, sim = "non-independent") %>%
+  dplyr::mutate(sim = "non-independent",
+                net_mean_lambda = mean(mean_ttlg),
+                net_mean_xi = mean(mean_ttrg))
+
+rates_gt <- get_rates(sched = gt, sim = "group-think") %>%
+  dplyr::mutate(sim = "group-think",
+                net_mean_lambda = mean(mean_ttlg),
+                net_mean_xi = mean(mean_ttrg))
+
+rates <- dplyr::bind_rows(rates_ind, rates_non, rates_gt) %>%
+  dplyr::mutate(sim = factor(sim, levels = c("group-think", "non-independent", "independent"))) %>%
+  tidyr::pivot_longer(cols = dplyr::starts_with("mean"), names_to = "state", values_to = "rate")
+
+ggplot(rates, aes(x = rate, y = sim, color = state, point_color = state, fill = state)) +
+  geom_density_ridges(
+    jittered_points = TRUE, scale = .95, rel_min_height = .01,
+    point_shape = "|", point_size = 3, size = 0.25,
+    position = position_points_jitter(height = 0)) +
+  geom_segment(aes(x = net_mean_lambda, xend = net_mean_lambda, y = as.numeric(sim), yend = as.numeric(sim) + .9), color = "red") +
+  geom_segment(aes(x = net_mean_xi, xend = net_mean_xi, y = as.numeric(sim), yend = as.numeric(sim) + .9), color = "red") +
+  scale_y_discrete(expand = c(0, 0), name = "") +
+  scale_x_continuous(name = "Days") +
+  scale_fill_manual(values = c("#D55E0050", "#0072B250"), labels = c("mean lambda", "mean xi")) +
+  scale_color_manual(values = c("#D55E00", "#0072B2"), guide = "none") +
+  scale_discrete_manual("point_color", values = c("#D55E00", "#0072B2"), guide = "none") +
+  coord_cartesian(clip = "off") +
+  guides(fill = guide_legend(override.aes = list(fill = c("#D55E00A0", "#0072B2A0"),color = NA, point_color = NA))) +
+  theme_ridges(center = TRUE) +
+  geom_vline(aes(xintercept = time_to_leave), lty = 2)+
+  geom_vline(aes(xintercept = time_to_return), lty = 2) +
+  theme(legend.title = element_blank())
+
+```
+
+As before, these are density plots of the individual rates within each simulation. The red lines are the mean values and the dotted black lines are the user-specified lambda and xi rates.
+
+Clearly there are some outliers -- longer simulation durations on larger networks with more groups bring these values closer to the desired targets.
+
+We don't always want to work on a list of data.tables, so let's employ the `graph_from_schedule()` call to create `igraph` graph objects. Each of these calls may take about a minute.
 
 ```{r make-graphs}
 # compare graphs
@@ -261,9 +280,9 @@ par(mfrow = c(1,3),
     oma = c(0, 0, 1, 0),
     mar = c(0, 0, 2, 0),
     xpd = NA)
-plot_simulated_graph(g_ind, vertex.size = 35, title = "independent")
-plot_simulated_graph(g_ni, vertex.size = 35, title = "non-independent")
-plot_simulated_graph(g_gt, vertex.size = 35, title = "group-think")
+plot_simulated_graph(g_ind, vertex.size = 30, title = "independent")
+plot_simulated_graph(g_ni, vertex.size = 30, title = "non-independent")
+plot_simulated_graph(g_gt, vertex.size = 30, title = "group-think")
 ```
 
 Here, each circle (or node) represents an individual. The color of the node represents it's home group and the polygon encircling nodes of the same color are an additional aid in visualizing group memberships. The darkness of the lines indicate the edge weights -- that is, darker lines mean more time spent together. Between the graphs we have the same number of individuals and the same number of groups, but these are three totally different simulations so they will still be different in terms of how many animals are in each group and the arrangement of colors. However, what is potentially meaningful are differences in terms of how the communities here segregate or don't and the edge weights. In general, 'non-independent' should segregate more neatly into distinct groups because of the rules governing that simulator.
@@ -288,10 +307,10 @@ ggplot(df2)+
   scale_fill_viridis_d(option = "plasma", end = 0.6) +
   facet_wrap(~sim)+
   theme_clean()+
-  theme(axis.title = element_text(size = 20/2),
-        axis.text.x = element_text(size = 15/2),
-        axis.text.y = element_text(size = 20/2),
-        strip.text = element_text(size = 20/2))
+  theme(axis.title = element_text(size = 15),
+        axis.text.x = element_text(size = 10),
+        axis.text.y = element_text(size = 15),
+        strip.text = element_text(size = 15))
 
 mean(ew_ind)
 mean(ew_non_ind)
@@ -310,9 +329,9 @@ q_rel(g_ni)
 q_rel(g_gt)
 ```
 
-We could have predicted that the non-independent simulator would produce a higher modularity value than the others based on everything we've said up to this point. Notice that the independent and group-think values are pretty close to one another.
+We could have predicted that the non-independent simulator would produce a higher modularity value than the others based on everything we've said up to this point. In this case group-think is quite close to the independent simulator.
 
-Now let's do a longer run. We'll increase the simulation time to 60 days and leave all else the same.
+Now let's do a longer run. We'll increase the simulation time to 60 days and leave all else the same. We'll also skip right to the 'times' and 'rates' plots.
 
 
 ```{r parameters2}
@@ -335,21 +354,7 @@ ind <- simulate_schedule(n_animals = n_animals,
                          sampling_duration = sampling_duration,
                          simulator = "independent")
 
-ids_ind <- names(ind)
-
-out_ind <- get_times(schedule = ind[[1]],
-                  id = ids_ind[[1]],
-                  simulator = "independent")
-for(i in 2:length(ids_ind)){
-  out_ind[i, ] <- get_times(ind[[i]],
-                         ids_ind[[i]],
-                         simulator = "independent")
-}
-
-paste("For the \'independent\' simulator, the average proportion of time that individuals spent at their home patch was ",
-      mean(out_ind$time_at_home) %>% round(., 3),
-      ", versus the desired value of ",
-      round(time_to_leave / (time_to_leave + time_to_return), 3))
+out_ind <- purrr::map2(ind, names(ind), ~get_times(schedule = .x, id = .y, simulator = "independent")) %>% dplyr::bind_rows()
 
 # non-independent
 set.seed(1234)
@@ -361,22 +366,8 @@ non_ind <- simulate_schedule(n_animals = n_animals,
                              travel_time = travel_time,
                              sampling_duration = sampling_duration,
                              simulator = "non-independent")
-ids_ni <- names(non_ind)
 
-out_ni <- get_times(schedule = non_ind[[1]],
-                     id = ids_ni[[1]],
-                     simulator = "non-independent")
-
-for(i in 2:length(ids_ni)){
-  out_ni[i, ] <- get_times(non_ind[[i]],
-                            ids_ni[[i]],
-                            simulator = "non-independent")
-}
-
-paste("For the \'non-independent\' simulator, the average proportion of time that individuals spent at their home patch was ",
-      mean(out_ni$time_at_home) %>% round(., 3),
-      ", versus the desired value of ",
-      round(time_to_leave / (time_to_leave + time_to_return), 3))
+out_ni <- purrr::map2(non_ind, names(non_ind), ~get_times(schedule = .x, id = .y, simulator = "non-independent")) %>% dplyr::bind_rows()
 
 # group-think
 gt <- simulate_schedule(n_animals = n_animals,
@@ -387,25 +378,10 @@ gt <- simulate_schedule(n_animals = n_animals,
                         travel_time = travel_time,
                         sampling_duration = sampling_duration,
                         simulator = "group-think")
-ids_gt <- names(gt)
 
-out_gt <- get_times(schedule = gt[[1]],
-                    id = ids_gt[[1]],
-                    simulator = "group-think", option = "attached")
+out_gt <- purrr::map2(gt, names(gt), ~get_times(schedule = .x, id = .y, simulator = "group-think", option = "attached")) %>% dplyr::bind_rows()
 
-for(i in 2:length(ids_gt)){
-  out_gt[i, ] <- get_times(gt[[i]],
-                           ids_gt[[i]],
-                           simulator = "group-think", option = "attached")
-}
-
-paste("For the \'group-think\' simulator, the average proportion of time that individuals spent with their core group was ",
-      mean(out_gt$time_at_home) %>% round(., 3),
-      ", versus the desired value of ",
-      round(time_to_leave / (time_to_leave + time_to_return), 3))
 ```
-
-Look at those time breakdowns -- they're all pretty close to the targets.
 
 ```{r ggplot-proportion-time2, fig.width=8, fig.height=6, fig.cap = ""}
 out <- out_ind %>% dplyr::mutate(sim = "independent",
@@ -443,64 +419,53 @@ ggplot(out2, aes(x = proportion, y = sim, color = state, point_color = state, fi
   geom_vline(aes(xintercept = time_to_return / (time_to_leave + time_to_return)), lty = 2) +
   theme(legend.title = element_blank())
 
+rates_ind <- get_rates(sched = ind, sim = "independent") %>%
+  dplyr::mutate(sim = "independent",
+                net_mean_lambda = mean(mean_ttlg),
+                net_mean_xi = mean(mean_ttrg))
+
+rates_non <- get_rates(sched = non_ind, sim = "non-independent") %>%
+  dplyr::mutate(sim = "non-independent",
+                net_mean_lambda = mean(mean_ttlg),
+                net_mean_xi = mean(mean_ttrg))
+
+rates_gt <- get_rates(sched = gt, sim = "group-think") %>%
+  dplyr::mutate(sim = "group-think",
+                net_mean_lambda = mean(mean_ttlg),
+                net_mean_xi = mean(mean_ttrg))
+
+rates <- dplyr::bind_rows(rates_ind, rates_non, rates_gt) %>%
+  dplyr::mutate(sim = factor(sim, levels = c("group-think", "non-independent", "independent"))) %>%
+  tidyr::pivot_longer(cols = dplyr::starts_with("mean"), names_to = "state", values_to = "rate")
+
+ggplot(rates, aes(x = rate, y = sim, color = state, point_color = state, fill = state)) +
+  geom_density_ridges(
+    jittered_points = TRUE, scale = .95, rel_min_height = .01,
+    point_shape = "|", point_size = 3, size = 0.25,
+    position = position_points_jitter(height = 0)) +
+  geom_segment(aes(x = net_mean_lambda, xend = net_mean_lambda, y = as.numeric(sim), yend = as.numeric(sim) + .9), color = "red") +
+  geom_segment(aes(x = net_mean_xi, xend = net_mean_xi, y = as.numeric(sim), yend = as.numeric(sim) + .9), color = "red") +
+  scale_y_discrete(expand = c(0, 0), name = "") +
+  scale_x_continuous(name = "Days") +
+  scale_fill_manual(values = c("#D55E0050", "#0072B250"), labels = c("mean lambda", "mean xi")) +
+  scale_color_manual(values = c("#D55E00", "#0072B2"), guide = "none") +
+  scale_discrete_manual("point_color", values = c("#D55E00", "#0072B2"), guide = "none") +
+  coord_cartesian(clip = "off") +
+  guides(fill = guide_legend(override.aes = list(fill = c("#D55E00A0", "#0072B2A0"),color = NA, point_color = NA))) +
+  theme_ridges(center = TRUE) +
+  geom_vline(aes(xintercept = time_to_leave), lty = 2)+
+  geom_vline(aes(xintercept = time_to_return), lty = 2) +
+  theme(legend.title = element_blank())
+
+
 ```
 
 There's still noise -- afterall these are stochastic simulations -- but on the average the results suggest our simulators are working the way they should. In particular the non-monotonicity of the group-think results suggest that there's heterogeneous mixing behavior on the individual level: some spend 'too much time' at home, other don't spend enough time at home, and others are in the goldilocks zone. This may be a useful bit of realism.
 
-```{r plot-graphs2, fig.width=8, fig.height=3, fig.cap = ""}
-# compare graphs
-g_ind <- graph_from_schedule(ind)
-g_ni <- graph_from_schedule(non_ind)
-g_gt <- graph_from_schedule(gt)
-
-par(mfrow = c(1,3),
-    oma = c(0, 0, 1, 0),
-    mar = c(0, 0, 2, 0),
-    xpd = NA)
-plot_simulated_graph(g_ind, vertex.size = 25, title = "independent")
-plot_simulated_graph(g_ni, vertex.size = 25, title = "non-independent")
-plot_simulated_graph(g_gt, vertex.size = 25, title = "group-think")
-```
-
 I'd like to speed a number of these functions up in the future, either with `rcpp` or discrete-time approximations. For those interested in producing larger graphs, the 'independent' sampler already has a discrete-time approximation called `simulate_graph()` where users specify the number of `samples_per_day` and `sampler = "discrete"`.
 
-These generally look like the graphs we plotted earlier.
-
-```{r edge-weights2, fig.width=8, fig.height=4, fig.cap = "", include = F}
-# compare edge weight distributions
-ew_ind <- igraph::E(g_ind)$weight
-ew_non_ind <- igraph::E(g_ni)$weight
-ew_gt <- igraph::E(g_gt)$weight
-
-df2 <- data.frame(weight = c(ew_ind, ew_non_ind, ew_gt),
-                  sim = c(rep("independent", length(ew_ind)),
-                          rep("non-independent", length(ew_non_ind)),
-                          rep("group-think", length(ew_gt))))
-df2$sim = factor(df2$sim, levels = c("independent", "non-independent","group-think"))
-
-ggplot(df2)+
-  geom_histogram(mapping = aes(x = weight, fill = sim), show.legend = FALSE)+
-  scale_fill_viridis_d(option = "plasma", end = 0.6) +
-  facet_wrap(~sim)+
-  theme_clean()+
-  theme(axis.title = element_text(size = 20/2),
-        axis.text.x = element_text(size = 15/2),
-        axis.text.y = element_text(size = 20/2),
-        strip.text = element_text(size = 20/2))
-
-mean(ew_ind)
-mean(ew_non_ind)
-mean(ew_gt)
-```
-
-The edge weight distributions look less similar to each other than in the previous example.
-
-```{r modularity2}
-q_rel(g_ind)
-q_rel(g_ni)
-q_rel(g_gt)
-```
-
-The modularity scores have all decreased some and non-independent has the highest value again.
-
 While 'independent' ensures consistent switching behavior across individuals, 'non-independent' ensures that individuals will adhere to their 'friends' more closely. By comparison, 'group-think' generates heterogeneous behavior that falls somewhere in the middle: some individuals adhere closely to 'friends' while others don't. To see why this is useful -- and for another way of comparing the simulators -- check out the 'graph-crossing' vignette where we put these continuous-time schedules to work in an individually-based disease context.
+
+```{r final, include = FALSE}
+par(old.par) # restore original settings
+```

@@ -1,10 +1,12 @@
 Package: modulr
-Title: Simulate Modular Fission-Fusion Networks and Sample Design
+Title: Simulate Individual Movement Behaviors Underlying Modular Fission-Fusion Networks
 Version: 0.8.0
 Authors@R: 
-    person("Gavin", "Cotterill", , "gcotterill2@unl.edu", role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0002-1408-778X"))
-Description: Simulate group switching behavior and sampling of weighted, 'undirected' social networks based on the proportion of time 'dyads' spend together. 
+    c(person("Gavin", "Cotterill", , "gcotterill2@unl.edu", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-1408-778X")),
+     person("Kezia", "Manlove", , "kezia.manlove@usu.edu", role = c("aut"),
+           comment = c(ORCID = "0000-0002-7200-5236")))
+Description: A system for stochastic simulation of individual movements that generate social networks with controllable modularity and sampling simulators for power analysis. 
 URL: https://github.com/gavincotterill/modulr
 BugReports: https://github.com/gavincotterill/modulr/issues
 License: MIT + file LICENSE

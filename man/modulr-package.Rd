@@ -4,9 +4,9 @@
 \name{modulr-package}
 \alias{modulr}
 \alias{modulr-package}
-\title{modulr: Simulate Modular Fission-Fusion Networks and Sample Design}
+\title{modulr: Simulate Individual Movement Behaviors Underlying Modular Fission-Fusion Networks}
 \description{
-Simulate group switching behavior and sampling of weighted, 'undirected' social networks based on the proportion of time 'dyads' spend together.
+A system for stochastic simulation of individual movements that generate social networks with controllable modularity and sampling simulators for power analysis.
 }
 \seealso{
 Useful links:
@@ -18,6 +18,11 @@ Useful links:
 }
 \author{
 \strong{Maintainer}: Gavin Cotterill \email{gcotterill2@unl.edu} (\href{https://orcid.org/0000-0002-1408-778X}{ORCID})
+
+Authors:
+\itemize{
+  \item Kezia Manlove \email{kezia.manlove@usu.edu} (\href{https://orcid.org/0000-0002-7200-5236}{ORCID})
+}
 
 }
 \keyword{internal}
