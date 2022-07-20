@@ -25,8 +25,8 @@ simulate_non_independence2 <- function(
   }else if(is.na(n_splits)){
     n_split_list <- lapply(grp_lengths_vector, function (x){
       if(x == 1){y = 1}
-      if(x == 2){y = rbinom(1, 1, 0.5) + 1} # one or two with 50% prob
-      if(x >= 3 & x <= 5){y = rbinom(1, 1, 0.5) + 2} # two or three
+      if(x == 2){y = stats::rbinom(1, 1, 0.5) + 1} # one or two with 50% prob
+      if(x >= 3 & x <= 5){y = stats::rbinom(1, 1, 0.5) + 2} # two or three
       if(x >= 6 & x <= 10){y = sample(2:4, 1, prob=c(1/3, 1/3, 1/3))} # two, three, or four
       if(x >= 11 & x <= 15){y = sample(3:5, 1, prob = c(1/3, 1/3, 1/3))} # 3:5
       if(x >= 16){y = sample(4:6, 1, prob = c(1/3, 1/3, 1/3))} # 4:6
@@ -59,22 +59,22 @@ simulate_non_independence2 <- function(
 
   complete_intervals <-
     data.frame(start = c(unique(ints$start), unique(ints$end))) %>%
-    dplyr::arrange(start) %>%
+    dplyr::arrange(.data$start) %>%
     round(4) %>% # without rounding again, you can have such small differences in intervals that they appear to be x to x, rather than only x to y, y to z
     dplyr::distinct() %>%
-    dplyr::arrange(start) %>%
-    dplyr::mutate(end = dplyr::lead(start))
+    dplyr::arrange(.data$start) %>%
+    dplyr::mutate(end = dplyr::lead(.data$start))
 
   sub_group = groups_transformed[[1]][[1]]
   intervals = complete_intervals
   cust_fxn <- function(sub_group, intervals){
     t1 <- intervals %>%
       dplyr::left_join(sub_group, by = c("end")) %>%
-      tidyr::fill(state, .direction = "up") %>%
-      tidyr::fill(sub_id, .direction = "up") %>%
-      dplyr::select(- start.y) %>%
-      dplyr::rename(start = start.x) %>%
-      na.omit()
+      tidyr::fill(.data$state, .direction = "up") %>%
+      tidyr::fill(.data$sub_id, .direction = "up") %>%
+      dplyr::select(- .data$start.y) %>%
+      dplyr::rename(start = .data$start.x) %>%
+      stats::na.omit()
     t1
   }
 
@@ -86,22 +86,22 @@ simulate_non_independence2 <- function(
   comp_ints_list <- lapply(list_of_lists, dplyr::bind_rows)
 
   df <- dplyr::bind_rows(comp_ints_list, .id = "id") %>%
-    dplyr::arrange(start, end, state, id, sub_id)
+    dplyr::arrange(.data$start, .data$end, .data$state, .data$id, .data$sub_id)
 
   #' now collapse instances where sub_ids are together -- usually at home, but not always
   #' then remove duplicates
 
   test <- df %>%
-    dplyr::group_by(id, state, start, end) %>%
-    dplyr::summarise(sub_vector=paste(sub_id, collapse="-")) %>%
+    dplyr::group_by(.data$id, .data$state, .data$start, .data$end) %>%
+    dplyr::summarise(sub_vector = paste(.data$sub_id, collapse="-")) %>%
     dplyr::ungroup() %>%
-    dplyr::arrange(start, end, id, state)
+    dplyr::arrange(.data$start, .data$end, .data$id, .data$state)
 
   # this will be spatially explicit, so we'll judge 'time home' vs 'time away' in 'recovering' the switching rates
   # but we'll analyze network properties on the basis of time spent together as edge weights
 
   #' initiate groups and hold them in reserve
-  p <- test %>% dplyr::filter(start == 0) %>% dplyr::select(-"sub_vector")
+  p <- test %>% dplyr::filter(.data$start == 0) %>% dplyr::select(-"sub_vector")
   p$members <- purrr::map2(p$id, grp_lengths_vector, ~initiate_group(.x, .y))
 
   mem_df <- dplyr::left_join(test, p, by = c("state", "start", "end", "id")) %>%
@@ -109,17 +109,17 @@ simulate_non_independence2 <- function(
 
   #' need to create vector column to see which groups are where
   t2 <- test %>%
-    dplyr::group_by(state, start, end) %>%
-    dplyr::summarise(vector=paste(id, collapse="-")) %>%
+    dplyr::group_by(.data$state, .data$start, .data$end) %>%
+    dplyr::summarise(vector = paste(.data$id, collapse="-")) %>%
     dplyr::ungroup() %>%
-    dplyr::arrange(start, end, state) %>%
-    dplyr::mutate(idx = match(start, unique(start))) %>%
+    dplyr::arrange(.data$start, .data$end, .data$state) %>%
+    dplyr::mutate(idx = match(.data$start, unique(.data$start))) %>%
     data.frame() %>%
     dplyr::mutate(holding = NA) %>%
     dplyr::left_join(mem_df, by = c("state", "start", "end")) %>% # adding by to suppress message
-    dplyr::select(state, start, end, idx, vector, members, holding) %>%
+    dplyr::select(.data$state, .data$start, .data$end, .data$idx, .data$vector, .data$members, .data$holding) %>%
     dplyr::distinct() %>%
-    dplyr::filter(start <= sampling_duration)
+    dplyr::filter(.data$start <= sampling_duration)
 
   t2$vector <- purrr::map(t2$vector, ~clean_vector(.x))
 
@@ -130,21 +130,17 @@ simulate_non_independence2 <- function(
       t2[i,"holding"] <- clean_holding(t2[i, "holding"])
     }
 
-    #' split vector[i] into a list of groups present
+    #' split vector_i into a list of groups present
     curr_vec <- stringr::str_split(t2$vector[i], "-")[[1]]
 
     # for empty travel states:
-    # if(i > (n_groups + 1) & t2$holding[i] %in% c(NA, "")){ # I'm worried about the empty character string "" being an issue
-    if(t2[i, "idx"] > 1 & t2$holding[i] %in% c(NA, "")){ # I'm worried about the empty character string "" being an issue
-      # t2$holding[i] <- paste0(stringr::str_split(t2$vector[i], "-")[[1]], "_0") %>% unlist() %>% sort() %>% paste(collapse = "/") # this won't order them correctly
+    if(t2[i, "idx"] > 1 & t2$holding[i] %in% c(NA, "")){
       t2$holding[i] <- paste0(stringr::str_split(t2$vector[i], "-")[[1]], "_0") %>% paste(collapse = "/") # since vector is ordered correctly, this should work
 
     }
 
     if(t2[i, "idx"] > 1 & is.na(t2$members[i])){
-      # switch <- stringr::str_detect(t2$holding[i], "/")
       holding_groups <- stringr::str_split(t2$holding[i], "/")[[1]] %>% extract_group()
-      # holding_groups
       n_holding_groups <- length(holding_groups)
 
       if(n_holding_groups == length(curr_vec)){
@@ -163,20 +159,18 @@ simulate_non_independence2 <- function(
       }
     }
 
-    # I shouldn't need this gusb anymore:
-    # mbrs_list <- as.list(stringr::str_split(t2$members[i], "/")[[1]] %>%  gsub(paste0(t2$state[i],"_0-"),"", .) %>% sort())
     mbrs_list <- as.list(stringr::str_split(t2$members[i], "/")[[1]]) %>%
       `names<-`(curr_vec)
 
     #' make a mbrs_list that has length n vectors and populate it with members from holding
     curr_time <- t2$idx[i]
     next_time <- curr_time + 1
-    #' look ahead to idx[i]+1, the next time interval
+    #' look ahead to idx_i+1, the next time interval
     #' number_of_current_locations <- the number of rows in which vector occurs at present time_interval
     #' number_of_destinations <- the number of rows in which vector/mbrs_list have to go next
-    curr_temp <- t2 %>% dplyr::filter(idx == curr_time)
+    curr_temp <- t2 %>% dplyr::filter(.data$idx == curr_time)
     curr_vl <- curr_temp %>% dplyr::select(vector) %>% as.list(stringr::str_split(., "-")[[1]])
-    next_temp <- t2 %>% dplyr::filter(idx == next_time)
+    next_temp <- t2 %>% dplyr::filter(.data$idx == next_time)
     next_vl <- next_temp %>% dplyr::select(vector) %>% as.list(stringr::str_split(., "-")[[1]])
     n_curr_locs_list <- lapply(purrr::map2(names(mbrs_list), curr_vl, function(x, y) grep(paste0("\\b",x,"\\b"), y)), length)
     n_next_locs_list <- lapply(purrr::map2(names(mbrs_list), next_vl, function(x, y) grep(paste0("\\b",x,"\\b"), y)), length)
@@ -199,7 +193,7 @@ simulate_non_independence2 <- function(
         indivs <- stringr::str_split(mbrs_list[[j]], "-")[[1]]
         n_indivs <- length(indivs)
         probs <- rep(1/n_next_locs_list[[j]], n_next_locs_list[[j]])
-        f <- as.list(rmultinom(n = 1, size = n_indivs, prob = probs )) # this can result in 0 draws, meaning no indivs are sent to a 'split', that's ok by itself but the code can't handle it
+        f <- as.list(stats::rmultinom(n = 1, size = n_indivs, prob = probs )) # this can result in 0 draws, meaning no indivs are sent to a 'split', that's ok by itself but the code can't handle it
         out_list <- list()
         for(k in 1:length(probs)){
           out_list[[k]] <- sample(indivs, f[[k]], replace = FALSE)
@@ -259,8 +253,6 @@ simulate_non_independence2 <- function(
       }
     } # end j loop
   } # end i
-  # # not a perfect scrub of dummies:
-  # t2$members <- stringr::str_replace(string = t2$members, pattern = "\\d{1,}_0/|/\\d{1,}_0|\\d{1,}_0-|\\d{1,}_0|\\d{1,}_0-\\d{1,}_0-", replacement = "") # same as str_remove
 
   # try this:
   t2$members <- stringr::str_remove_all(string = t2$members, pattern = "\\d{1,}_0")

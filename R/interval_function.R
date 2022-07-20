@@ -10,7 +10,7 @@ interval_function <- function(groups, intervals){
   intervals %>%
     dplyr::left_join(groups, by = "start") %>%
     data.frame() %>%
-    tidyr::fill(state) %>%
-    dplyr::select(- end.y) %>%
-    dplyr::rename(end = end.x)
+    tidyr::fill(.data$state) %>%
+    dplyr::select(- .data$end.y) %>%
+    dplyr::rename(end = .data$end.x)
 }

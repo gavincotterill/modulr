@@ -81,12 +81,14 @@ ff_forward3 <- function(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_retur
         not_at_home2 <- tryCatch({
           purrr::map2(does_go_home, not_at_home, ~drop_function(.x, .y))
         }, error = function(e){
-          stop(assign("t2", t2, .GlobalEnv),
-               assign("does_go_home", does_go_home, .GlobalEnv),
-               assign("not_at_home", not_at_home, .GlobalEnv),
-               assign("f1", f1, .GlobalEnv),
-               assign("go_home_samp", go_home_samp, .GlobalEnv),
-               assign("switch_samp", switch_samp, .GlobalEnv)
+          stop(pos <- 1,
+               envir = as.environment(pos),
+               assign("t2", t2, pos),
+               assign("does_go_home", does_go_home, pos),
+               assign("not_at_home", not_at_home, pos),
+               assign("f1", f1, pos),
+               assign("go_home_samp", go_home_samp, pos),
+               assign("switch_samp", switch_samp, pos)
                )
         })
         # drop this here and give it a try
@@ -96,13 +98,15 @@ ff_forward3 <- function(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_retur
         does_switch <- tryCatch({
           purrr::map2(not_at_home2, switch_samp, ~ sample(.x, size=.y))
         }, error = function(e){
-          stop(assign("t2", t2, .GlobalEnv),
-               assign("does_go_home", does_go_home, .GlobalEnv),
-               assign("not_at_home", not_at_home, .GlobalEnv),
-               assign("not_at_home2", not_at_home2, .GlobalEnv),
-               assign("f1", f1, .GlobalEnv),
-               assign("go_home_samp", go_home_samp, .GlobalEnv),
-               assign("switch_samp", switch_samp, .GlobalEnv)
+          stop(pos <- 1,
+               envir = as.environment(pos),
+               assign("t2", t2, pos),
+               assign("does_go_home", does_go_home, pos),
+               assign("not_at_home", not_at_home, pos),
+               assign("not_at_home2", not_at_home2, pos),
+               assign("f1", f1, pos),
+               assign("go_home_samp", go_home_samp, pos),
+               assign("switch_samp", switch_samp, pos)
           )
           }
         )

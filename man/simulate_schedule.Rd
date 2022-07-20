@@ -16,7 +16,11 @@ simulate_schedule(
 )
 }
 \arguments{
+\item{n_animals}{the number of animals in the network}
+
 \item{n_groups}{the number of social groups and/or distinct patches in the population}
+
+\item{n_splits}{if using the non-independent simulator. Integer value or NA. If an integer value, the number of sub-groups to split into when moving. If NA (default) larger groups will split into larger subgroups.}
 
 \item{time_to_leave}{the average number of days spent at home prior to leaving}
 
@@ -25,7 +29,20 @@ simulate_schedule(
 \item{travel_time}{a list of two values in terms of days. These are the limits for draws from a uniform distribution governing how long it will take to get from one group to another.}
 
 \item{sampling_duration}{the number of days to simulate.}
+
+\item{simulator}{the simulator to use. One of: "independent", "non-independent", or "group-think".}
 }
 \description{
 Generates a continuous-time-movement description for each individual in a simulated network according to the rules set forth by the chosen simulator. Returns a list of data.frames.
+}
+\examples{
+\donttest{
+obj <- simulate_schedule(n_animals = 15,
+                         n_groups = 3,
+                         time_to_leave = 5,
+                         time_to_return = 2,
+                         travel_time = c(0.001, 0.2),
+                         sampling_duration = 20,
+                         simulator = "independent")
+}
 }

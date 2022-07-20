@@ -10,6 +10,6 @@ new_dt_fxn <- function(obj_in_sgl){
                   state = .data$current_state) %>%
     dplyr::mutate(start = .data$end - .data$waiting_time) %>%
     dplyr::select("state", "start","end", "sub_id") %>%
-    na.omit() %>%
+    stats::na.omit() %>%
     dplyr::mutate_all(~as.numeric(.))
 }

@@ -4,7 +4,7 @@
 #'
 #' @keywords internal
 rand_vect <- function(N, M, sd = 1, pos.only = TRUE) {
-  vec <- rnorm(N, M/N, sd)
+  vec <- stats::rnorm(N, M/N, sd)
   if (abs(sum(vec)) < 0.01) vec <- vec + 1
   vec <- round(vec / sum(vec) * M)
   deviation <- M - sum(vec)

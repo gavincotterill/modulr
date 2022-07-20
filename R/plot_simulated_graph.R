@@ -42,7 +42,7 @@ plot_simulated_graph <- function(g, vertex.size = 40, mark.expand = 25,
   whole_lists <- grp %>%
     dplyr::group_by(.data$mem) %>%
     tidyr::nest() %>%
-    dplyr::mutate(data = purrr::map(data, as.list)) %>%
+    dplyr::mutate(data = purrr::map(.data$data, as.list)) %>%
     dplyr::pull(.data$data)
 
   grp_list_whole <- lapply(whole_lists, `[[`, "name")

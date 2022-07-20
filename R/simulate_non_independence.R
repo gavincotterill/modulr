@@ -35,7 +35,7 @@ simulate_non_independence <- function(
                     state = dplyr::lead(.data$current_state)) %>%
       dplyr::rename(start = .data$cumulative_time) %>%
       dplyr::select("state", "start","end") %>%
-      na.omit() %>%
+      stats::na.omit() %>%
       dplyr::mutate_all(~as.numeric(.))
   })
 
@@ -43,10 +43,10 @@ simulate_non_independence <- function(
     dplyr::select(-"state")
 
   complete_intervals <- data.frame(start = c(ints$start, ints$end)) %>%
-    dplyr::group_by(start) %>%
+    dplyr::group_by(.data$start) %>%
     dplyr::slice(1) %>%
     dplyr::ungroup() %>%
-    dplyr::mutate(end = dplyr::lead(start)) %>%
+    dplyr::mutate(end = dplyr::lead(.data$start)) %>%
     dplyr::slice(1:dplyr::n()-1)
 
   # now I have a list, one data.frame per id. intervals match across all dfs in list. location is tracked
@@ -55,21 +55,21 @@ simulate_non_independence <- function(
   df <- dplyr::bind_rows(comp_ints_list, .id = "id")
 
   test <- df %>%
-    dplyr::group_by(state, start, end) %>%
-    dplyr::summarise(vector=paste(id, collapse="-")) %>%
+    dplyr::group_by(.data$state, .data$start, .data$end) %>%
+    dplyr::summarise(vector=paste(.data$id, collapse="-")) %>%
     dplyr::ungroup() %>%
-    dplyr::arrange(state, start, end)
+    dplyr::arrange(.data$state, .data$start, .data$end)
 
   # initiate groups
   grp_lengths_vector <- rand_vect(n_groups, n_animals, sd = 1)
-  p <- test %>% dplyr::filter(start == 0) %>% dplyr::arrange(start, end, state)
+  p <- test %>% dplyr::filter(.data$start == 0) %>% dplyr::arrange(.data$start, .data$end, .data$state)
   p$members <- purrr::map2(p$vector, grp_lengths_vector, ~initiate_group(.x, .y))
   test <- dplyr::left_join(test, p, by = c("state", "start", "end", "vector")) %>%
     dplyr::mutate(dplyr::across(dplyr::everything(), dplyr::na_if, "NULL"))
 
   t2 <- test %>%
-    dplyr::arrange(start) %>%
-    dplyr::mutate(idx = match(start, unique(start))) %>%
+    dplyr::arrange(.data$start) %>%
+    dplyr::mutate(idx = match(.data$start, unique(.data$start))) %>%
     data.frame() %>%
     dplyr::mutate(action = NA,
                   holding = NA)

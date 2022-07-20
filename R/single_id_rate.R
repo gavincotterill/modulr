@@ -21,16 +21,16 @@ single_id_rate <- function(sub_sched, sub_id, sim){
 
   if(sim == "independent"){
     sub_sched <- sub_sched %>%
-      dplyr::filter(state >= 1) %>%
-      dplyr::mutate(start = ifelse(rownames(.) != 1, dplyr::lag(end), start),
-                    home = ifelse(state == home, TRUE, FALSE),
-                    lambda = ifelse(home == TRUE, end - start, NA),
-                    xi = ifelse(home == FALSE, end - start, NA))
+      dplyr::filter(.data$state >= 1) %>%
+      dplyr::mutate(start = ifelse(rownames(.) != 1, dplyr::lag(.data$end), .data$start),
+                    home = ifelse(.data$state == home, TRUE, FALSE),
+                    lambda = ifelse(home == TRUE, .data$end - .data$start, NA),
+                    xi = ifelse(home == FALSE, .data$end - .data$start, NA))
   }else if(sim %in% c("non-independent", "group-think")){
 
     test <- sub_sched %>%
       # dplyr::select(-members) %>%
-      dplyr::filter(state >= 1)
+      dplyr::filter(.data$state >= 1)
 
     if(length(unique(test$state)) == 1){
       r <- 1
@@ -40,15 +40,15 @@ single_id_rate <- function(sub_sched, sub_id, sim){
 
     sub_sched <- tryCatch({test %>%
       dplyr::mutate(cons = rep(seq(r), r)) %>%
-      dplyr::group_by(state, cons) %>%
-      dplyr::summarise(start = min(start),
-                end = max(end)) %>%
-      dplyr::arrange(start) %>%
+      dplyr::group_by(.data$state, .data$cons) %>%
+      dplyr::summarise(start = min(.data$start),
+                end = max(.data$end)) %>%
+      dplyr::arrange(.data$start) %>%
       dplyr::ungroup() %>%
-      dplyr::mutate(start = ifelse(rownames(.) != 1, dplyr::lag(end), start),
-                    home = ifelse(state == home, TRUE, FALSE),
-                    lambda = ifelse(home == TRUE, end - start, NA),
-                    xi = ifelse(home == FALSE, end - start, NA))},
+      dplyr::mutate(start = ifelse(rownames(.) != 1, dplyr::lag(.data$end), .data$start),
+                    home = ifelse(.data$state == home, TRUE, FALSE),
+                    lambda = ifelse(home == TRUE, .data$end - .data$start, NA),
+                    xi = ifelse(home == FALSE, .data$end - .data$start, NA))},
       error = function(x){
         print(test)
         print(r)

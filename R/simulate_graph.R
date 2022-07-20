@@ -81,15 +81,15 @@ simulate_graph <- function(n_animals,
     # build SRI adjacency matrix -----
     ids <- names(animal_sample_df)
     vals <- unique(c(ids, ids))
-    dyads <- data.frame(t(combn(vals, 2)))
+    dyads <- data.frame(t(utils::combn(vals, 2)))
     names(dyads) <- c("Var1", "Var2")
 
     adj_mat <- matrix(NA, nrow = n_animals, ncol = n_animals)
     row.names(adj_mat) <- colnames(adj_mat) <- ids
 
     for(d in 1:nrow(dyads)){
-      anim1 <- samples_out %>% dplyr::filter(id == dyads[d, 1])
-      anim2 <- samples_out %>% dplyr::filter(id == dyads[d, 2])
+      anim1 <- samples_out %>% dplyr::filter(.data$id == dyads[d, 1])
+      anim2 <- samples_out %>% dplyr::filter(.data$id == dyads[d, 2])
       # anim1 <- subset(samples_out, id == levels(factor(samples_out$id))[dyads[d, 1]])
       # anim2 <- subset(samples_out, id == levels(factor(samples_out$id))[dyads[d, 2]])
       together <- length(which(anim1$location == anim2$location))
@@ -111,7 +111,7 @@ simulate_graph <- function(n_animals,
                          membership = unlist(lapply(animal_list, function(x) x[['animals_home']])))
 
     vals <- unique(c(ids, ids))
-    dyads <- data.frame(t(combn(vals, 2)))
+    dyads <- data.frame(t(utils::combn(vals, 2)))
     names(dyads) <- c("Var1", "Var2")
     dyads$ew <- NA
 
@@ -129,7 +129,7 @@ simulate_graph <- function(n_animals,
         dplyr::mutate(start_max = pmax(.data$start, .data$i.start),
                       end_min = pmin(.data$end, .data$i.end),
                       together = ifelse(.data$state == .data$i.state, 1, 0)) %>%
-        na.omit()
+        stats::na.omit()
 
       g_int <- data.frame(intervals) %>%
         dplyr::select(1,4,7:9)

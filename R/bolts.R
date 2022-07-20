@@ -10,13 +10,13 @@ bolts <- function(animal, infectious){
   new_overlaps <- data.frame()
   for(i in 1:nrow(infectious)){
     mod <- as.numeric(infectious[i, "state"])
-    x <- dplyr::filter(animal, state == mod)
+    x <- dplyr::filter(animal, .data$state == mod)
     y <- data.table::setkey(infectious[i,2:3])
 
-    df <- na.omit(data.table::foverlaps(x,y)) %>%
-      dplyr::mutate(start = ifelse(i.start > start, i.start, start),
-                    end = ifelse(i.end < end, i.end, end)) %>%
-      dplyr::select(state, start, end)
+    df <- stats::na.omit(data.table::foverlaps(x,y)) %>%
+      dplyr::mutate(start = ifelse(.data$i.start > .data$start, .data$i.start, .data$start),
+                    end = ifelse(.data$i.end < .data$end, .data$i.end, .data$end)) %>%
+      dplyr::select(.data$state, .data$start, .data$end)
 
     new_overlaps <- rbind(new_overlaps, df)
   }

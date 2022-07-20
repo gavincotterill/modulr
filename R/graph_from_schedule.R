@@ -9,6 +9,13 @@
 #' @export
 #' @examples
 #' \donttest{
+#' obj <- simulate_schedule(n_animals = 15,
+#'                          n_groups = 3,
+#'                          time_to_leave = 5,
+#'                          time_to_return = 2,
+#'                          travel_time = c(0.001, 0.2),
+#'                          sampling_duration = 20,
+#'                          simulator = "independent")
 #' g <- graph_from_schedule(schedule = obj)
 #'}
 graph_from_schedule <- function(schedule) {
@@ -19,7 +26,7 @@ graph_from_schedule <- function(schedule) {
                        membership = grp_mem)
 
   vals <- unique(c(ids, ids))
-  dyads <- data.frame(t(combn(vals, 2)))
+  dyads <- data.frame(t(utils::combn(vals, 2)))
   names(dyads) <- c("Var1", "Var2")
   dyads$ew <- NA
 
@@ -37,11 +44,11 @@ graph_from_schedule <- function(schedule) {
       dplyr::mutate(start_max = pmax(.data$start, .data$i.start),
                     end_min = pmin(.data$end, .data$i.end),
                     together = ifelse(.data$state == .data$i.state, 1, 0)) %>%
-      na.omit() %>%
-      dplyr::arrange(end_min) # make sure the last row has the max value for end_min
+      stats::na.omit() %>%
+      dplyr::arrange(.data$end_min) # make sure the last row has the max value for end_min
 
     g_int <- data.frame(intervals) %>%
-      dplyr::select(state, i.state,start_max, end_min, together)
+      dplyr::select(.data$state, .data$i.state, .data$start_max, .data$end_min, together)
 
     together <- g_int[,c(1,3:5)] %>%
       dplyr::mutate(id = "A") %>%

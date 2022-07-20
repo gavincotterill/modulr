@@ -22,9 +22,9 @@ now collapse instances where sub_ids are together -- usually at home, but not al
 then remove duplicates
 initiate groups and hold them in reserve
 need to create vector column to see which groups are where
-split vector\link{i} into a list of groups present
+split vector_i into a list of groups present
 make a mbrs_list that has length n vectors and populate it with members from holding
-look ahead to idx\link{i}+1, the next time interval
+look ahead to idx_i+1, the next time interval
 number_of_current_locations <- the number of rows in which vector occurs at present time_interval
 number_of_destinations <- the number of rows in which vector/mbrs_list have to go next
 if number of current locations is > 1 and number of destinations == 1, send all mbrs_list to the single destination's holding at next time interval

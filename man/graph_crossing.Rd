@@ -20,6 +20,16 @@ Recursive function to calculate graph crossing time and do individual-based SEIR
 }
 \examples{
 \donttest{
-out <- graph_crossing(schedule = obj, exposure_time = 2, infectious_time = 5, index_case = names(obj)[[1]])
+obj <- simulate_schedule(n_animals = 15,
+                         n_groups = 3,
+                         time_to_leave = 5,
+                         time_to_return = 2,
+                         travel_time = c(0.001, 0.2),
+                         sampling_duration = 20,
+                         simulator = "independent")
+out <- graph_crossing(schedule = obj,
+                      exposure_time = 2,
+                      infectious_time = 5,
+                      index_case = names(obj)[[1]])
 }
 }

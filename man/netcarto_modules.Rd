@@ -9,11 +9,6 @@ netcarto_modules(x)
 \arguments{
 \item{x}{a named square adjacency matrix or named 'igraph' graph. Intended for
 weighted, undirected graphs.}
-
-\item{alg}{the community detection algorithm to use, either from igraph:
-"fast_greedy", "leading_eigen", "leiden", "louvain", or "walktrap"
-or from rnetcarto: "netcarto"
-default is "walktrap"}
 }
 \value{
 a named vector of module memberships matching the named adjacency

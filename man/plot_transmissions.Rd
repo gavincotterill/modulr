@@ -20,11 +20,11 @@ plot_transmissions(
 
 \item{vertex.label}{label for graph vertices}
 
+\item{edge.arrow.size}{size of the directed arrows, default 0.5}
+
 \item{vertex.label.cex}{size for vertex labels}
 
 \item{title}{plot title}
-
-\item{mark.expand}{padding of polygon denoting modules around nodes}
 }
 \value{
 a plot of the igraph object

@@ -1,6 +1,6 @@
 test_that("module_summary works", {
 
-  g_d_1 <- simulate_graph(n_animals = 6,
+  g_d_1 <- simulate_graph(n_animals = 10,
                           n_groups = 2,
                           time_to_leave = 5,
                           time_to_return = 2,
@@ -9,7 +9,7 @@ test_that("module_summary works", {
                           sampler = "discrete",
                           samples_per_day = 1)
 
-  g_d_2 <- simulate_graph(n_animals = 7,
+  g_d_2 <- simulate_graph(n_animals = 12,
                           n_groups = 2,
                           time_to_leave = 5,
                           time_to_return = 2,

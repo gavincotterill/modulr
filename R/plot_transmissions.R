@@ -4,10 +4,10 @@
 #'
 #' @param gc_out an edgelist data.frame created with graph_crossing()
 #' @param vertex.size node size in plot
-#' @param mark.expand padding of polygon denoting modules around nodes
 #' @param vertex.label label for graph vertices
 #' @param vertex.label.cex size for vertex labels
 #' @param title plot title
+#' @param edge.arrow.size size of the directed arrows, default 0.5
 #'
 #' @return
 #' a plot of the igraph object
@@ -48,7 +48,7 @@ plot_transmissions <- function(gc_out,
   whole_lists <- grp %>%
     dplyr::group_by(.data$mem) %>%
     tidyr::nest() %>%
-    dplyr::mutate(data = purrr::map(data, as.list)) %>%
+    dplyr::mutate(data = purrr::map(.data$data, as.list)) %>%
     dplyr::pull(.data$data)
 
   grp_list_whole <- lapply(whole_lists, `[[`, "name")

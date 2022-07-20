@@ -11,6 +11,8 @@ get_times(schedule, id, simulator, option = NA)
 
 \item{id}{the character string name of an individual node}
 
+\item{simulator}{the simulator used to generate the schedule. One of: "independent", "non-independent", "group-think".}
+
 \item{option}{additional option for group-think, "co-located" or "attached"}
 }
 \description{

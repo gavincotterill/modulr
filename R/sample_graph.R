@@ -16,7 +16,6 @@
 #'
 #' @examples
 #' \donttest{
-#' library(igraph)
 #' g <- simulate_graph(n_animals = 25,
 #'                     n_groups = 4,
 #'                     time_to_leave = 5,
@@ -31,6 +30,7 @@
 #'   sample_nNodes = 10,
 #'   prop_hi_res = 1,
 #'   hi_res = 2,
+#'   sampling_duration = 7,
 #'   regime = "random",
 #'   alg = "fast_greedy")
 #'
@@ -137,7 +137,7 @@ sample_graph <- function(graph, sample_nNodes, sampling_duration, prop_hi_res = 
     id_df <- data.frame(ids = igraph::V(graph)$name, group = membership) %>%
       dplyr::group_by(.data$group) %>%
       dplyr::mutate(count = dplyr::n()) %>%
-      dplyr::arrange(desc(.data$count)) %>%
+      dplyr::arrange(dplyr::desc(.data$count)) %>%
       dplyr::ungroup()
 
     nGroups <- length(unique(membership))
@@ -151,7 +151,7 @@ sample_graph <- function(graph, sample_nNodes, sampling_duration, prop_hi_res = 
         dplyr::select(.data$group)
 
       sample <- id_df %>%
-        dplyr::filter(group %in% groups_to_sample$group) %>%
+        dplyr::filter(.data$group %in% groups_to_sample$group) %>%
         dplyr::group_by(.data$group) %>%
         dplyr::slice(1) %>%
         dplyr::ungroup() %>%
@@ -173,7 +173,7 @@ sample_graph <- function(graph, sample_nNodes, sampling_duration, prop_hi_res = 
           dplyr::group_by(.data$group) %>%
           dplyr::slice_sample(n = 1) %>%
           dplyr::ungroup() %>%
-          dplyr::arrange(desc(.data$count)) %>%
+          dplyr::arrange(dplyr::desc(.data$count)) %>%
           dplyr::slice(1:number_to_remove)
 
         sample <- initial_sample %>%
@@ -206,7 +206,7 @@ sample_graph <- function(graph, sample_nNodes, sampling_duration, prop_hi_res = 
   ed <- igraph::get.data.frame(g2) # nodes can get silently dropped,
 
   ids <- igraph::V(g2)$name # so make sure that doesn't happen
-  dyads <- data.frame(t(combn(ids, 2)))
+  dyads <- data.frame(t(utils::combn(ids, 2)))
   names(dyads) <- c("from", "to")
   ed <- dplyr::left_join(dyads, ed, by = c("from", "to"))
   ed[is.na(ed)] <- 0

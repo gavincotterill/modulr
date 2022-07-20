@@ -40,7 +40,6 @@ Simulates network sampling, monitoring and performs community detection based on
 }
 \examples{
 \donttest{
-library(igraph)
 g <- simulate_graph(n_animals = 25,
                     n_groups = 4,
                     time_to_leave = 5,
@@ -55,6 +54,7 @@ g_obs <- sample_graph(
   sample_nNodes = 10,
   prop_hi_res = 1,
   hi_res = 2,
+  sampling_duration = 7,
   regime = "random",
   alg = "fast_greedy")
 

@@ -5,10 +5,6 @@
 #'
 #' @param x a named square adjacency matrix or named 'igraph' graph. Intended for
 #'   weighted, undirected graphs.
-#' @param alg the community detection algorithm to use, either from igraph:
-#' "fast_greedy", "leading_eigen", "leiden", "louvain", or "walktrap"
-#' or from rnetcarto: "netcarto"
-#' default is "walktrap"
 #'
 #' @return a named vector of module memberships matching the named adjacency
 #'   matrix or igraph graph object (igraph::V(graph)$name)

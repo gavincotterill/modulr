@@ -11,7 +11,7 @@ dt_fxn <- function(animal){
                   state = dplyr::lead(.data$current_state)) %>%
     dplyr::rename(start = .data$cumulative_time) %>%
     dplyr::select("state", "start","end") %>%
-    na.omit() %>%
+    stats::na.omit() %>%
     dplyr::mutate_all(~as.numeric(.)) %>%
     data.table::setDT()
 

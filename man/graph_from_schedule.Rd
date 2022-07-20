@@ -19,6 +19,13 @@ are the proportion of time a dyad spent co-located at a patch.
 }
 \examples{
 \donttest{
+obj <- simulate_schedule(n_animals = 15,
+                         n_groups = 3,
+                         time_to_leave = 5,
+                         time_to_return = 2,
+                         travel_time = c(0.001, 0.2),
+                         sampling_duration = 20,
+                         simulator = "independent")
 g <- graph_from_schedule(schedule = obj)
 }
 }
