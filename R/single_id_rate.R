@@ -17,7 +17,7 @@
 #' single_id_rate(sub_sched = obj[[1]], sub_id = names(obj)[[1]], "independent")
 #' }
 single_id_rate <- function(sub_sched, sub_id, sim){
-  home <- modulr:::extract_group(sub_id) %>% as.numeric()
+  home <- extract_group(sub_id) %>% as.numeric()
 
   if(sim == "independent"){
     sub_sched <- sub_sched %>%
