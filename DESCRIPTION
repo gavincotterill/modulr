@@ -6,7 +6,7 @@ Authors@R:
            comment = c(ORCID = "0000-0002-1408-778X")),
      person("Kezia", "Manlove", , "kezia.manlove@usu.edu", role = c("aut"),
            comment = c(ORCID = "0000-0002-7200-5236")))
-Description: A system for stochastic simulation of individual movements that generate social networks with controllable modularity and sampling simulators for power analysis. 
+Description: A system for stochastic simulation of individual movements that generate social networks with controllable 'modularity' and sampling simulators for power analysis. 
 URL: https://github.com/gavincotterill/modulr
 BugReports: https://github.com/gavincotterill/modulr/issues
 License: MIT + file LICENSE

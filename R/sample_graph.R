@@ -43,7 +43,7 @@ sample_graph <- function(graph, sample_nNodes, sampling_duration, prop_hi_res = 
   if(!alg %in% possible_algorithms){stop("alg must take one of the following values: \"netcarto\", \"fast_greedy\",\"label_prop\", \"leiden\", \"louvain\"  or \"walktrap\"")}
   if(alg %in% c("netcarto") & !requireNamespace(c("rnetcarto"), quietly = TRUE)){stop( "Package \"rnetcarto\" must be installed to use the netcarto community detection algorithm.")}
   if(sample_nNodes <= 2){stop("sample_nNodes must be greater than 2 in order to make a graph")}
-  if(class(graph) != "igraph"){ stop("graph needs to be an igraph object.", call. = FALSE) }
+  if(!is(graph, "igraph")){ stop("graph needs to be an igraph object.", call. = FALSE) }
 
   adjmat = igraph::as_adjacency_matrix(graph, attr = "weight", type = "both", sparse = FALSE)
   netSize <- ncol(adjmat)
