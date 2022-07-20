@@ -2,8 +2,8 @@
   "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
   "@type": "SoftwareSourceCode",
   "identifier": "modulr",
-  "description": "'`modulr` provides functions to simulate group switching behavior and create weighted, undirected social networks based on the proportion of time dyads spend together. `modulr` also simulates sampling processes and gives users to the tools to assess network statistic estimation under diverse scenarios'.",
-  "name": "modulr: Simulate modular fission-fusion networks and sample design",
+  "description": "A system for stochastic simulation of individual movements that generate social networks with controllable 'modularity' and sampling simulators for power analysis.",
+  "name": "Simulate Individual Movement Behaviors Underlying Modular Fission-Fusion Networks",
   "license": "https://spdx.org/licenses/MIT",
   "version": "0.8.0",
   "programmingLanguage": {
