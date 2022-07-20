@@ -3,10 +3,10 @@ test_that("group-think has all individuals at all intervals", {
   na = 150
   t2 <- simulate_non_independence(n_animals = na,
                                   n_groups = 13,
-                                  time_to_leave = 5,
-                                  time_to_return = 2,
-                                  travel_time = c(0.001,0.25),
-                                  sampling_duration = 30)
+                                  time_to_leave = 3,
+                                  time_to_return = 1,
+                                  travel_time = c(0.001,0.002),
+                                  sampling_duration = 15)
 
   t3 <- t2 %>%
     dplyr::group_by(start) %>%

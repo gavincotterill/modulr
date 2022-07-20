@@ -40,3 +40,16 @@ test_that("simulate_graph continuous creates list", {
                         samples_per_day = 1)
   expect_equal(length(g_c), 10)
 })
+
+test_that("simulate_graph accepts a vector of switching times", {
+
+  g_c <- simulate_graph(n_animals = 10,
+                        n_groups = 2,
+                        time_to_leave = c(3, 4, 5, 3, 4, 5, 3, 4, 5, 3),
+                        time_to_return = c(1, 2, 3, 1, 2, 3, 1, 2, 3, 1),
+                        travel_time = c(0.001, 0.002),
+                        sampling_duration = 7,
+                        sampler = "continuous",
+                        samples_per_day = 1)
+  expect_equal(length(g_c), 10)
+})

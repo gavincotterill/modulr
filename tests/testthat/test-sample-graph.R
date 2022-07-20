@@ -1,5 +1,4 @@
 test_that("when there are more than two edges in sampled graph with fast_greedy, all memberships are assigned", {
-  # library(igraph)
   g_d <- simulate_graph(n_animals = 10,
                         n_groups = 2,
                         time_to_leave = 5,
@@ -62,6 +61,17 @@ test_that("sample_graph grab-two works with multiple conditions", {
                      alg = "netcarto")
   expect_equal(length(igraph::V(g2)), 5)
 
+  g2a <- sample_graph(graph = g0,
+                     sample_nNodes = 6,
+                     prop_hi_res = 0.5,
+                     hi_res = 12,
+                     lo_res = 1/7,
+                     sampling_duration = 7,
+                     regime = "grab-two",
+                     alg = "netcarto")
+  expect_equal(length(igraph::V(g2a)), 6)
+
+
     # sample nNodes is greater than twice the number of groups
   g3 <- sample_graph(graph = g0,
                      sample_nNodes = 7,
@@ -94,6 +104,39 @@ test_that("sample_graph grab-two works with multiple conditions", {
   expect_equal(length(igraph::V(g5)), 9)
 })
 
+test_that("grab-two remainder 1 chunk", {
+
+  na <- 12
+  s1 <- simulate_schedule(n_animals = na, n_groups = 4, n_splits = NA, time_to_leave = 5, time_to_return = 2, travel_time = c(0.001, 0.002), sampling_duration = 14, simulator = "independent")
+  g0 <- graph_from_schedule(s1)
+
+  # sample_nNodes <= 8 and even
+
+  # regime grab-two
+  # sample nNodes is fewer than twice the number of groups and even, remainder 0, 1, >1
+  g1 <- sample_graph(graph = g0,
+                     sample_nNodes = 4,
+                     prop_hi_res = 0.5,
+                     hi_res = 12,
+                     lo_res = 1/7,
+                     sampling_duration = 7,
+                     regime = "grab-two",
+                     alg = "netcarto")
+  expect_equal(length(igraph::V(g1)), 4)
+
+  g2a <- sample_graph(graph = g0,
+                      sample_nNodes = 6,
+                      prop_hi_res = 0.5,
+                      hi_res = 12,
+                      lo_res = 1/7,
+                      sampling_duration = 7,
+                      regime = "grab-two",
+                      alg = "netcarto")
+  expect_equal(length(igraph::V(g2a)), 6)
+
+})
+
+
 test_that("sample_graph even works with multiple conditions", {
 
   na <- 12
@@ -123,7 +166,6 @@ test_that("sample_graph even works with multiple conditions", {
                      alg = "netcarto")
   expect_equal(length(igraph::V(g2)), 4)
 
-  # sample nNodes is greater than twice the number of groups
   g3 <- sample_graph(graph = g0,
                      sample_nNodes = 5,
                      prop_hi_res = 0.5,
@@ -160,7 +202,7 @@ test_that("sample_graph even works with multiple conditions", {
 test_that("sample_graph random works with multiple conditions", {
 
   na <- 10
-  s1 <- simulate_schedule(n_animals = na, n_groups = 6, n_splits = NA, time_to_leave = 5, time_to_return = 2, travel_time = c(0.001, 0.002), sampling_duration = 14, simulator = "independent")
+  s1 <- simulate_schedule(n_animals = na, n_groups = 2, n_splits = NA, time_to_leave = 5, time_to_return = 2, travel_time = c(0.001, 0.002), sampling_duration = 14, simulator = "independent")
   g0 <- graph_from_schedule(s1)
 
   # regime random netcarto
