@@ -6,7 +6,7 @@
 \alias{modulr-package}
 \title{modulr: Simulate Individual Movement Behaviors Underlying Modular Fission-Fusion Networks}
 \description{
-A system for stochastic simulation of individual movements that generate social networks with controllable modularity and sampling simulators for power analysis.
+A system for stochastic simulation of individual movements that generate social networks with controllable 'modularity' and sampling simulators for power analysis.
 }
 \seealso{
 Useful links:

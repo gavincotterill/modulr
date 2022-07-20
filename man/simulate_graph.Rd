@@ -47,8 +47,8 @@ graph_from_schedule, but also includes a discrete-time approximation that is
 faster for large networks.
 }
 \examples{
-g <- simulate_graph(n_animals = 25,
-                    n_groups = 4,
+g <- simulate_graph(n_animals = 10,
+                    n_groups = 2,
                     time_to_leave = 5,
                     time_to_return = 2,
                     travel_time = c(0.001,0.2),
