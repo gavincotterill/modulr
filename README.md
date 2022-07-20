@@ -5,28 +5,24 @@
 
 # modulr
 
-**NOTE:** This package is under active development. A stable version
-will be available soon.
-
-`modulr` is an R package that simulates network graphs with controllable
-modularity and stochastic continuous-time descriptions of individuals’
-locations over the course of a simulation. The package includes tools
-for simulating sampling processes, power analysis, visualization, and
-individually-based disease models.
-
-Some of the functions in this package can use the ‘netcarto’
+`modulr` is primarily motivated by the investigation of transmission in
+wildlife but could be extendable to other systems. The workflow starts
+with simulating individual movement behaviors that give rise to emergent
+network properties. Within a simulated population, individual-based
+transmission and contact patterns can be investigated and network
+sampling simulators facilitate power analysis for social network
+statistic estimation. To our knowledge, it is also the first R package
+to let users simulate networks with controllable modularity. The package
+makes heavy use of ‘igraph’, especially for network visualization. Some
+of the functions in this package can use the ‘netcarto’
 simulated-annealing community detection algorithm implemented via
 `rnetcarto`, although this is a suggested package, not a dependency.
-`rnetcarto` setup can be laborious depending on your machine. In our
-experience, this community detection algorithm has the greatest
-performance advantages for small networks, which may make the additional
-setup effort worthwhile.
 
 ## How to cite this package
 
-Cotterill, G. and Manlove, K. modulr: R package for simulating
-fission-fusion networks and sample design. (Version v1.0.0).
-<https://github.com/gavincotterill/modulr>
+Cotterill, G. and Manlove, K. modulr: R package to simulate individual
+movement behaviors underlying modular fission-fusion networks. (Version
+v0.8.0). <https://github.com/gavincotterill/modulr>
 
 ## Installation
 
@@ -111,11 +107,7 @@ group membership for each animal, and calculate the network modularity
 (Newman’s Q).
 
 ``` r
-adj_ind <- as.matrix(igraph::get.adjacency(g, type = "upper",
-    attr = "weight"))
-mem_ind <- V(g)$membership
-Q <- assortnet::assortment.discrete(adj_ind, types = mem_ind,
-    weighted = T)$r
+Q <- q_rel(g)
 Q
 #> [1] 0.5442307
 ```
@@ -150,40 +142,35 @@ g_obs <- sample_graph(graph = g, sample_nNodes = sn, sampling_duration = sd,
 Let’s calculate estimated modularity of the sampled graph.
 
 ``` r
-adj_sample <- as.matrix(igraph::get.adjacency(g_obs, type = "upper",
-    attr = "weight"))
-mem_sample <- V(g_obs)$membership
-Qest <- assortnet::assortment.discrete(adj_sample, types = mem_sample,
-    weighted = T)$r
+Qest <- q_rel(g_obs)
 Qest
 #> [1] 0.5091914
 ```
 
 Now we can plot our sampled graph side-by-side with the original and
-compare.
+compare. Using the optional `seed` call, and providing the same value to
+both plotting functions let’s us ‘lock’ the node layout in place to
+faciliate side-by-side comparison of the ‘true’ and ‘observed’ graphs.
 
 ``` r
 par(mfrow = c(1, 2))
+seed_val <- 123
 plot_simulated_graph(g, title = paste0("True Q = ", round(Q,
-    2)))
+    2)), seed = seed_val)
 plot_sampled_graph(g_obs = g_obs, g = g, title = paste0("Estimated Q = ",
-    round(Qest, 2)))
+    round(Qest, 2)), seed = seed_val)
 ```
 
 ![](man/figures/README-plot-sampled-1.png)
 
-`plot_sampled_graph()` preserves the node location from the left hand
-plot to make it easier to see which animals were sampled. Netcarto’s
-community assignments are represented as the node color in the right
-hand figure and the encircling polygons indicate the “true membership”
-in both left and right. By chance, all 5 social groups were sampled, and
-netcarto correctly assigned all individuals except the white node up
-top, which should have been in it’s own group. Netcarto did a good job
-in this example. Netcarto is also fast for the sizes of networks we are
-likely to encounter for many wildlife species. Different community
-detection algorithms vary in their strengths and abilities – some will
-perform better if the observation frequency is reduced. As we can see
-the estimated modularity ended up being a little low, but not too far
-off.
+Netcarto’s community assignments are represented as the node color in
+the right hand figure and the encircling polygons indicate the “true
+membership” in both left and right. By chance, all 5 social groups were
+sampled, and netcarto correctly assigned all individuals except the
+white node up top, which should have been in it’s own group. Different
+community detection algorithms vary in their strengths and abilities –
+some will perform better if the observation frequency is reduced. As we
+can see the estimated modularity ended up being a little low, but not
+too far off.
 
 Be sure to check out the other vignettes to learn more about `modulr`!
