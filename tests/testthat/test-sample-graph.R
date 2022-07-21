@@ -106,7 +106,7 @@ test_that("sample_graph grab-two works with multiple conditions", {
 
 test_that("grab-two remainder 1 chunk", {
 
-  na <- 12
+  na <- 16
   s1 <- simulate_schedule(n_animals = na, n_groups = 4, n_splits = NA, time_to_leave = 5, time_to_return = 2, travel_time = c(0.001, 0.002), sampling_duration = 14, simulator = "independent")
   g0 <- graph_from_schedule(s1)
 
