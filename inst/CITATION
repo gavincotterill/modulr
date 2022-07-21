@@ -3,7 +3,7 @@ citHeader("To cite modulr in publications use:")
 citEntry(
   entry    = "Misc",
   title    = "Simulate Individual Movement Behaviors Underlying Modular Fission-Fusion Networks",
-  author   = personList(as.person("Gavin Cotteril"),
+  author   = personList(as.person("Gavin Cotterill"),
                                    as.person("Kezia Manlove")),
   year     = "2022",
   url      = "https://github.com/gavincotterill/modulr",
