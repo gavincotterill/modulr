@@ -29,7 +29,6 @@ single_id_rate <- function(sub_sched, sub_id, sim){
   }else if(sim %in% c("non-independent", "group-think")){
 
     test <- sub_sched %>%
-      # dplyr::select(-members) %>%
       dplyr::filter(.data$state >= 1)
 
     if(length(unique(test$state)) == 1){

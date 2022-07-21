@@ -17,7 +17,6 @@ sglt_bind <- function(a, b){
 
   # convert to state//start//end format
   sgl_transformed <- lapply(sub_group_list, new_dt_fxn)
-  # out <- dplyr::bind_rows(sgl_transformed) # don't bind just yet
   out <- sgl_transformed
   return(out)
 }

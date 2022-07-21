@@ -19,10 +19,6 @@ simulate_groups <- function(animals_home,
 
   animals_other_groups <- which(c(1:n_groups) != animals_home)
 
-  # # convert expected times to departure rates
-  # delta <- 1/time_to_leave
-  # xi <- 1/time_to_return
-
   # store inputs in named list (returned at end of function)
   inputs <- list(animals_home = animals_home,
                  time_to_leave = time_to_leave,

@@ -161,11 +161,6 @@ sample_graph <- function(graph, sample_nNodes, sampling_duration, prop_hi_res = 
 
       initial_preference <- ceiling(sample_nNodes / nGroups)
 
-      # initial_sample <- id_df %>%
-      #   dplyr::group_by(.data$group) %>%
-      #   dplyr::slice_sample(n = initial_preference) %>%
-      #   dplyr::ungroup()
-      # # bug fix for latest dplyr 1.0.7 -> 1.0.9
       initial_sample <- id_df %>%
         dplyr::group_by(.data$group) %>%
         dplyr::slice(sample.int(n = initial_preference)) %>%

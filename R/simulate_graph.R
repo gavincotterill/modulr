@@ -37,10 +37,11 @@ simulate_graph <- function(n_animals,
   if (!requireNamespace(c("igraph"), quietly = TRUE)) { stop("Package \"igraph\"  must be installed to use this function.",call. = FALSE)}
   if (n_groups == 1) {stop( "single module networks are currently not supported -- n_groups must be >= 2", call. = FALSE)}
   if (!sampler %in% c("discrete", "continuous")) {stop("sampler must be either \"discrete\" or \"continuous\".",call. = FALSE) }
+
   animal_list <- animal_sample_df <- vector("list", length = n_animals)  # build storage objects
 
   if( length(time_to_leave) == length(time_to_return) & length(time_to_return) == 1 ) {
-    for(a in 1:n_animals){  # for-loop over animals.
+    for(a in 1:n_animals){
       animal_list[[a]] <- simulate_animal(time_to_leave = time_to_leave,
                                           time_to_return = time_to_return,
                                           travel_time = travel_time,
@@ -54,7 +55,7 @@ simulate_graph <- function(n_animals,
     }
 
   } else if(length(time_to_leave) == length(time_to_return) & length(time_to_return) == n_animals){
-    for(a in 1:n_animals){  # for-loop over animals.
+    for(a in 1:n_animals){
       animal_list[[a]] <- simulate_animal(time_to_leave = time_to_leave[a],
                                           time_to_return = time_to_return[a],
                                           travel_time = travel_time,
@@ -90,13 +91,10 @@ simulate_graph <- function(n_animals,
     for(d in 1:nrow(dyads)){
       anim1 <- samples_out %>% dplyr::filter(.data$id == dyads[d, 1])
       anim2 <- samples_out %>% dplyr::filter(.data$id == dyads[d, 2])
-      # anim1 <- subset(samples_out, id == levels(factor(samples_out$id))[dyads[d, 1]])
-      # anim2 <- subset(samples_out, id == levels(factor(samples_out$id))[dyads[d, 2]])
       together <- length(which(anim1$location == anim2$location))
       adj_mat[dyads[d, 1], dyads[d, 2]] <- together / nrow(anim1)
     }
 
-    # rownames(adj_mat) <- colnames(adj_mat) <- levels(factor(samples_out$id))
     diag(adj_mat) <- rep(0, n_animals) # zero diagonal and lower tri
     adj_mat[lower.tri(adj_mat)] <- 0
   }
@@ -105,7 +103,6 @@ simulate_graph <- function(n_animals,
   if(sampler == "continuous"){
     ids <- names(animal_sample_df)
     names(animal_list) <- ids
-    # names(animal_list) <- 1:length(animal_list)
 
     mem_df <- data.frame(ids = names(animal_list),
                          membership = unlist(lapply(animal_list, function(x) x[['animals_home']])))
@@ -143,9 +140,7 @@ simulate_graph <- function(n_animals,
         dplyr::mutate(time = .data$end_min - .data$start_max)
 
       numer <- sum(time_overlap$time)
-      # denom <- intervals[nrow(intervals), "end_min"]$end_min #
-      # denom <- intervals[nrow(intervals), "end_min"]["end_min"] # throwing an error after travel time incorporated
-      # denom <- max(intervals$end_min)
+
       denom <- intervals[[nrow(intervals), "end_min"]]
 
       if(is.na(numer)){
@@ -159,8 +154,6 @@ simulate_graph <- function(n_animals,
       adj_mat[dyads[d, 1], dyads[d, 2]] <- dyads$ew[d]
     }
 
-    # rownames(adj_mat) <- colnames(adj_mat) <- names(animal_list)
-    # diag(adj_mat) <- rep(0, n_animals) # zero diagonal and lower tri
     diag(adj_mat) <- 0
     adj_mat[lower.tri(adj_mat)] <- 0
     adj_mat[is.na(adj_mat)] <- 0

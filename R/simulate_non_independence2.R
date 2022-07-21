@@ -5,7 +5,6 @@
 #' @keywords internal
 #' @inheritParams simulate_groups
 #' @param n_splits the number of subgroups that groups will splinter into when they leave home. If NA, the number of subgroups is dependent on the number of animals in a group.
-
 simulate_non_independence2 <- function(
   n_groups = 4,
   n_animals = 16,
@@ -124,19 +123,14 @@ simulate_non_independence2 <- function(
   t2$vector <- purrr::map(t2$vector, ~clean_vector(.x))
 
   for(i in 1:nrow(t2)){
-    # if(i == 1341){break}
-
     if(!is.na(t2[i,"holding"])){
       t2[i,"holding"] <- clean_holding(t2[i, "holding"])
     }
-
     #' split vector_i into a list of groups present
     curr_vec <- stringr::str_split(t2$vector[i], "-")[[1]]
-
     # for empty travel states:
     if(t2[i, "idx"] > 1 & t2$holding[i] %in% c(NA, "")){
       t2$holding[i] <- paste0(stringr::str_split(t2$vector[i], "-")[[1]], "_0") %>% paste(collapse = "/") # since vector is ordered correctly, this should work
-
     }
 
     if(t2[i, "idx"] > 1 & is.na(t2$members[i])){
@@ -254,7 +248,6 @@ simulate_non_independence2 <- function(
     } # end j loop
   } # end i
 
-  # try this:
   t2$members <- stringr::str_remove_all(string = t2$members, pattern = "\\d{1,}_0")
   t2$members <- stringr::str_remove(string = t2$members, pattern = "(?<!\\d{1,1})/")
   t2$members <- stringr::str_remove(string = t2$members, pattern = "/(?!\\d{1,1})")

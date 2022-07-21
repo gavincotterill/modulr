@@ -22,7 +22,6 @@ simulate_independence <- function(n_animals,
                                             nrow(animal_list[[a]]$samples)))
     names(animal_sample_df)[a] <- paste(animal_list[[a]]$animals_home, a, sep = "_")
   }
-  # names(animal_list) <- names(animal_sample_df)
   animals_transformed <- lapply(animal_list, dt_fxn)
   names(animals_transformed) <- names(animal_sample_df)
 
@@ -32,8 +31,6 @@ simulate_independence <- function(n_animals,
   Individuals are randomly assigned to groups.
   At small average group sizes it is possible that fewer groups are returned than desired."), call. = FALSE)}
 
-  # out_list <- list(animals_transformed = animals_transformed, animal_list = animal_list)
-  # return(out_list)
   return(animals_transformed)
 }
 

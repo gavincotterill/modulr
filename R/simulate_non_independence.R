@@ -4,8 +4,6 @@
 #'
 #' @inheritParams simulate_groups
 #' @keywords internal
-
-
 simulate_non_independence <- function(
   n_groups = 4,
   n_animals = 16,
@@ -80,9 +78,7 @@ simulate_non_independence <- function(
   }
 
   #--------------------------------------
-  # set.seed(123)
   for(i in 1:nrow(t2)){
-    # if(i == 4224){break}
     if(t2$action[i] %in% c(NA)){
       next
     }else if(t2$action[i] == "same"){
@@ -92,11 +88,11 @@ simulate_non_independence <- function(
           stringr::str_remove_all(., "(?<!\\d{1,1})-|-(?!\\d{1,1})")
 
       }else{
-        (existing_grps <- stringr::str_split(t2$holding[i], "-")[[1]])
-        (existing_mems <- stringr::str_split(t2$members[i], "/")[[1]])
+        existing_grps <- stringr::str_split(t2$holding[i], "-")[[1]]
+        existing_mems <- stringr::str_split(t2$members[i], "/")[[1]]
 
-        (incoming_grps <- stringr::str_split(t2$vector[i], "-")[[1]])
-        (incoming_ids <- stringr::str_split(t2$members[index_back_same(t2, "vector", t2$vector[i], i)], "/")[[1]])
+        incoming_grps <- stringr::str_split(t2$vector[i], "-")[[1]]
+        incoming_ids <- stringr::str_split(t2$members[index_back_same(t2, "vector", t2$vector[i], i)], "/")[[1]]
 
         exist_mem_lst <- vector("list", length(incoming_ids))
         missing_grp_vec <- !incoming_grps %in% existing_grps
@@ -105,14 +101,14 @@ simulate_non_independence <- function(
         out_ids <- list()
         for(k in seq_along(incoming_grps)){
           if(!incoming_grps[k] %in% existing_grps){
-            (out_ids[k] <- incoming_ids[k])
+            out_ids[k] <- incoming_ids[k]
           }else if(incoming_grps[k] %in% existing_grps){
-            (grp_to_paste <- existing_grps[which(existing_grps == incoming_grps[k])])
-            (ids_to_paste <- exist_mem_lst[[k]])
-            (out_ids[k] <- paste(incoming_ids[k], ids_to_paste, sep = "-"))
+            grp_to_paste <- existing_grps[which(existing_grps == incoming_grps[k])]
+            ids_to_paste <- exist_mem_lst[[k]]
+            out_ids[k] <- paste(incoming_ids[k], ids_to_paste, sep = "-")
           }
         }
-        t2$members[i] <- paste(out_ids, collapse = "/") %>% ## does this need [[1]]?
+        t2$members[i] <- paste(out_ids, collapse = "/") %>%
            stringr::str_remove_all(., "(?<!\\d{1,1})-|-(?!\\d{1,1})")
       }
       # look forward
@@ -136,11 +132,11 @@ simulate_non_independence <- function(
         t2$members[i] <- paste(unlist(mbrs_list), collapse = "/") %>% # assign current
           stringr::str_remove_all(., "(?<!\\d{1,1})-|-(?!\\d{1,1})")
       }else{
-        (existing_grps <- stringr::str_split(t2$holding[i], "-")[[1]])
-        (existing_mems <- stringr::str_split(t2$members[i], "/")[[1]])
+        existing_grps <- stringr::str_split(t2$holding[i], "-")[[1]]
+        existing_mems <- stringr::str_split(t2$members[i], "/")[[1]]
 
-        (incoming_grps <- stringr::str_split(t2$vector[i], "-")[[1]])
-        (incoming_ids <- stringr::str_split(t2$members[index_back_same(t2, "vector", t2$vector[i], i)], "/")[[1]])
+        incoming_grps <- stringr::str_split(t2$vector[i], "-")[[1]]
+        incoming_ids <- stringr::str_split(t2$members[index_back_same(t2, "vector", t2$vector[i], i)], "/")[[1]]
 
         exist_mem_lst <- vector("list", length(incoming_ids))
         missing_grp_vec <- !incoming_grps %in% existing_grps
@@ -149,11 +145,11 @@ simulate_non_independence <- function(
         out_ids <- list()
         for(k in seq_along(incoming_grps)){
           if(!incoming_grps[k] %in% existing_grps){
-            (out_ids[k] <- incoming_ids[k])
+            out_ids[k] <- incoming_ids[k]
           }else if(incoming_grps[k] %in% existing_grps){
-            (grp_to_paste <- existing_grps[which(existing_grps == incoming_grps[k])])
-            (ids_to_paste <- exist_mem_lst[[k]])
-            (out_ids[k] <- paste(incoming_ids[k], ids_to_paste, sep = "-"))
+            grp_to_paste <- existing_grps[which(existing_grps == incoming_grps[k])]
+            ids_to_paste <- exist_mem_lst[[k]]
+            out_ids[k] <- paste(incoming_ids[k], ids_to_paste, sep = "-")
           }
         }
         t2$members[i] <- paste(out_ids, collapse = "/") %>%
@@ -173,8 +169,6 @@ simulate_non_independence <- function(
       t2 <- ff_forward3(t2, curr_vec, mbrs_list, i, time_to_leave, time_to_return)
     }
   }
-
-
   return(t2)
 }
 
