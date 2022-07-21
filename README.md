@@ -1,5 +1,5 @@
-<!-- badges: start --> [![Codecov test
-coverage](https://codecov.io/gh/gavincotterill/modulr/branch/main/graph/badge.svg)](https://app.codecov.io/gh/gavincotterill/modulr?branch=main)
+<!-- badges: start --> 
+[![Codecov test coverage](https://codecov.io/gh/gavincotterill/modulr/branch/main/graph/badge.svg)](https://app.codecov.io/gh/gavincotterill/modulr?branch=main)
 <!-- badges: end -->
 
 # modulr
