@@ -10,7 +10,7 @@ This is a resubmission. In this version I have:
 
 * Added new functions, tests and vignettes.
 
-* Functions no longer print() information to console but use message().
+* Functions no longer print() information to console but use message(), warning() or stop().
 
 * Examples no longer change par() settings. Vignettes store user's par settings at beginning and restore them at end.
 
@@ -24,6 +24,6 @@ This is a resubmission. In this version I have:
 
 * Currently no DOI, getting ready to resubmit manuscript.
 
-* All SUGGESTs are now on CRAN.
+* All SUGGESTs are currently available on CRAN.
 
 
