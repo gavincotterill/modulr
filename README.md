@@ -1,7 +1,3 @@
-<!-- badges: start -->
-
-[![codecov](https://codecov.io/gh/gavincotterill/modulr/branch/main/graph/badge.svg?token=511F3OBKA6)](https://codecov.io/gh/gavincotterill/modulr)
-<!-- badges: end -->
 
 # modulr
 
