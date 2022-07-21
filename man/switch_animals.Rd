@@ -10,7 +10,7 @@ switch_animals(inlist, elem_leave)
 \item{inlist}{a list like mbrs_list}
 
 \item{elem_leave}{a list with same length  as mbrs_list of animals to send away
-fromt heir home group}
+from their home group}
 }
 \description{
 Sends animals leaving home to another group at current time step
