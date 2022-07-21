@@ -1,7 +1,10 @@
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
 <!-- badges: start -->
 
-[![Codecov-test-coverage](https://codecov.io/gh/gavincotterill/modulr/branch/main/graph/badge.svg)](https://app.codecov.io/gh/gavincotterill/modulr?branch=main)
 [![R-CMD-check](https://github.com/gavincotterill/modulr/workflows/R-CMD-check/badge.svg)](https://github.com/gavincotterill/modulr/actions)
+[![Codecov test
+coverage](https://codecov.io/gh/gavincotterill/modulr/branch/main/graph/badge.svg)](https://app.codecov.io/gh/gavincotterill/modulr?branch=main)
 <!-- badges: end -->
 
 # modulr
@@ -85,11 +88,10 @@ head(ind[[1]], 6)
 ```
 
 Each of these schedule objects is a list of data.frames, one per
-individual, detailing where they were with time intervals. The time
-intervals are the same for each individual, regardless of whether or not
-they moved. We can use the “schedule” object `ind` for a few different
-things including making an `igraph` graph with `graph_from_schedule()`,
-which we can plot using `plot_simulated_graph()`.
+individual, detailing where they were with time intervals. We can use
+the “schedule” object `ind` for a few different things including making
+an `igraph` graph with `graph_from_schedule()`, which we can plot using
+`plot_simulated_graph()`.
 
 ``` r
 g <- graph_from_schedule(ind)
@@ -97,7 +99,7 @@ plot_simulated_graph(g, title = "independent", vertex.size = 25,
     mark.expand = 25)
 ```
 
-![](man/figures/README-graph-1.png)
+![](man/figures/README-graph-1.png)<!-- -->
 
 Here, each circle (aka node) represents an individual. The color of the
 node represents it’s home group and the polygon encircling nodes of the
@@ -154,8 +156,8 @@ Qest
 
 Now we can plot our sampled graph side-by-side with the original and
 compare. Using the optional `seed` call, and providing the same value to
-both plotting functions let’s us ‘lock’ the node layout in place to
-faciliate side-by-side comparison of the ‘true’ and ‘observed’ graphs.
+both plotting functions, let’s us ‘lock’ the node layout in place to
+facilitate side-by-side comparison of the ‘true’ and ‘observed’ graphs.
 
 ``` r
 par(mfrow = c(1, 2))
@@ -166,7 +168,7 @@ plot_sampled_graph(g_obs = g_obs, g = g, title = paste0("Estimated Q = ",
     round(Qest, 2)), seed = seed_val)
 ```
 
-![](man/figures/README-plot-sampled-1.png)
+![](man/figures/README-plot-sampled-1.png)<!-- -->
 
 Netcarto’s community assignments are represented as the node color in
 the right hand figure and the encircling polygons indicate the “true
