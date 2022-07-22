@@ -2,12 +2,31 @@
 There were no ERRORs, or WARNINGs.
 
 There was 1 NOTE: 
-* New Submission
-
-
+```
+checking CRAN incoming feasibility ... NOTE
+  Maintainer: ‘Gavin Cotterill <gcotterill2@unl.edu>’
+  
+  New submission
+```
 ## Resubmission
-This is a resubmission. In this version I have:
+This is a resubmission. Changes to this version include:
 
+* (possibly) invalid URL from 'codecov' badge in 'README.md'. 
+I deleted/recreated 'codecov' repo connection and checked that reports are uploading. I updated the README badges and double checked links. I also checked that my format follows other CRAN packages (ggplot2). I re-ran checks to ensure no URL warnings:
+
+```
+devtools::check(
+  manual = TRUE,
+  remote = TRUE,
+  incoming = TRUE
+)
+
+devtools::check_win_devel()
+```
+
+* Added R-CMD-check CI and badge
+
+### Previous revisions
 * Added new functions, tests and vignettes.
 
 * Functions no longer print() information to console but use message(), warning() or stop().
