@@ -9,7 +9,7 @@ vignette: >
 
 
 
-If you haven't already done so, be sure to check out the other vignettes for an explanation of the simulators and how to generate continous-time descriptions of animal movements.
+If you haven't already done so, be sure to check out the other vignettes for an explanation of the simulators and how to generate continuous-time descriptions of animal movements.
 
 
 ```r

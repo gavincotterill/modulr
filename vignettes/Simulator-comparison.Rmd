@@ -99,7 +99,7 @@ head(ind[[1]], 6)
 ### Proportion of time spent 'home' vs. 'away'
 Next I'll use the `get_times()` function to calculate the amount of time each individual spent at home vs. with any other group/patch.
 
-In case `purrr` functions are unfamiliar, you can see examples of these functions in a more 'base R' style. `get_times()` needs the individual's schedule, the individual's name, and the simulator used to generate the data. We'll get the proportions for each individual in the simulation and average those values:
+In case `purrr` functions are unfamiliar, you can see examples of these functions in a more 'base R' style in the functions' help documentation (e.g. call `?get_times`). `get_times()` needs the individual's schedule, the individual's name, and the simulator used to generate the data. We'll get the proportions for each individual in the simulation and average those values:
 
 
 ```r
@@ -191,7 +191,7 @@ writeLines(msg)
 #> versus the desired value of 0.667
 ```
 
-This time it's much closer. Again, with longer sampling durations relative to switching rates we can reduce the amount of noise in these results.
+Again, with longer sampling durations relative to switching rates we can reduce the amount of noise in these results.
 
 Now we can reshape the data and plot the distributions of time home vs. away for all individuals in the three simulations.
 
@@ -239,7 +239,7 @@ ggplot(out2, aes(x = proportion, y = sim, color = state, point_color = state,
 
 The two black dashed vertical lines are our 'targets' based on the group-switching rates we provided and the red vertical lines are the mean values averaged over all individuals in each simulation. These look fine, but group-think is a little more noisy. 30 days should be enough time for individuals to have left and returned 'home' 4 or 6 times on average, so this isn't too surprising. Also note that the rug plots (short lines along the x-axis) are showing individual results. Whereas in the independent and group-think simulator there are more distinct lines, in the non-independent simulator there are fewer unique values by virtue of individuals switching with other members of their group.
 
-A more direct comparison is to calculate the average lambda and xi waiting times that individuals in each network experienced using `get_rates()`, where lambda is the average number of days before leaving the home state and xi is the average number of days before returning to the home state.
+A more direct comparison is to calculate the average $\lambda$ and $\xi$ waiting times that individuals in each network experienced using `get_rates()`, where lambda is the average number of days before leaving the home state and xi is the average number of days before returning to the home state.
 
 
 ```r
