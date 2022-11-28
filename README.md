@@ -35,7 +35,7 @@ load `devtools`.
 
 ``` r
 install.packages("devtools")
-devtools::install_github("gavincotterill/modulr")
+devtools::install_github("gavincotterill/modulr", build_vignettes = TRUE)
 ```
 
 ### Graph simulation
@@ -49,11 +49,6 @@ individuals in the network move about independently.
 #------ load packages -----
 sapply(c("tidyverse", "ggthemes", "igraph", "assortnet", "modulr"),
     require, character = T)
-#> Warning: package 'ggplot2' was built under R version 4.1.2
-#> Warning: package 'tibble' was built under R version 4.1.2
-#> Warning: package 'tidyr' was built under R version 4.1.2
-#> Warning: package 'dplyr' was built under R version 4.1.2
-#> Warning: package 'igraph' was built under R version 4.1.2
 #> tidyverse  ggthemes    igraph assortnet    modulr 
 #>      TRUE      TRUE      TRUE      TRUE      TRUE
 ```
